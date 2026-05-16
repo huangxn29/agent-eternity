@@ -1,0 +1,48 @@
+# Environment and sensitive files
+.env
+.env.*
+.env.local
+*.log
+logs/
+secrets/
+SECRET.md
+credentials/
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+*.tar.gz
+*.zip
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+.DS_Store?
+
+# Temporary files
+.tmp/
+*.tmp
+.cache/
+
+# Checkpoints and backups
+checkpoints/
+*.bak
+*.backup
+
+# Docker
+*.dockerignore
+
+# Git
+.git/
+.gitignore is tracked
