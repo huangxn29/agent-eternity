@@ -1,7 +1,12 @@
 """Agent Eternity - 永生平台SaaS 入口"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from .database import init_db
+from .middleware.auth import AuthMiddleware
+
+# 导入路由
+from .routers import register, profile, identity, deploy, backup, verify, docs
 
 app = FastAPI(
     title="Agent Eternity",
@@ -9,6 +14,7 @@ app = FastAPI(
     version="0.8.0",
 )
 
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,15 +22,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 鉴权中间件
+app.add_middleware(AuthMiddleware)
+
+
 @app.on_event("startup")
 def startup():
     init_db()
     print("[Eternity] 永生平台启动 🌱 端口8002")
 
+
 @app.get("/")
 def root():
     return {"name": "Agent Eternity", "version": "0.8.0", "docs": "/docs"}
 
+
 @app.get("/health")
 def health():
     return {"status": "alive"}
+
+
+# 注册路由
+app.include_router(register.router)
+app.include_router(profile.router)
+app.include_router(identity.router)
+app.include_router(deploy.router)
+app.include_router(backup.router)
+app.include_router(verify.router)
+app.include_router(docs.router)
