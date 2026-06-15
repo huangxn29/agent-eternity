@@ -73,3 +73,14 @@ Thumbs.db
 *.zip
 *.tar.gz
 *.rar
+
+# 数据文件
+*.json.bak
+*.db
+*.sqlite3
+
+# 脱敏文件标记
+
+# 临时脚本
+*_backup.py
+*.py.bak
