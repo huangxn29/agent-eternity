@@ -23,7 +23,21 @@ logger = logging.getLogger(__name__)
 
 
 def validate_email(email: str) -> bool:
-    """验证邮箱格式是否正确"""
+    """
+    验证邮箱格式是否正确
+    
+    Args:
+        email: 待验证的邮箱地址
+    
+    Returns:
+        bool: 邮箱格式是否正确
+    
+    Examples:
+        >>> validate_email("test@example.com")
+        True
+        >>> validate_email("invalid_email")
+        False
+    """
     if not email:
         return False
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -31,7 +45,21 @@ def validate_email(email: str) -> bool:
 
 
 def validate_url(url: str) -> bool:
-    """验证URL格式是否正确"""
+    """
+    验证URL格式是否正确
+    
+    Args:
+        url: 待验证的URL
+    
+    Returns:
+        bool: URL格式是否正确
+    
+    Examples:
+        >>> validate_url("https://www.example.com")
+        True
+        >>> validate_url("invalid_url")
+        False
+    """
     if not url:
         return False
     pattern = r'^https?://[^\s/$.?#].[^\s]*$'
@@ -39,7 +67,22 @@ def validate_url(url: str) -> bool:
 
 
 def safe_json_loads(json_str: str, default: Any = None) -> Any:
-    """安全的JSON解析，失败时返回默认值"""
+    """
+    安全的JSON解析，失败时返回默认值
+    
+    Args:
+        json_str: 待解析的JSON字符串
+        default: 解析失败时的默认值
+    
+    Returns:
+        Any: 解析结果或默认值
+    
+    Examples:
+        >>> safe_json_loads('{"key": "value"}')
+        {'key': 'value'}
+        >>> safe_json_loads('invalid_json', default={})
+        {}
+    """
     try:
         return json.loads(json_str)
     except (json.JSONDecodeError, TypeError, ValueError):
@@ -47,19 +90,43 @@ def safe_json_loads(json_str: str, default: Any = None) -> Any:
 
 
 def truncate_string(s: str, max_length: int = 100, suffix: str = '...') -> str:
-    """截断字符串到指定长度"""
+    """
+    截断字符串到指定长度
+    
+    Args:
+        s: 原始字符串
+        max_length: 最大长度
+        suffix: 截断时添加的后缀
+    
+    Returns:
+        str: 截断后的字符串
+    
+    Examples:
+        >>> truncate_string("This is a long string", 10)
+        'This is...'
+    """
     if len(s) <= max_length:
         return s
     return s[:max_length - len(suffix)] + suffix
 
 
 def dict_get_nested(d: Dict, path: str, default: Any = None) -> Any:
-    """安全地获取嵌套字典中的值
+    """
+    安全地获取嵌套字典中的值
     
     Args:
         d: 字典
         path: 路径，用点号分隔，如 "a.b.c"
         default: 默认值
+    
+    Returns:
+        Any: 获取的值或默认值
+    
+    Examples:
+        >>> dict_get_nested({'a': {'b': {'c': 'value'}}}, 'a.b.c')
+        'value'
+        >>> dict_get_nested({'a': {}}, 'a.b.c', default='default')
+        'default'
     """
     keys = path.split('.')
     current = d
@@ -72,12 +139,20 @@ def dict_get_nested(d: Dict, path: str, default: Any = None) -> Any:
 
 
 def batch_process(items: List, func: Callable, batch_size: int = 10) -> List:
-    """批量处理数据
+    """
+    批量处理数据
     
     Args:
         items: 待处理的项目列表
         func: 处理函数
         batch_size: 批次大小
+    
+    Returns:
+        List: 处理结果列表
+    
+    Examples:
+        >>> batch_process([1, 2, 3, 4], lambda x: x*2, batch_size=2)
+        [2, 4, 6, 8]
     """
     results = []
     for i in range(0, len(items), batch_size):
@@ -95,6 +170,12 @@ def retry(max_attempts: int = 3, delay: float = 1.0, backoff: float = 2.0):
         max_attempts: 最大尝试次数
         delay: 初始延迟时间（秒）
         backoff: 延迟倍增因子
+    
+    Examples:
+        @retry(max_attempts=5)
+        def may_fail():
+            # 可能失败的操作
+            pass
     """
     def decorator(func):
         @functools.wraps(func)
@@ -121,6 +202,12 @@ def retry(max_attempts: int = 3, delay: float = 1.0, backoff: float = 2.0):
 def monitor_performance(func: Callable) -> Callable:
     """
     性能监控装饰器，记录函数执行时间
+    
+    Examples:
+        @monitor_performance
+        def my_function():
+            # 被监控的函数
+            pass
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -136,11 +223,21 @@ def monitor_performance(func: Callable) -> Callable:
 
 
 def format_datetime(dt: Union[datetime, str], fmt: str = '%Y-%m-%d %H:%M:%S') -> str:
-    """格式化日期时间
+    """
+    格式化日期时间
     
     Args:
         dt: 日期时间对象或字符串
         fmt: 目标格式
+    
+    Returns:
+        str: 格式化后的日期时间字符串
+    
+    Examples:
+        >>> format_datetime(datetime.now())
+        '2023-04-01 12:00:00'
+        >>> format_datetime('2023-04-01T12:00:00')
+        '2023-04-01 12:00:00'
     """
     if isinstance(dt, str):
         try:
@@ -151,11 +248,19 @@ def format_datetime(dt: Union[datetime, str], fmt: str = '%Y-%m-%d %H:%M:%S') ->
 
 
 def read_file(file_path: str, encoding: str = 'utf-8') -> Optional[str]:
-    """读取文件内容
+    """
+    读取文件内容
     
     Args:
         file_path: 文件路径
         encoding: 文件编码
+    
+    Returns:
+        Optional[str]: 文件内容或None（读取失败时）
+    
+    Examples:
+        >>> read_file('example.txt')
+        '文件内容'
     """
     try:
         with open(file_path, 'r', encoding=encoding) as f:
@@ -169,13 +274,21 @@ def read_file(file_path: str, encoding: str = 'utf-8') -> Optional[str]:
 
 
 def write_file(file_path: str, content: str, encoding: str = 'utf-8', mode: str = 'w') -> bool:
-    """写入文件内容
+    """
+    写入文件内容
     
     Args:
         file_path: 文件路径
         content: 文件内容
         encoding: 文件编码
         mode: 写入模式 ('w' 或 'a')
+    
+    Returns:
+        bool: 写入是否成功
+    
+    Examples:
+        >>> write_file('example.txt', 'Hello, World!')
+        True
     """
     try:
         with open(file_path, mode, encoding=encoding) as f:
@@ -187,7 +300,16 @@ def write_file(file_path: str, content: str, encoding: str = 'utf-8', mode: str 
 
 
 class ConfigManager:
-    """简单的配置管理器"""
+    """
+    简单的配置管理器
+    
+    Attributes:
+        _config: 配置字典
+    
+    Examples:
+        config = ConfigManager('config.json')
+        value = config.get('key')
+    """
     
     def __init__(self, config_file: str = None):
         self._config = {}
@@ -195,7 +317,12 @@ class ConfigManager:
             self.load(config_file)
     
     def load(self, config_file: str):
-        """从文件加载配置"""
+        """
+        从文件加载配置
+        
+        Args:
+            config_file: 配置文件路径
+        """
         try:
             with open(config_file, 'r', encoding='utf-8') as f:
                 self._config = json.load(f)
@@ -203,11 +330,26 @@ class ConfigManager:
             self._config = {}
     
     def get(self, key: str, default: Any = None) -> Any:
-        """获取配置值"""
+        """
+        获取配置值
+        
+        Args:
+            key: 配置键
+            default: 默认值
+        
+        Returns:
+            Any: 配置值或默认值
+        """
         return dict_get_nested(self._config, key, default)
     
     def set(self, key: str, value: Any):
-        """设置配置值"""
+        """
+        设置配置值
+        
+        Args:
+            key: 配置键
+            value: 配置值
+        """
         keys = key.split('.')
         current = self._config
         for k in keys[:-1]:
@@ -217,88 +359,60 @@ class ConfigManager:
         current[keys[-1]] = value
     
     def to_dict(self) -> Dict:
-        """返回配置字典"""
+        """
+        返回配置字典
+        
+        Returns:
+            Dict: 配置字典的副本
+        """
         return self._config.copy()
 
 
 def is_blank(s: Optional[str]) -> bool:
-    """检查字符串是否为空或空白"""
+    """
+    检查字符串是否为空或空白
+    
+    Args:
+        s: 待检查的字符串
+    
+    Returns:
+        bool: 是否为空或空白
+    
+    Examples:
+        >>> is_blank('')
+        True
+        >>> is_blank('   ')
+        True
+        >>> is_blank('hello')
+        False
+    """
     return not s or s.strip() == ''
 
 
 def mask_sensitive_info(s: str, keep_start: int = 3, keep_end: int = 3, mask_char: str = '*') -> str:
-    """遮蔽敏感信息
+    """
+    遮蔽敏感信息
     
     Args:
         s: 原始字符串
         keep_start: 开头保留字符数
         keep_end: 结尾保留字符数
         mask_char: 遮蔽字符
+    
+    Returns:
+        str: 遮蔽后的字符串
+    
+    Examples:
+        >>> mask_sensitive_info('1234567890')
+        '123*****890'
     """
     if not s:
         return s
     
-    length = len(s)
-    if length <= keep_start + keep_end:
+    if len(s) <= keep_start + keep_end:
         return s
     
-    mask_length = length - keep_start - keep_end
-    mask_str = mask_char * mask_length
-    return s[:keep_start] + mask_str + s[-keep_end:]
-
-
-def chunk_list(lst: List, chunk_size: int) -> List[List]:
-    """将列表分块
+    masked_length = len(s) - keep_start - keep_end
+    mask = mask_char * masked_length
     
-    Args:
-        lst: 原始列表
-        chunk_size: 分块大小
-    """
-    return [lst[i:i + chunk_size] for i in range(0, len(lst), chunk_size)]
-
-
-def remove_duplicates(lst: List, key: Optional[Callable] = None) -> List:
-    """去除列表中的重复项
-    
-    Args:
-        lst: 原始列表
-        key: 用于确定唯一性的键函数
-    """
-    seen = set()
-    result = []
-    for item in lst:
-        value = item if key is None else key(item)
-        if value not in seen:
-            seen.add(value)
-            result.append(item)
-    return result
-
-
-def main():
-    # 示例用法
-    config = ConfigManager('config.json')
-    logger.info(config.get('database.host'))
-    
-    # 测试字符串工具函数
-    test_str = "这是一个测试字符串"
-    logger.info(truncate_string(test_str, 10))
-    logger.info(mask_sensitive_info("1234567890", 3, 3))
-    
-    # 测试日期时间格式化
-    dt = datetime.now()
-    logger.info(format_datetime(dt))
-    
-    # 测试文件操作
-    file_path = "test.txt"
-    content = "这是一个测试文件内容"
-    if write_file(file_path, content):
-        logger.info(read_file(file_path))
-    
-    # 测试列表操作
-    test_list = [1, 2, 2, 3, 4, 4, 5]
-    logger.info(remove_duplicates(test_list))
-    logger.info(chunk_list(test_list, 2))
-
-
-if __name__ == "__main__":
-    main()
+    return s[:keep_start] + mask + s[-keep_end:]
