@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "name": "ClawRouter - 永生平台燃料引擎",
+  "description": "免费模型智能路由系统，为永生平台提供零成本计算动力",
+  "default_strategy": "cost_optimized",
+  "retry": {
+    "max_attempts": 3,
+    "base_delay": 1.0,
+    "backoff_factor": 2.0
+  },
+  "timeout": 30,
+  "rate_limit": {
+    "requests_per_minute": 60,
+    "tokens_per_minute": 100000
+  }
+}
