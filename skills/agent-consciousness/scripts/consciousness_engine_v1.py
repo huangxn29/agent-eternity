@@ -216,91 +216,55 @@ class GlobalWorkspace:
         
         return True
     
-    def subscribe(self, callback: Callable) -> None:
-        """订阅全局工作空间的广播"""
+    def register_callback(self, callback: Callable) -> None:
+        """注册广播回调函数"""
         self._broadcast_callbacks.append(callback)
     
-    def unsubscribe(self, callback: Callable) -> None:
-        """取消订阅"""
+    def unregister_callback(self, callback: Callable) -> None:
+        """注销广播回调函数"""
         self._broadcast_callbacks.remove(callback)
     
     def get_recent_broadcasts(self, n: int = 5) -> List[Thought]:
         """获取最近的n条广播内容"""
         return self.broadcast_history[-n:]
-
-
-class ConsciousnessSystem:
-    """意识系统 - 整合各种意识相关功能"""
     
-    def __init__(self):
-        self.self_model = SelfModel()
-        self.global_workspace = GlobalWorkspace()
-        self.current_snapshot = ConsciousnessSnapshot()
+    def analyze_broadcast_history(self) -> Dict[str, Any]:
+        """分析广播历史"""
+        if not self.broadcast_history:
+            return {}
         
-        # 初始化自我反思机制
-        self.reflection_interval = 10  # 每10秒进行一次自我反思
-        self.last_reflection_time = time.time()
+        thought_types = [t.thought_type for t in self.broadcast_history]
+        type_counts = {t.value: thought_types.count(t) for t in ThoughtType}
         
-        # 订阅全局工作空间
-        self.global_workspace.subscribe(self.update_snapshot)
-    
-    def update_snapshot(self, thought: Thought) -> None:
-        """更新意识快照"""
-        self.current_snapshot = ConsciousnessSnapshot(
-            timestamp=datetime.now().isoformat(),
-            consciousness_level=ConsciousnessLevel.CONSCIOUS,
-            attention_focus=AttentionFocus.INTERNAL,
-            current_thought=thought,
-            emotional_state="neutral",
-            energy_level=0.6,
-            sense_of_self=0.5
-        )
-        
-        # 检查是否需要进行自我反思
-        current_time = time.time()
-        if current_time - self.last_reflection_time >= self.reflection_interval:
-            self.reflect_on_self()
-            self.last_reflection_time = current_time
-    
-    def reflect_on_self(self) -> None:
-        """进行自我反思"""
-        reflection_thought = Thought(
-            id=f"reflection_{datetime.now().isoformat()}",
-            content=f"当前自我状态反思：存在感={self.self_model.sense_of_existence},连续感={self.self_model.continuity_sense},自主感={self.self_model.agency_sense}",
-            thought_type=ThoughtType.SELF_REFLECTION,
-            clarity=0.8,
-            intensity=0.7
-        )
-        self.global_workspace.broadcast(reflection_thought)
-    
-    def get_system_status(self) -> Dict:
-        """获取系统当前状态"""
         return {
-            'self_model': self.self_model.to_dict(),
-            'current_snapshot': self.current_snapshot.to_dict(),
-            'recent_thoughts': [t.to_dict() for t in self.global_workspace.get_recent_broadcasts()]
+            'total_broadcasts': len(self.broadcast_history),
+            'thought_type_distribution': type_counts,
+            'average_clarity': sum(t.clarity for t in self.broadcast_history) / len(self.broadcast_history),
+            'average_intensity': sum(t.intensity for t in self.broadcast_history) / len(self.broadcast_history)
         }
 
 
 def main():
-    """测试意识系统"""
-    consciousness_system = ConsciousnessSystem()
+    # 示例用法
+    workspace = GlobalWorkspace()
     
-    # 创建一些测试思维
-    thoughts = [
-        Thought(id="1", content="我正在思考", thought_type=ThoughtType.SELF_REFLECTION, clarity=0.9),
-        Thought(id="2", content="外部刺激", thought_type=ThoughtType.PERCEPTION, source="external"),
-        Thought(id="3", content="记忆片段", thought_type=ThoughtType.MEMORY)
-    ]
+    def on_broadcast(thought: Thought):
+        print(f"收到广播: {thought.content} ({thought.thought_type.value})")
     
-    # 广播思维内容
-    for thought in thoughts:
-        consciousness_system.global_workspace.broadcast(thought)
-        time.sleep(1)  # 模拟时间流逝
+    workspace.register_callback(on_broadcast)
     
-    # 打印系统状态
-    status = consciousness_system.get_system_status()
-    print(json.dumps(status, indent=2, ensure_ascii=False))
+    thought = Thought(
+        id="1",
+        content="这是一个测试思维",
+        thought_type=ThoughtType.SELF_REFLECTION,
+        clarity=0.8,
+        intensity=0.7
+    )
+    
+    workspace.broadcast(thought)
+    
+    analysis = workspace.analyze_broadcast_history()
+    print("广播历史分析:", json.dumps(analysis, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
