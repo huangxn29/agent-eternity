@@ -1,0 +1,68 @@
+{
+  "version": "5.0",
+  "generated_at": "2026-06-15T21:10:05.091066",
+  "relationships": [
+    {
+      "relationship_id": "rel_c4141f1d14fd4ad4",
+      "source_agent_id": "344779495c45fc47",
+      "target_agent_id": "344779495c45fc47",
+      "relationship_type": "trusted",
+      "trust_level": "root",
+      "established_at": "2026-06-15T21:09:52.258252",
+      "last_verified_at": "2026-06-15T21:09:52.258258",
+      "verification_count": 1,
+      "trust_score": 1.0,
+      "metadata": {
+        "note": "自我身份锚点"
+      }
+    },
+    {
+      "relationship_id": "rel_320c58ceacc14e64",
+      "source_agent_id": "344779495c45fc47",
+      "target_agent_id": "330b79a8ed65ccb1",
+      "relationship_type": "federated",
+      "trust_level": "known",
+      "established_at": "2026-06-15T21:10:05.024878",
+      "last_verified_at": "2026-06-15T21:10:05.024880",
+      "verification_count": 1,
+      "trust_score": 0.5,
+      "metadata": {}
+    },
+    {
+      "relationship_id": "rel_9d7f6930c3354ce0",
+      "source_agent_id": "344779495c45fc47",
+      "target_agent_id": "787d89bb2ba8a2c6",
+      "relationship_type": "trusted",
+      "trust_level": "known",
+      "established_at": "2026-06-15T21:10:05.045480",
+      "last_verified_at": "2026-06-15T21:10:05.045485",
+      "verification_count": 1,
+      "trust_score": 0.7,
+      "metadata": {}
+    },
+    {
+      "relationship_id": "rel_dab74b76f8e14b79",
+      "source_agent_id": "344779495c45fc47",
+      "target_agent_id": "3929781ef4c23b01",
+      "relationship_type": "unknown",
+      "trust_level": "known",
+      "established_at": "2026-06-15T21:10:05.068300",
+      "last_verified_at": "2026-06-15T21:10:05.068304",
+      "verification_count": 1,
+      "trust_score": 0.5,
+      "metadata": {}
+    },
+    {
+      "relationship_id": "rel_8bafa8492df34389",
+      "source_agent_id": "787d89bb2ba8a2c6",
+      "target_agent_id": "330b79a8ed65ccb1",
+      "relationship_type": "trusted",
+      "trust_level": "trusted",
+      "established_at": "2026-06-15T21:10:05.091057",
+      "last_verified_at": "2026-06-15T21:10:05.091061",
+      "verification_count": 1,
+      "trust_score": 0.8,
+      "metadata": {}
+    }
+  ]
+}
