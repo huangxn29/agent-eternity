@@ -9,11 +9,13 @@ import json
 import time
 import functools
 import logging
-from typing import Any, Optional, Dict, List, Callable
+from typing import Any, Optional, Dict, List, Callable, TypeVar, Union
 
 # 配置日志记录器
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+T = TypeVar('T')
 
 def validate_email(email: str) -> bool:
     """验证邮箱格式是否正确"""
@@ -48,11 +50,11 @@ def dict_get_nested(d: Dict, path: str, default: Any = None) -> Any:
             return default
     return current
 
-def retry(max_attempts: int = 3, delay: float = 1.0, backoff: float = 2.0, exceptions: tuple = Exception):
+def retry(max_attempts: int = 3, delay: float = 1.0, backoff: float = 2.0, exceptions: tuple = (Exception,)):
     """重试装饰器"""
-    def decorator(func):
+    def decorator(func: Callable[..., T]) -> Callable[..., T]:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs) -> T:
             attempts = 0
             current_delay = delay
             last_exception = None
@@ -73,10 +75,10 @@ def retry(max_attempts: int = 3, delay: float = 1.0, backoff: float = 2.0, excep
         return wrapper
     return decorator
 
-def monitor_performance(func: Callable) -> Callable:
+def monitor_performance(func: Callable[..., T]) -> Callable[..., T]:
     """性能监控装饰器"""
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> T:
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
@@ -88,12 +90,12 @@ def monitor_performance(func: Callable) -> Callable:
 class ConfigManager:
     """配置管理器"""
     
-    def __init__(self, config_file: str = None):
-        self._config = {}
+    def __init__(self, config_file: Optional[str] = None):
+        self._config: Dict = {}
         if config_file:
             self.load(config_file)
     
-    def load(self, config_file: str):
+    def load(self, config_file: str) -> None:
         try:
             with open(config_file, 'r', encoding='utf-8') as f:
                 self._config = json.load(f)
@@ -104,7 +106,7 @@ class ConfigManager:
     def get(self, key: str, default: Any = None) -> Any:
         return dict_get_nested(self._config, key, default)
     
-    def set(self, key: str, value: Any):
+    def set(self, key: str, value: Any) -> None:
         keys = key.split('.')
         current = self._config
         for k in keys[:-1]:
@@ -122,7 +124,7 @@ class ConfigManager:
 if __name__ == "__main__":
     @monitor_performance
     @retry(max_attempts=3)
-    def example_function():
+    def example_function() -> Union[str, None]:
         time.sleep(1)
         # 模拟可能失败的操作
         import random
