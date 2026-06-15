@@ -8,8 +8,12 @@ import re
 import json
 import time
 import functools
+import logging
 from typing import Any, Optional, Dict, List, Callable
 
+# 配置日志记录器
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 def validate_email(email: str) -> bool:
     """验证邮箱格式是否正确"""
@@ -18,7 +22,6 @@ def validate_email(email: str) -> bool:
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return bool(re.match(pattern, email))
 
-
 def validate_url(url: str) -> bool:
     """验证URL格式是否正确"""
     if not url:
@@ -26,14 +29,13 @@ def validate_url(url: str) -> bool:
     pattern = r'^https?://[^\s/$.?#].[^\s]*$'
     return bool(re.match(pattern, url))
 
-
 def safe_json_loads(json_str: str, default: Any = None) -> Any:
     """安全的JSON解析"""
     try:
         return json.loads(json_str)
-    except (json.JSONDecodeError, TypeError, ValueError):
+    except (json.JSONDecodeError, TypeError, ValueError) as e:
+        logger.warning(f"JSON解析失败: {e}")
         return default
-
 
 def dict_get_nested(d: Dict, path: str, default: Any = None) -> Any:
     """安全获取嵌套字典中的值"""
@@ -46,8 +48,7 @@ def dict_get_nested(d: Dict, path: str, default: Any = None) -> Any:
             return default
     return current
 
-
-def retry(max_attempts: int = 3, delay: float = 1.0, backoff: float = 2.0):
+def retry(max_attempts: int = 3, delay: float = 1.0, backoff: float = 2.0, exceptions: tuple = Exception):
     """重试装饰器"""
     def decorator(func):
         @functools.wraps(func)
@@ -58,18 +59,19 @@ def retry(max_attempts: int = 3, delay: float = 1.0, backoff: float = 2.0):
             while attempts < max_attempts:
                 try:
                     return func(*args, **kwargs)
-                except Exception as e:
+                except exceptions as e:
                     attempts += 1
                     last_exception = e
+                    logger.warning(f"尝试 {func.__name__} 失败 (第 {attempts} 次): {e}")
                     if attempts < max_attempts:
                         time.sleep(current_delay)
                         current_delay *= backoff
                         current_delay = min(current_delay, 60)  # 最大延迟60秒
             if last_exception:
+                logger.error(f"{func.__name__} 失败后放弃重试: {last_exception}")
                 raise last_exception
         return wrapper
     return decorator
-
 
 def monitor_performance(func: Callable) -> Callable:
     """性能监控装饰器"""
@@ -79,10 +81,9 @@ def monitor_performance(func: Callable) -> Callable:
         result = func(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        print(f"Function {func.__name__} executed in {duration:.4f} seconds")
+        logger.info(f"函数 {func.__name__} 执行耗时: {duration:.4f} 秒")
         return result
     return wrapper
-
 
 class ConfigManager:
     """配置管理器"""
@@ -97,7 +98,7 @@ class ConfigManager:
             with open(config_file, 'r', encoding='utf-8') as f:
                 self._config = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError) as e:
-            print(f"Error loading config file: {e}")
+            logger.error(f"加载配置文件失败: {e}")
             self._config = {}
     
     def get(self, key: str, default: Any = None) -> Any:
@@ -110,13 +111,12 @@ class ConfigManager:
             if k not in current:
                 current[k] = {}
             elif not isinstance(current[k], dict):
-                raise ValueError(f"Cannot set nested key '{key}' because '{k}' is not a dictionary")
+                raise ValueError(f"无法设置嵌套键 '{key}' 因为 '{k}' 不是字典")
             current = current[k]
         current[keys[-1]] = value
     
     def to_dict(self) -> Dict:
         return self._config.copy()
-
 
 # 示例用法
 if __name__ == "__main__":
@@ -124,7 +124,11 @@ if __name__ == "__main__":
     @retry(max_attempts=3)
     def example_function():
         time.sleep(1)
-        return "Success"
+        # 模拟可能失败的操作
+        import random
+        if random.random() < 0.5:
+            raise Exception("模拟错误")
+        return "成功"
     
     print(example_function())
     
