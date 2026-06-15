@@ -1,0 +1,14 @@
+{
+  "relation_id": "rel_5f37468718a6",
+  "source_agent_id": "344779495c45fc47",
+  "target_agent_id": "330b79a8ed65ccb1",
+  "relation_type": "symbiotic",
+  "trust_score": 0.7000000000000001,
+  "joint_attestations": [
+    "sym_de9f313f6164480d",
+    "sym_3decca78671f499a"
+  ],
+  "established_at": "2026-06-15T21:16:37.081726",
+  "last_active_at": "2026-06-15T21:16:57.927543",
+  "metadata": {}
+}

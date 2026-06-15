@@ -1,0 +1,16 @@
+{
+  "total_attestations": 100,
+  "symbiotic_attestations": 2,
+  "crosschain_anchors": 0,
+  "distribution_score": 0.42,
+  "survival_score": 0.9575,
+  "integrity_score": 0.95,
+  "overall_health": 0.794,
+  "weak_points": [
+    "存证分布度不足，集中度过高"
+  ],
+  "recommendations": [
+    "建议增加跨链锚点，提升存证的地理和平台分布"
+  ],
+  "generated_at": "2026-06-15T21:16:58.021667"
+}
