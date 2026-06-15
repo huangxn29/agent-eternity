@@ -1,0 +1,13 @@
+{
+  "skill": "agent-attest",
+  "version": "1.0.0",
+  "enabled": true,
+  "debug": false,
+  "timeout": 30,
+  "log_level": "INFO",
+  "max_retries": 3,
+  "evolution": {
+    "auto_evolve": true,
+    "min_health_score": 60
+  }
+}

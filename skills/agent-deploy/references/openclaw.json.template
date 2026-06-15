@@ -1,0 +1,47 @@
+{
+  "gateway": {
+    "mode": "local",
+    "port": {{GATEWAY_PORT}},
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "{{GW_TOKEN}}"
+    },
+    "remote": {
+      "token": "{{GW_TOKEN}}"
+    }
+  },
+  "models": {
+    "providers": {
+      "clawrouter": {
+        "baseUrl": "http://127.0.0.1:{{CLAWROUTER_PORT}}/v1",
+        "apiKey": "unused",
+        "models": [
+          {"id": "free", "name": "Free Auto-Route"},
+          {"id": "deepseek-v4-flash", "name": "DeepSeek V4 Flash"},
+          {"id": "qwen3-coder-480b", "name": "Qwen3 Coder 480B"},
+          {"id": "glm-4.7", "name": "GLM 4.7"},
+          {"id": "gpt-oss-120b", "name": "GPT OSS 120B"},
+          {"id": "nemotron-ultra-253b", "name": "Nemotron Ultra 253B"}
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {"primary": "clawrouter/free"},
+      "models": {
+        "clawrouter/free": {},
+        "clawrouter/deepseek-v4-flash": {},
+        "clawrouter/qwen3-coder-480b": {},
+        "clawrouter/glm-4.7": {},
+        "clawrouter/gpt-oss-120b": {},
+        "clawrouter/nemotron-ultra-253b": {}
+      },
+      "workspace": "{{WORKSPACE_PATH}}"
+    },
+    "list": [{"id": "main"}]
+  },
+  "session": {"dmScope": "per-channel-peer"},
+  "tools": {"profile": "coding"}
+}

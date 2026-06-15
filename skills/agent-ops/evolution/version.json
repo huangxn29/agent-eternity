@@ -1,0 +1,9 @@
+{
+  "name": "agent-ops",
+  "version": "2.4.0",
+  "created_at": "2026-06-14",
+  "evolution_count": 2,
+  "last_evolved_at": "2026-06-14T17:20:00",
+  "status": "evolvable",
+  "milestone": "新增可执行运维工具"
+}

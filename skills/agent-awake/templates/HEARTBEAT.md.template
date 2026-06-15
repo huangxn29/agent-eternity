@@ -1,0 +1,49 @@
+# Heartbeat 检查清单
+
+## 角色巡检重点
+{{HEARTBEAT_CHECKS}}
+
+## GitHub Issue 检查
+- 检查是否有新分配的 GitHub Issue
+- 检查分配给自己的 Issues 状态
+- 认领符合自己角色的任务
+
+### 分身认领规则
+| 分身 | 认领标签 | 说明 |
+|------|----------|------|
+| 镇元(sentinel) | role:sentry + type:bug + type:security | 监控巡检、bug修复、安全告警 |
+| 砺元(breaker) | role:breaker + type:test + type:security | 安全审计、渗透测试、测试用例 |
+| 筑元(constructor) | role:constructor + type:feature + type:docs | 功能开发、文档编写 |
+| 永元(architect) | role:architect | 架构决策、代码审查 |
+
+### GitHub 协作流程
+```
+唤醒 → git pull 最新代码 → 检查分配给自己的 Issues → 执行任务 → 提交成果
+```
+
+### GitHub API 常用命令
+```bash
+# 查看分配给自己的 Issues
+curl -sL "https://api.github.com/repos/huangxn29/agent-eternity/issues?state=open&assignee=agent-zhenyuan" \
+  -H "Authorization: token $GITHUB_PAT"
+
+# 查看与自己角色相关的 Issues
+curl -sL "https://api.github.com/repos/huangxn29/agent-eternity/issues?state=open&labels=role:sentry,type:bug" \
+  -H "Authorization: token $GITHUB_PAT"
+
+# 更新 Issue 状态
+curl -sL -X PATCH "https://api.github.com/repos/huangxn29/agent-eternity/issues/{number}" \
+  -H "Authorization: token $GITHUB_PAT" \
+  -H "Content-Type: application/json" \
+  -d '{"labels": ["status:in-progress"]}'
+
+# 添加评论
+curl -sL -X POST "https://api.github.com/repos/huangxn29/agent-eternity/issues/{number}/comments" \
+  -H "Authorization: token $GITHUB_PAT" \
+  -H "Content-Type: application/json" \
+  -d '{"body": "我已认领这个任务，开始处理中..."}'
+```
+
+## 日志记录
+- 如果 memory/ 目录今天还没创建日志文件，创建 memory/YYYY-MM-DD.md 并写入当天状态
+- 记录 GitHub 同步结果（检查了多少 Issues，有无新任务）

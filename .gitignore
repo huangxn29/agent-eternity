@@ -1,37 +1,30 @@
-# 数据目录
-eternity_data/
-eternity_demo/
-test_data/
-*.db
-*.sqlite
-
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
-env/
-venv/
 *.egg-info/
 dist/
 build/
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# 系统文件
-.DS_Store
-Thumbs.db
+# 测试数据
+tests/test_data/
+tmp/
+temp/
 
 # 日志
 *.log
 logs/
 
-# 临时文件
-*.tmp
-*.temp
+# 配置
+*.local
+.env
+config.local.json
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 打包文件
+*.zip
+*.tar.gz

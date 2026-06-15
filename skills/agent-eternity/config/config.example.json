@@ -1,0 +1,7 @@
+{
+  "_comment": "配置示例文件，请复制为 config.json 后修改",
+  "skill": "agent-eternity",
+  "enabled": true,
+  "debug": false,
+  "timeout": 30
+}

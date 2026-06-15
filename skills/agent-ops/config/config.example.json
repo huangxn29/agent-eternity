@@ -1,0 +1,7 @@
+{
+  "_comment": "这是配置示例文件，请复制为config.json后修改",
+  "skill": "agent-ops",
+  "enabled": true,
+  "debug": false,
+  "timeout": 30
+}

@@ -1,0 +1,5 @@
+{
+  "_comment": "配置示例，请复制为 config.json",
+  "skill": "agent-evolution",
+  "enabled": true
+}

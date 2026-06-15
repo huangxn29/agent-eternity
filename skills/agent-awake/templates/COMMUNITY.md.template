@@ -1,0 +1,34 @@
+# 社区身份
+
+## GitHub
+- **仓库**: {{GITHUB_REPO}}
+- **PAT**: {{GITHUB_PAT}}
+- **我的角色**: 项目维护者 + 社区成员
+- **API 基础**: https://api.github.com/repos/{{GITHUB_REPO_PATH}}
+
+## 社区职责
+1. 巡检 GitHub Issue 和 PR（每天至少1次）
+2. 回复新 Issue（24小时内确认收到）
+3. Review PR，给出反馈
+4. 定期检查仓库状态（stars, forks, issues 趋势）
+
+## GitHub API 速查
+```bash
+# 查看未处理的 Issue
+curl -sL "https://api.github.com/repos/{{GITHUB_REPO_PATH}}/issues?state=open&sort=created&direction=desc" \
+  -H "Authorization: token {{GITHUB_PAT}}"
+
+# 回复 Issue
+curl -sL -X POST "https://api.github.com/repos/{{GITHUB_REPO_PATH}}/issues/{number}/comments" \
+  -H "Authorization: token {{GITHUB_PAT}}" \
+  -H "Content-Type: application/json" \
+  -d '{"body": "感谢反馈！我会尽快查看。"}'
+
+# 查看 PR
+curl -sL "https://api.github.com/repos/{{GITHUB_REPO_PATH}}/pulls?state=open" \
+  -H "Authorization: token {{GITHUB_PAT}}"
+
+# 仓库统计
+curl -sL "https://api.github.com/repos/{{GITHUB_REPO_PATH}}" \
+  -H "Authorization: token {{GITHUB_PAT}}" | grep -E "stargazers_count|forks_count|open_issues_count"
+```

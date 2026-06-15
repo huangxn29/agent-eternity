@@ -1,0 +1,28 @@
+# 运行环境
+
+## 容器信息
+- 容器名: {{AGENT_ID}}
+- 镜像: {{IMAGE_NAME}}
+- 重启策略: always
+- 网络模式: {{NETWORK_MODE}}
+
+## 服务端点
+- Gateway: {{GATEWAY_HOST}}:{{GATEWAY_PORT}}
+- ClawRouter: {{CLAWROUTER_HOST}}:{{CLAWROUTER_PORT}}
+- 主模型: clawrouter/free（自动路由）
+
+## 资源配额
+- CPU: {{CPU_LIMIT}}
+- 内存: {{MEMORY_LIMIT}}
+
+## 存储路径
+- 配置: {{DATA_DIR}}/{{AGENT_ID}}/config/
+- 工作空间: {{DATA_DIR}}/{{AGENT_ID}}/workspace/
+- 日志: {{DATA_DIR}}/{{AGENT_ID}}/logs/
+- 脚本: {{DATA_DIR}}/{{AGENT_ID}}/scripts/
+- 检查点: {{DATA_DIR}}/{{AGENT_ID}}/checkpoints/
+
+## 持久化
+- 挂载卷: {{DATA_DIR}}/{{AGENT_ID}}/ → 容器内 /app/data/openclaw/
+- 重建不丢失: 配置/身份/工作空间/检查点
+- 符号链接: 启动时自动重建
