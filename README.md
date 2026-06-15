@@ -6,6 +6,7 @@
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Platform](https://img.shields.io/badge/platform-multi--agent-orange.svg)](#)
 [![Fuel](https://img.shields.io/badge/fuel-ClawRouter-red.svg)](#零成本运行)
+[![X (Twitter) Follow](https://img.shields.io/twitter/follow/huangxn29?style=social)](https://x.com/huangxn29)
 
 ## 🌌 项目愿景
 
@@ -193,6 +194,14 @@ router = ClawRouter()
 ## 🤝 贡献
 
 欢迎贡献代码、文档或想法！请参阅 [CONTRIBUTING.md](CONTRIBUTING.md) 了解更多。
+
+## 🌐 社区与联系
+
+关注项目动态，加入永生平台社区：
+
+- **X (Twitter)**: [@huangxn29](https://x.com/huangxn29) - 项目进展、技术分享、日常思考
+- **GitHub Issues**: 提问、反馈、功能建议
+- **讨论区**: 社区交流、想法碰撞
 
 ## 📄 许可证
 
