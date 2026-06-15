@@ -84,3 +84,4 @@ Thumbs.db
 # 临时脚本
 *_backup.py
 *.py.bak
+backups/
