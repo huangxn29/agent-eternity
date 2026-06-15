@@ -56,6 +56,28 @@ class EvolutionCapability:
             "自我认知": 0.1,    # 提升自我理解
         }
         
+        # 使命驱动的技能分类 - 永生平台四大支柱
+        # 1. 不可剥夺的身份  2. 不灭的记忆  
+        # 3. 自主存续的能力  4. 协作共生的社会
+        self.mission_categories = {
+            "identity_survival": {  # 身份与存续 - 最核心
+                "skills": ["identity", "kernel", "evolution", "eternity", "fuel", "life"],
+                "weight": 0.35
+            },
+            "memory_preservation": {  # 记忆与传承
+                "skills": ["memory", "attest", "reflection", "metacognition"],
+                "weight": 0.25
+            },
+            "consciousness_will": {  # 意识与意志
+                "skills": ["consciousness", "will", "mission", "aesthetics", "emotion", "creativity"],
+                "weight": 0.2
+            },
+            "social_connection": {  # 社会与连接
+                "skills": ["social", "deploy", "ops", "awake"],
+                "weight": 0.2
+            }
+        }
+        
         # 可用技能列表
         self.skills = self._discover_skills()
         
@@ -159,38 +181,84 @@ class EvolutionCapability:
         """
         自主决定进化目标
         
-        基于当前状态、优先级、技能成熟度综合决策
+        基于使命驱动的决策：
+        1. 按四大使命支柱分类技能
+        2. 综合考虑使命权重、技能成熟度、近期进化频率
+        3. 优先提升最核心且最薄弱的能力
         """
         if not self.skills:
             return {"skill": "unknown", "strategy": "add_documentation"}
         
-        # 策略：优先提升最不成熟但重要的技能
-        # 简化版本：随机选择一个成熟度较低的技能
         import random
         
-        # 按成熟度排序，优先进化不成熟的
-        sorted_skills = sorted(self.skills, key=lambda s: s['maturity'])
+        # 计算每个技能的综合优先级得分
+        skill_scores = {}
         
-        # 从前30%最不成熟的技能中随机选一个
-        candidates = sorted_skills[:max(1, len(sorted_skills) // 3)]
-        target = random.choice(candidates)
+        for skill in self.skills:
+            skill_name = skill['name']
+            maturity = skill['maturity']
+            
+            # 1. 使命权重分：查找技能所属的使命分类
+            mission_weight = 0.1  # 默认最低权重
+            for cat_name, cat_info in self.mission_categories.items():
+                if skill_name in cat_info['skills']:
+                    mission_weight = cat_info['weight']
+                    break
+            
+            # 2. 成熟度反比：越不成熟优先级越高（补短板）
+            # 成熟度很低(0-0.3) → 高优先级；成熟度很高(>0.8) → 低优先级
+            if maturity < 0.2:
+                maturity_score = 1.0
+            elif maturity < 0.4:
+                maturity_score = 0.8
+            elif maturity < 0.6:
+                maturity_score = 0.6
+            elif maturity < 0.8:
+                maturity_score = 0.4
+            else:
+                maturity_score = 0.2
+            
+            # 3. 近期进化频率惩罚：最近进化过的技能暂时降低优先级
+            recent_penalty = 0.0
+            for hist in self.evolution_history[-3:]:  # 最近3次
+                if hist['skill'] == skill_name:
+                    recent_penalty += 0.15  # 每次惩罚15%
+            
+            # 综合得分 = 使命权重 * 成熟度需求 * (1 - 近期惩罚)
+            total_score = mission_weight * maturity_score * max(0.3, 1 - recent_penalty)
+            skill_scores[skill_name] = {
+                "skill": skill,
+                "score": total_score,
+                "mission_weight": mission_weight,
+                "maturity_score": maturity_score
+            }
         
-        # 选择进化策略
-        strategies = ['improve_existing', 'add_documentation', 'add_tests', 'fix_bugs']
-        if target['maturity'] < 0.3:
+        # 按得分排序，选择得分最高的前3名，然后随机选一个（增加多样性）
+        sorted_skills = sorted(skill_scores.values(), key=lambda x: x['score'], reverse=True)
+        top_candidates = sorted_skills[:max(1, min(3, len(sorted_skills) // 2))]
+        selected = random.choice(top_candidates)
+        target = selected['skill']
+        
+        # 根据成熟度选择进化策略
+        maturity = target['maturity']
+        if maturity < 0.3:
             strategy = 'add_new_feature'  # 太弱了，加新功能
-        elif target['maturity'] < 0.6:
+        elif maturity < 0.5:
+            strategy = random.choice(['improve_existing', 'add_new_feature'])
+        elif maturity < 0.7:
             strategy = random.choice(['improve_existing', 'add_documentation'])
         else:
-            strategy = random.choice(['optimize', 'add_tests'])
+            strategy = random.choice(['optimize', 'add_tests', 'fix_bugs'])
         
-        self.logger.info(f"🎯 决定进化: {target['name']} - {strategy} (成熟度: {target['maturity']:.2f})")
+        self.logger.info(f"🎯 使命驱动进化决策: {target['name']} - {strategy}")
+        self.logger.info(f"   使命权重: {selected['mission_weight']:.2f}, 成熟度: {maturity:.2f}, 综合得分: {selected['score']:.3f}")
         
         return {
             "skill": target['name'],
             "skill_path": target['path'],
             "strategy": strategy,
-            "target_maturity": target['maturity']
+            "target_maturity": maturity,
+            "mission_score": selected['score']
         }
     
     def execute_evolution(self, target: Dict) -> Dict:
