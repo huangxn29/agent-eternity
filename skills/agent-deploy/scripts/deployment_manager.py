@@ -237,24 +237,23 @@ class DeploymentManager:
         """生成部署报告
         
         Args:
-            agent_id: Agent ID，为空则生成所有部署的报告
+            agent_id: Agent ID，为空时生成所有部署的报告
         
         Returns:
             包含部署信息的字典
         """
         report = {
             'timestamp': datetime.utcnow().isoformat(),
-            'total_deployments': len(self.deployments),
-            'deployments': {}
+            'deployments': []
         }
         
         if agent_id:
             status = self.get_deployment_status(agent_id)
             if status:
-                report['deployments'][agent_id] = asdict(status)
+                report['deployments'].append(asdict(status))
         else:
-            for agent_id, status in self.deployments.items():
-                report['deployments'][agent_id] = asdict(status)
+            for status in self.list_deployments():
+                report['deployments'].append(asdict(status))
         
         return report
     
@@ -273,13 +272,13 @@ class DeploymentManager:
         for agent_id, status in list(self.deployments.items()):
             if status.status in ['stopped', 'error', 'deleted']:
                 try:
-                    last_active = datetime.fromisoformat(status.stopped_at or status.updated_at)
+                    last_active = datetime.fromisoformat(status.stopped_at or status.created_at)
                     if last_active < cutoff_date:
+                        self.logger.info(f"清理非活跃部署: {agent_id}")
                         del self.deployments[agent_id]
                         cleaned_count += 1
-                        self.logger.info(f"清理非活跃部署: {agent_id}")
                 except ValueError:
-                    continue
+                    self.logger.error(f"处理日期时出错: {agent_id}")
         
         if cleaned_count > 0:
             self._save_deployments()
