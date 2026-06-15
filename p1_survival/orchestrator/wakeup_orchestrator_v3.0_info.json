@@ -1,0 +1,18 @@
+{
+  "module": "wakeup_orchestrator",
+  "version": "3.0.0",
+  "maturity_score": 82,
+  "features": [
+    "智能调度器",
+    "DAG依赖图",
+    "自适应熔断",
+    "预测性调度",
+    "自学习优化",
+    "多节点编排",
+    "任务重试机制",
+    "优先级队列",
+    "健康监测"
+  ],
+  "test_status": "passed",
+  "timestamp": "2026-06-13T13:45:02.139869"
+}

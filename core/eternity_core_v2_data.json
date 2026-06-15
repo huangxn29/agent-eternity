@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "state": "running",
+  "stats": {
+    "total_heartbeats": 1,
+    "total_evolutions": 1,
+    "total_healings": 1,
+    "total_cycles": 0,
+    "uptime_seconds": 0,
+    "avg_health_score": 0.8096666666666666
+  },
+  "module_health": {
+    "p0_memory": 0.88,
+    "p0_identity": 0.84,
+    "p0_attest": 0.86,
+    "p0_evolution": 0.83,
+    "p1_deployment": 0.82,
+    "p1_wakeup": 0.84,
+    "p1_operations": 0.85,
+    "p2_social": 0.7
+  },
+  "energy": {
+    "total": 100.0,
+    "available": 62.349999999999994,
+    "reserved": 15.0,
+    "consumption_rate": 0.1,
+    "generation_rate": 0.05
+  },
+  "last_heartbeat": "2026-06-13T14:15:50.853570",
+  "last_saved": "2026-06-13T14:15:50.972089"
+}

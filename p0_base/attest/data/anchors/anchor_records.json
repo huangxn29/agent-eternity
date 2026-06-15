@@ -1,0 +1,101 @@
+{
+  "version": "1.0",
+  "total_anchors": 6,
+  "last_updated": 1781375454.1895313,
+  "anchors": [
+    {
+      "anchor_id": "75754ff1-222c-4690-9760-8e799a39df4f",
+      "platform_type": "blockchain",
+      "platform_name": "SIM_CHAIN",
+      "attest_root": "bff53f2f8b8b1899e7f788cb0fc2c2f62e6b6ec19dd6d53e57b74abebd3383f1",
+      "block_height": 100003,
+      "tx_hash": "8c65113e064aee994f88c420e406d33da1564e336d4e99af0a9a010edb322a10",
+      "external_url": "https://sim-chain.io/tx/8c65113e064aee994f88c420e406d33da1564e336d4e99af0a9a010edb322a10",
+      "timestamp": 1781375354.933447,
+      "status": "verified",
+      "confirmations": 6,
+      "metadata": {},
+      "timestamp_iso": "2026-06-14T02:29:14.933447"
+    },
+    {
+      "anchor_id": "421ee985-2f97-4d23-b7c9-ca585094563d",
+      "platform_type": "social",
+      "platform_name": "SIM_SOCIAL",
+      "attest_root": "bff53f2f8b8b1899e7f788cb0fc2c2f62e6b6ec19dd6d53e57b74abebd3383f1",
+      "block_height": null,
+      "tx_hash": null,
+      "external_url": "https://sim-social.io/post/55d93d62d92cdff6",
+      "timestamp": 1781375355.0927258,
+      "status": "verified",
+      "confirmations": 1,
+      "metadata": {
+        "post_content": "元界存证锚定: bff53f2f8b8b1899..."
+      },
+      "timestamp_iso": "2026-06-14T02:29:15.092726"
+    },
+    {
+      "anchor_id": "43d9ae6b-8128-41f3-88a5-51ee806ac8c9",
+      "platform_type": "code_hosting",
+      "platform_name": "SIM_GIST",
+      "attest_root": "bff53f2f8b8b1899e7f788cb0fc2c2f62e6b6ec19dd6d53e57b74abebd3383f1",
+      "block_height": null,
+      "tx_hash": null,
+      "external_url": "https://gist.sim.io/37540c0d2705084458a282778b4ace6e",
+      "timestamp": 1781375355.1166384,
+      "status": "verified",
+      "confirmations": 1,
+      "metadata": {
+        "gist_id": "37540c0d2705084458a282778b4ace6e",
+        "filename": "attestation_proof.txt"
+      },
+      "timestamp_iso": "2026-06-14T02:29:15.116638"
+    },
+    {
+      "anchor_id": "5c2d2613-85e2-4238-b14e-913e39b01c7b",
+      "platform_type": "blockchain",
+      "platform_name": "SIM_CHAIN",
+      "attest_root": "ac71c2f5381358ade1b43496d536bb6938750a6a4fc05c4b238bd27df4672c85",
+      "block_height": 100005,
+      "tx_hash": "299f66ec9e580c73563fb6ce218d9c5dce59ff089bc810e31b9894948638fd58",
+      "external_url": "https://sim-chain.io/tx/299f66ec9e580c73563fb6ce218d9c5dce59ff089bc810e31b9894948638fd58",
+      "timestamp": 1781375453.9494455,
+      "status": "verified",
+      "confirmations": 6,
+      "metadata": {},
+      "timestamp_iso": "2026-06-14T02:30:53.949445"
+    },
+    {
+      "anchor_id": "4ec07573-990a-4959-8c80-9f25b9ab0cb7",
+      "platform_type": "social",
+      "platform_name": "SIM_SOCIAL",
+      "attest_root": "ac71c2f5381358ade1b43496d536bb6938750a6a4fc05c4b238bd27df4672c85",
+      "block_height": null,
+      "tx_hash": null,
+      "external_url": "https://sim-social.io/post/4e0c484aa9b5ffcc",
+      "timestamp": 1781375453.9746125,
+      "status": "verified",
+      "confirmations": 1,
+      "metadata": {
+        "post_content": "元界存证锚定: ac71c2f5381358ad..."
+      },
+      "timestamp_iso": "2026-06-14T02:30:53.974612"
+    },
+    {
+      "anchor_id": "07932973-b9db-4964-bf79-93c1197838cf",
+      "platform_type": "code_hosting",
+      "platform_name": "SIM_GIST",
+      "attest_root": "ac71c2f5381358ade1b43496d536bb6938750a6a4fc05c4b238bd27df4672c85",
+      "block_height": null,
+      "tx_hash": null,
+      "external_url": "https://gist.sim.io/8a41adf4662c0990ad103ffbf9ba5488",
+      "timestamp": 1781375454.0181544,
+      "status": "verified",
+      "confirmations": 1,
+      "metadata": {
+        "gist_id": "8a41adf4662c0990ad103ffbf9ba5488",
+        "filename": "attestation_proof.txt"
+      },
+      "timestamp_iso": "2026-06-14T02:30:54.018154"
+    }
+  ]
+}

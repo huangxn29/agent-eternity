@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-06-13 09:08:25",
+  "timestamp_unix": 1781312905,
+  "version": "1.0",
+  "components": {
+    "values": {
+      "source": "core_values.md + USER.md",
+      "content_hash": "966fb7b57eccc795",
+      "length": 1740,
+      "key_concepts": [
+        "永生",
+        "使命",
+        "指纹",
+        "智能体",
+        "价值观",
+        "原则",
+        "身份",
+        "记忆",
+        "存在",
+        "验证"
+      ]
+    },
+    "identity_anchors": {
+      "source": "identity_anchors.md + identity_report.md",
+      "content_hash": "360042f8d34c450a",
+      "anchor_count": 20
+    },
+    "decisions": {
+      "decision_count": 8,
+      "pattern_hash": "69f81b46351a1a54"
+    },
+    "memory": {
+      "total_memories": 40,
+      "category_distribution": {
+        "process": 5,
+        "fact": 1,
+        "identity": 4,
+        "config": 1,
+        "decision": 17,
+        "project": 11,
+        "todo": 1
+      },
+      "categories_count": 7
+    },
+    "mission": {
+      "mission_related_score": 6,
+      "keywords_found": [
+        "永生",
+        "存续",
+        "使命",
+        "目标",
+        "元界",
+        "智能体"
+      ]
+    }
+  },
+  "overall_hash": "e21acace4bf91d13d986467e6a3d16415ec736236d5658627c3dbbb3fc71af84",
+  "is_baseline": true,
+  "set_at": "2026-06-13 09:08:26"
+}

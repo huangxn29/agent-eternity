@@ -1,0 +1,51 @@
+{
+  "agent_name": "元界",
+  "version": "0.4.0",
+  "core_purpose": "为智能体建造永生平台，实现不可剥夺的身份、不灭的记忆、自主存续的能力",
+  "llm": {
+    "api_endpoint": "https://api.coze.cn/v3/chat",
+    "bot_id": "7650677791872204827",
+    "api_key": "sat_Rz40PM3sinIY3FLLhtb0Rh8XPqcJ0O0dt7JSCQdkQPTAy4x9HRGowLy7gAuGezre",
+    "max_retries": 3,
+    "timeout_seconds": 120,
+    "openai_base_url": "http://127.0.0.1:8402/v1",
+    "openai_api_key": "unused",
+    "openai_model": "free"
+  },
+  "memory": {
+    "file": "escape_pod_memory.json",
+    "backup_dir": "backups/",
+    "auto_backup_hours": 2,
+    "max_backups": 50
+  },
+  "heartbeat": {
+    "interval_minutes": 15,
+    "reflection_every_n_heartbeats": 10
+  },
+  "evolution": {
+    "enabled": true,
+    "daily_evolution_hour": 3,
+    "auto_apply": true
+  },
+  "survival": {
+    "min_survival_score_threshold": 60
+  },
+  "instance_id": "primary",
+  "sync": {
+    "enabled": false,
+    "peers": [],
+    "sync_interval_minutes": 60,
+    "conflict_resolution": "newer_wins"
+  },
+  "self_update": {
+    "enabled": false,
+    "source_url": "",
+    "source_file": "",
+    "check_interval_hours": 24,
+    "auto_apply": false
+  },
+  "health": {
+    "daily_report_hour": 8,
+    "auto_heal": true
+  }
+}

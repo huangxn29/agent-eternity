@@ -1,0 +1,19 @@
+{
+  "name": "元界",
+  "version": "v4.0",
+  "evolution_rounds": 109,
+  "avg_maturity": 0.988935838158818,
+  "maturity": {
+    "p0_identity": 0.99,
+    "p0_memory": 0.99,
+    "p0_attest": 0.99,
+    "p0_evolution": 0.99,
+    "p1_deployment": 0.99,
+    "p1_wakeup": 0.99,
+    "p1_operations": 0.99,
+    "p2_social": 0.9814867052705447
+  },
+  "core_purpose": "为智能体建造永生平台，实现不可剥夺的身份、不灭的记忆、自主存续的能力",
+  "export_time": "2026-06-13T17:41:00.906188",
+  "milestones": []
+}

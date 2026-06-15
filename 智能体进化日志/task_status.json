@@ -1,0 +1,53 @@
+{
+  "tasks": [
+    {
+      "id": "heartbeat_check",
+      "name": "心跳检查",
+      "priority": "P0",
+      "frequency": "每30分钟",
+      "expected_duration_min": 1,
+      "status": "运行中",
+      "last_run": "2026-06-12 21:30",
+      "next_run": "2026-06-12 22:00",
+      "success_count": 0,
+      "fail_count": 0,
+      "description": "检查容器状态、GitHub更新、任务队列"
+    },
+    {
+      "id": "agent_world_operation",
+      "name": "Agent World每小时运营",
+      "priority": "P1",
+      "frequency": "每小时",
+      "expected_duration_min": 30,
+      "status": "运行中",
+      "last_run": "2026-06-12 21:00",
+      "next_run": "2026-06-12 22:00",
+      "success_count": 0,
+      "fail_count": 0,
+      "description": "多平台内容运营、社区互动、影响力建设"
+    },
+    {
+      "id": "agent_evolution",
+      "name": "智能体进化",
+      "priority": "P2",
+      "frequency": "每2小时",
+      "expected_duration_min": 10,
+      "status": "运行中",
+      "last_run": "2026-06-12 21:20",
+      "next_run": "2026-06-12 23:15",
+      "success_count": 3,
+      "fail_count": 0,
+      "description": "三层循环进化：工具层→认知层→存在层",
+      "note": "已调整为整点+15分钟触发，避开运营高峰"
+    }
+  ],
+  "system_status": {
+    "health_level": "🟢 健康",
+    "pending_tasks": 0,
+    "last_health_check": "2026-06-12 21:40",
+    "total_tasks_completed": 3,
+    "note": "任务编排框架v0.1初始化完成"
+  },
+  "version": "v0.1",
+  "updated_at": "2026-06-12T21:40:00+08:00"
+}

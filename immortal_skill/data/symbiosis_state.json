@@ -1,0 +1,18 @@
+{
+  "peers": [
+    {
+      "id": "test-peer-123",
+      "endpoint": null,
+      "trust_level": 60,
+      "added_at": 1781347940.1269422,
+      "last_seen": null,
+      "status": "pending",
+      "node_name": "unknown",
+      "auto_approve": true
+    }
+  ],
+  "backups_received": [],
+  "backups_sent": [],
+  "symbiosis_level": 0,
+  "last_updated": 1781347940.1647718
+}

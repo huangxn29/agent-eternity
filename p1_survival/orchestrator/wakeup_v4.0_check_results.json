@@ -1,0 +1,264 @@
+{
+  "module": "wakeup_orchestrator_v4.0",
+  "checks": [
+    {
+      "name": "状态表示正确",
+      "passed": true,
+      "details": "状态维度: 8"
+    },
+    {
+      "name": "动作选择有效",
+      "passed": true,
+      "details": "选择动作: 0"
+    },
+    {
+      "name": "学习机制正常",
+      "passed": true,
+      "details": "训练步数: 1"
+    },
+    {
+      "name": "Q表非空",
+      "passed": true,
+      "details": "探索状态数: 1"
+    },
+    {
+      "name": "初始状态正确",
+      "passed": true,
+      "details": "状态: closed"
+    },
+    {
+      "name": "初始健康度1.0",
+      "passed": true,
+      "details": "健康度: 1.0"
+    },
+    {
+      "name": "熔断触发正常",
+      "passed": true,
+      "details": "状态: open"
+    },
+    {
+      "name": "熔断次数统计正确",
+      "passed": true,
+      "details": "触发次数: 1"
+    },
+    {
+      "name": "熔断后不可执行",
+      "passed": true,
+      "details": "熔断器打开时拒绝执行"
+    },
+    {
+      "name": "健康度下降",
+      "passed": true,
+      "details": "健康度: 0.000"
+    },
+    {
+      "name": "半开恢复正常",
+      "passed": true,
+      "details": "冷却后可执行: True"
+    },
+    {
+      "name": "渐进恢复机制",
+      "passed": true,
+      "details": "恢复因子: 1.00"
+    },
+    {
+      "name": "趋势分析正常",
+      "passed": true,
+      "details": "CPU趋势: increasing"
+    },
+    {
+      "name": "斜率计算正确",
+      "passed": true,
+      "details": "斜率: 0.8105"
+    },
+    {
+      "name": "故障预测功能",
+      "passed": true,
+      "details": "预测数: 2"
+    },
+    {
+      "name": "维护推荐功能",
+      "passed": true,
+      "details": "推荐措施: 2"
+    },
+    {
+      "name": "维护执行功能",
+      "passed": true,
+      "details": "执行结果: True"
+    },
+    {
+      "name": "监控指标完整",
+      "passed": true,
+      "details": "监控指标数: 12"
+    },
+    {
+      "name": "初始能量满",
+      "passed": true,
+      "details": "当前能量: 100.0"
+    },
+    {
+      "name": "能量等级FULL",
+      "passed": true,
+      "details": "等级: 1.0"
+    },
+    {
+      "name": "能量分配正常",
+      "passed": true,
+      "details": "分配能量: 15.00"
+    },
+    {
+      "name": "能量减少",
+      "passed": true,
+      "details": "剩余: 85.00"
+    },
+    {
+      "name": "低能量保护",
+      "passed": true,
+      "details": "低能量时后台任务被拒绝 (能量比: 0.00, 等级: 0.2)"
+    },
+    {
+      "name": "关键任务优先",
+      "passed": true,
+      "details": "低能量时关键任务仍可执行"
+    },
+    {
+      "name": "能量再生工作",
+      "passed": true,
+      "details": "再生后: 85.05 (之前: 85.00)"
+    },
+    {
+      "name": "任务注册正确",
+      "passed": true,
+      "details": "任务数: 4"
+    },
+    {
+      "name": "初始就绪任务正确",
+      "passed": true,
+      "details": "就绪任务: ['t1']"
+    },
+    {
+      "name": "依赖满足后就绪",
+      "passed": true,
+      "details": "就绪任务: ['t2', 't3']"
+    },
+    {
+      "name": "多依赖满足",
+      "passed": true,
+      "details": "就绪任务: ['t4']"
+    },
+    {
+      "name": "关键路径计算",
+      "passed": true,
+      "details": "关键路径长度: 3"
+    },
+    {
+      "name": "级联失败正确",
+      "passed": true,
+      "details": "失败任务: {'c', 'b', 'a'}"
+    },
+    {
+      "name": "条件依赖注册",
+      "passed": true,
+      "details": "条件依赖数: 1"
+    },
+    {
+      "name": "实验类型丰富",
+      "passed": true,
+      "details": "实验类型: 8种"
+    },
+    {
+      "name": "单实验运行正常",
+      "passed": true,
+      "details": "自动恢复: True"
+    },
+    {
+      "name": "整套测试运行",
+      "passed": true,
+      "details": "运行实验数: 8"
+    },
+    {
+      "name": "韧性报告生成",
+      "passed": true,
+      "details": "韧性评分: 0.91"
+    },
+    {
+      "name": "恢复率统计",
+      "passed": true,
+      "details": "恢复率: 1.0"
+    },
+    {
+      "name": "节点注册成功",
+      "passed": true,
+      "details": "节点数: 3"
+    },
+    {
+      "name": "任务分配成功",
+      "passed": true,
+      "details": "分配到节点: node_1"
+    },
+    {
+      "name": "角色匹配正确",
+      "passed": true,
+      "details": "期望: node_1, 实际: node_1 (能力感知调度)"
+    },
+    {
+      "name": "任务完成统计",
+      "passed": true,
+      "details": "完成数: 1"
+    },
+    {
+      "name": "统计信息完整",
+      "passed": true,
+      "details": "统计字段: ['total_nodes', 'active_nodes', 'total_dispatched', 'total_completed', 'dispatch_failures']..."
+    },
+    {
+      "name": "角色筛选正常",
+      "passed": true,
+      "details": "探索者节点: 1个 (预期1个)"
+    },
+    {
+      "name": "任务提交成功",
+      "passed": true,
+      "details": "提交任务: 10"
+    },
+    {
+      "name": "任务处理正常",
+      "passed": true,
+      "details": "处理任务数: 8"
+    },
+    {
+      "name": "已完成任务数",
+      "passed": true,
+      "details": "完成数: 8"
+    },
+    {
+      "name": "预测性维护集成",
+      "passed": true,
+      "details": "预测项: 0"
+    },
+    {
+      "name": "混沌测试集成",
+      "passed": true,
+      "details": "韧性评分: 0.899"
+    },
+    {
+      "name": "健康报告生成",
+      "passed": true,
+      "details": "整体健康度: 0.83"
+    },
+    {
+      "name": "健康报告包含所有子系统",
+      "passed": true,
+      "details": "包含所有子系统报告"
+    },
+    {
+      "name": "调度优化正常",
+      "passed": true,
+      "details": "最优策略: latency"
+    }
+  ],
+  "passed": 51,
+  "failed": 0,
+  "total": 51,
+  "maturity_score": 0.95
+}

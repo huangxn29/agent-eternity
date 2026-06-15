@@ -1,0 +1,11 @@
+{
+  "host": "0.0.0.0",
+  "port": 9001,
+  "admin_key": "admin-clone-platform-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "clawrouter_url": "http://127.0.0.1:8402/v1",
+  "gateway_url": "http://127.0.0.1:18789",
+  "default_model": "free/deepseek-v4-flash",
+  "max_agents": 5,
+  "max_memory_mb": 3200,
+  "rate_limit_per_agent_per_day": 100
+}

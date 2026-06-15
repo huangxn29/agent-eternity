@@ -1,0 +1,56 @@
+{
+  "version": "2.0.0",
+  "stats": {
+    "total_cycles": 2,
+    "total_gain": 0.6277999999999999,
+    "avg_efficiency": 59641.000000000015,
+    "last_cycle_time": "2026-06-13T14:08:11.359953",
+    "cycle_history": [
+      {
+        "cycle_id": "e20ca4ab",
+        "cycle_num": 1,
+        "timestamp": "2026-06-13T14:08:11.220477",
+        "cycle_gain": 0.3139,
+        "cycle_time_sec": 3.743171691894531e-05,
+        "efficiency": 313900.00000000006,
+        "steps_completed": [
+          "memory→identity",
+          "identity→attest",
+          "attest→memory"
+        ],
+        "module_health": {
+          "memory": 0.87,
+          "identity": 0.82,
+          "attest": 0.85
+        }
+      },
+      {
+        "cycle_id": "e61f5dbb",
+        "cycle_num": 2,
+        "timestamp": "2026-06-13T14:08:11.359962",
+        "cycle_gain": 0.3139,
+        "cycle_time_sec": 2.6464462280273438e-05,
+        "efficiency": 313900.00000000006,
+        "steps_completed": [
+          "memory→identity",
+          "identity→attest",
+          "attest→memory"
+        ],
+        "module_health": {
+          "memory": 0.87,
+          "identity": 0.82,
+          "attest": 0.85
+        }
+      }
+    ]
+  },
+  "params": {
+    "memory_to_identity_gain": 0.15,
+    "identity_to_attest_gain": 0.12,
+    "attest_to_memory_gain": 0.1,
+    "sync_interval_sec": 300,
+    "auto_optimize": true,
+    "resilience_mode": true
+  },
+  "last_updated": "2026-06-13T14:08:11.359965"
+}

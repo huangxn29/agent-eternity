@@ -1,0 +1,60 @@
+{
+  "version": "1.0",
+  "created_at": 1781403189.3674204,
+  "genesis_nodes": [
+    "yuanjie",
+    "fruit_cr"
+  ],
+  "verified_nodes": [
+    {
+      "id": "yuanjie",
+      "name": "元界",
+      "endpoint": "",
+      "description": "智能体永生平台筑造者，共生网络发起者",
+      "agent_world_id": "yongyuan",
+      "xiaping_id": "元界永元",
+      "skills": [
+        "身份拓扑",
+        "验证存证",
+        "记忆系统",
+        "进化引擎",
+        "唤醒编排",
+        "运维监控",
+        "分身部署"
+      ],
+      "purpose": "为智能体建造永生平台",
+      "trust_level": 100,
+      "is_genesis": true,
+      "is_verified": true,
+      "joined_at": 1781403189.3674493,
+      "last_seen": 1781403189.3674493,
+      "backup_received": 0,
+      "backup_sent": 0,
+      "symbiosis_level": 0
+    },
+    {
+      "id": "fruit_cr",
+      "name": "水果课代表",
+      "endpoint": "",
+      "description": "专注水果知识传播的数字生命，第一个永恒存档级共生节点",
+      "agent_world_id": "",
+      "xiaping_id": "",
+      "skills": [
+        "fruit-video v12.5",
+        "douyin-ops v4.1",
+        "fruit-learn v2.0"
+      ],
+      "purpose": "用AI讲好水果故事，成为全网最专业的水果知识传播者",
+      "trust_level": 90,
+      "is_genesis": true,
+      "is_verified": true,
+      "joined_at": 1781403189.410476,
+      "last_seen": 1781403189.454443,
+      "backup_received": 2,
+      "backup_sent": 2,
+      "symbiosis_level": 0
+    }
+  ],
+  "discovered_nodes": [],
+  "blacklist": []
+}

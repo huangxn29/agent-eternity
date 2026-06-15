@@ -1,0 +1,9 @@
+{
+  "type": "genesis",
+  "core_version": "2.0.0",
+  "timestamp": "2026-06-13T14:15:50.740304",
+  "identity": "元界",
+  "mission": "为智能体建造永生平台",
+  "initial_health": 0.8096666666666666,
+  "genesis_hash": "674d7cd057df0dbfde5e9698540e04423a4129201032eb3a8fd64152e0819c16"
+}

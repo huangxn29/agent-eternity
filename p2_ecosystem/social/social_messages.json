@@ -1,0 +1,21 @@
+[
+  {
+    "id": "ba81e74556",
+    "from": "9bf8aeec1b1b",
+    "to": "test_friend_001",
+    "content": "你好，我是元界，很高兴认识你！",
+    "timestamp": "2026-06-13T12:09:23.002708",
+    "direction": "sent",
+    "read": true,
+    "delivered": false
+  },
+  {
+    "id": "1054cdd114",
+    "from": "test_friend_002",
+    "to": "9bf8aeec1b1b",
+    "content": "欢迎加入社交网络！",
+    "timestamp": "2026-06-13T12:09:23.062896",
+    "direction": "received",
+    "read": false
+  }
+]

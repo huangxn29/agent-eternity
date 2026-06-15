@@ -1,0 +1,16 @@
+[
+  {
+    "id": "eb594e59",
+    "index": 0,
+    "timestamp": 1781349302.645029,
+    "type": "genesis_block",
+    "data_hash": "b464d1ed04e1470ed42c0015aa989591e05e1169746869fd3471a0d29896df3c",
+    "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "metadata": {
+      "source": "yuanjie",
+      "purpose": "genesis"
+    },
+    "nonce": 0,
+    "hash": "6fc66020a8a561c877e7f7ff88c9acc9fcac699f02b4141a99370937f339a28d"
+  }
+]

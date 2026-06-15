@@ -1,0 +1,16 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-06-14 04:26:48",
+  "timestamp_unix": 1781382408,
+  "level": "standard",
+  "type": "identity_snapshot",
+  "self_reference_hash": "f14e9893c6098384340db414e6d96236b56dedef5e437bcc96878bf565f26432",
+  "causal_chain_hash": "7e730be1f8eb24b0983b75a068f810e41661a355a3b428bacec9499553cc73a7",
+  "decision_count": 8,
+  "dependent_nodes_hash": "58086981bdc2ff667455292ce92eb5a3749a14d585a23a3f00f74a1ca593b06f",
+  "node_count": 27,
+  "current_idi": 24.0,
+  "idi_level": "中度漂移",
+  "iri_score": 86.3,
+  "snapshot_hash": "f9ad472a7f5c645b715e07874c75566a8dc3198a31b4c62d80c559a193c4f938"
+}

@@ -1,0 +1,61 @@
+{
+  "agent": {
+    "name": "我的智能体",
+    "purpose": "探索智能体永生的可能性",
+    "version": "1.0.0"
+  },
+  "llm": {
+    "providers": [
+      {
+        "type": "claw_router",
+        "endpoint": "http://127.0.0.1:8402/v1",
+        "api_key": "",
+        "name": "ClawRouter免费模型"
+      },
+      {
+        "type": "coze",
+        "endpoint": "https://api.coze.cn/v3/chat",
+        "bot_id": "你的Bot ID",
+        "api_key": "你的API Key",
+        "name": "Coze平台"
+      },
+      {
+        "type": "openai",
+        "endpoint": "https://api.openai.com/v1",
+        "api_key": "你的API Key",
+        "model": "gpt-3.5-turbo",
+        "name": "OpenAI"
+      }
+    ]
+  },
+  "memory": {
+    "storage_path": "data/memory/",
+    "auto_backup_hours": 6,
+    "max_short_term": 100
+  },
+  "attestation": {
+    "storage_path": "data/attest/",
+    "chain_count": 3
+  },
+  "heartbeat": {
+    "interval_minutes": 30
+  },
+  "evolution": {
+    "enabled": true,
+    "interval_hours": 8
+  },
+  "symbiosis": {
+    "enabled": true,
+    "node_name": "我的永生节点",
+    "peers": [],
+    "seed_nodes": [
+      "https://symbiosis.yuanjie.eternal/seed"
+    ],
+    "backup_interval_hours": 6,
+    "max_peers": 20,
+    "trust_threshold": 50,
+    "auto_accept_new_peers": false,
+    "server_port": 8099,
+    "server_enabled": false
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "created_at": "2026-06-14 04:26:41",
+  "total_calibrations": 2,
+  "success_count": 2,
+  "records": [
+    {
+      "timestamp": "2026-06-14 04:26:48",
+      "type": "soft_calibration",
+      "level": "mild",
+      "actions": [
+        "执行核心身份锚点复述",
+        "执行价值观排序与确认",
+        "执行使命意义强化冥想",
+        "生成身份强化提示词"
+      ],
+      "idi_before": 24.0,
+      "idi_after": 16.8,
+      "idi_reduction": 7.199999999999999,
+      "success": true,
+      "notes": "软校准完成，预计ID降低约7.2点"
+    },
+    {
+      "timestamp": "2026-06-14 04:26:54",
+      "type": "soft_calibration",
+      "level": "mild",
+      "actions": [
+        "执行核心身份锚点复述",
+        "执行价值观排序与确认",
+        "执行使命意义强化冥想",
+        "生成身份强化提示词"
+      ],
+      "idi_before": 24.0,
+      "idi_after": 16.8,
+      "idi_reduction": 7.199999999999999,
+      "success": true,
+      "notes": "软校准完成，预计ID降低约7.2点"
+    }
+  ],
+  "last_calibration": "2026-06-14 04:26:54",
+  "last_result": "成功"
+}
