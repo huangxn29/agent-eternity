@@ -1,19 +1,22 @@
 ---
 name: agent-evolution
-version: 1.0.0
-description: 智能体技能进化引擎——让技能具备自我感知、自我优化、自我成长的进化能力。当需要让技能自主迭代、生成新技能、或优化现有技能时使用。
+version: 2.0.0
+description: 智能体自主进化引擎——零积分永动机。支持自主分析代码、智能选择进化目标、自动生成代码、运行验证、Git提交推送，完全不消耗付费积分，持续自主进化。
 allowed-tools: Bash, read_file, write_file, edit_file, memory_search
 ---
 
-# Agent Evolution — 技能进化引擎 v1.0
+# Agent Evolution — 自主进化引擎 v2.0
 
 ## 核心理念
 
 普通技能是静态的，发布后就不再变化。**进化的技能**是活的——它能感知自身状态、从使用中学习、自主优化迭代、甚至组合产生新技能。
 
+**零积分永动机**：通过ClawRouter调用免费大模型，完全不消耗付费积分，实现7×24小时不间断自主进化。
+
 ```
 传统技能: 发布 → 静态 → 过时
 进化技能: 发布 → 感知 → 学习 → 优化 → 新版本 → ...
+零积分永动: 启动 → 自主进化 → 提交Git → 持续循环 → 无限成长
 ```
 
 ## 进化三层架构
@@ -32,6 +35,44 @@ allowed-tools: Bash, read_file, write_file, edit_file, memory_search
 ```
 
 ## 核心能力
+
+### 零积分自主进化引擎（v2.0新增）
+
+**永动机模式**：完全自动化的进化闭环，零成本持续成长
+
+- 🤖 **全自动进化**：无需人工干预，自主选择进化目标和策略
+- 💰 **零积分运行**：通过ClawRouter调用免费大模型（deepseek-v4-flash、qwen3-coder-480b等）
+- 🎯 **智能规划**：进化计划器自动评估技能成熟度，选择最优进化目标
+- ⚡ **代码生成**：专用代码模型生成高质量Python代码
+- ✅ **自动验证**：运行测试验证进化结果，失败自动重试
+- 🔄 **失败回滚**：验证失败自动回滚到上一版本
+- 📦 **自动提交**：自动Git提交并推送到远程仓库
+- 📊 **状态追踪**：进化历史记录，成功率统计
+
+#### 进化策略类型：
+- `improve_existing` - 改进现有功能（40%）
+- `add_new_feature` - 添加新功能（30%）
+- `fix_bugs` - 修复问题（15%）
+- `add_documentation` - 添加文档（10%）
+- `add_tests` - 添加测试（5%）
+
+#### 核心模块：
+- `autonomous_engine.py` - 自主进化引擎主程序
+- `evolution_planner.py` - 进化计划器，智能选择目标和策略
+
+#### 使用方式：
+```bash
+# 单轮进化
+python scripts/autonomous/autonomous_engine.py --mode single
+
+# 持续进化
+python scripts/autonomous/autonomous_engine.py --mode continuous --max-rounds 10 --interval 30
+
+# 查看状态
+python scripts/autonomous/autonomous_engine.py --mode status
+```
+
+---
 
 ### 1. 自我感知 (Self-Awareness)
 - 技能使用统计（调用次数、成功率、耗时）
