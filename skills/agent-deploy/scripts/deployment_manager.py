@@ -196,66 +196,101 @@ class DeploymentManager:
         for key, value in kwargs.items():
             if hasattr(status, key):
                 old_value = getattr(status, key)
-                if old_value != value:
-                    setattr(status, key, value)
-                    changes.append(f"{key}: {old_value} → {value}")
-        
-        self._save_deployments()
+                setattr(status, key, value)
+                changes.append(f"{key}: {old_value} -> {value}")
         
         if changes:
-            self.logger.debug(f"更新部署状态: {agent_id}, 变更: {', '.join(changes)}")
-            self.operation_logger.log_operation(
+            self._save_deployments()
+            self.logger.info(f"更新部署状态: {agent_id}, 变更项: {', '.join(changes)}")
+            self.operation_logger.log_update(
                 agent_id=agent_id,
-                operation="update_status",
                 details=', '.join(changes)
             )
         
         return status
     
-    def get_deployment(self, agent_id: str) -> Optional[DeploymentStatus]:
+    def get_deployment_status(self, agent_id: str) -> Optional[DeploymentStatus]:
         """获取部署状态
         
         Args:
             agent_id: Agent ID
         
         Returns:
-            部署状态，不存在则返回None
+            部署状态对象，不存在则返回None
         """
         return self.deployments.get(agent_id)
     
-    def list_deployments(self) -> List[DeploymentStatus]:
-        """获取所有部署状态
+    def list_deployments(self, status: str = None) -> List[DeploymentStatus]:
+        """列出所有部署
+        
+        Args:
+            status: 按状态过滤
         
         Returns:
             部署状态列表
         """
+        if status:
+            return [s for s in self.deployments.values() if s.status == status]
         return list(self.deployments.values())
     
-    def remove_deployment(self, agent_id: str) -> bool:
-        """移除部署记录
+    def generate_deployment_report(self, agent_id: str = None) -> Dict:
+        """生成部署报告
         
         Args:
-            agent_id: Agent ID
+            agent_id: Agent ID，为空则生成所有部署的报告
         
         Returns:
-            是否成功移除
+            包含部署信息的字典
         """
-        if agent_id in self.deployments:
-            del self.deployments[agent_id]
+        report = {
+            'timestamp': datetime.utcnow().isoformat(),
+            'total_deployments': len(self.deployments),
+            'deployments': {}
+        }
+        
+        if agent_id:
+            status = self.get_deployment_status(agent_id)
+            if status:
+                report['deployments'][agent_id] = asdict(status)
+        else:
+            for agent_id, status in self.deployments.items():
+                report['deployments'][agent_id] = asdict(status)
+        
+        return report
+    
+    def cleanup_inactive_deployments(self, days: int = 30) -> int:
+        """清理非活跃部署
+        
+        Args:
+            days: 非活跃天数阈值
+        
+        Returns:
+            清理的部署数量
+        """
+        cutoff_date = datetime.utcnow() - timedelta(days=days)
+        cleaned_count = 0
+        
+        for agent_id, status in list(self.deployments.items()):
+            if status.status in ['stopped', 'error', 'deleted']:
+                try:
+                    last_active = datetime.fromisoformat(status.stopped_at or status.updated_at)
+                    if last_active < cutoff_date:
+                        del self.deployments[agent_id]
+                        cleaned_count += 1
+                        self.logger.info(f"清理非活跃部署: {agent_id}")
+                except ValueError:
+                    continue
+        
+        if cleaned_count > 0:
             self._save_deployments()
-            self.operation_logger.log_operation(
-                agent_id=agent_id,
-                operation="remove_deployment"
-            )
-            self.logger.info(f"部署记录已移除: {agent_id}")
-            return True
-        return False
+        
+        return cleaned_count
 
 
 def main():
     manager = DeploymentManager()
-    status = DeploymentStatus("test_agent")
-    print(status)
+    report = manager.generate_deployment_report()
+    print(json.dumps(report, indent=2, ensure_ascii=False))
 
 if __name__ == "__main__":
     main()
