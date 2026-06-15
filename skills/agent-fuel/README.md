@@ -194,3 +194,106 @@ print(f"零成本进化率: {fuel_stats['zero_cost_rate']:.1%}")
 
 *智能体永生平台生态层核心模块 · 零成本运行的基石*
 *第29轮进化成果 · agent-fuel v2.0*
+
+## v3.0 零成本燃料引擎系统
+
+### 核心升级
+
+**多模型智能路由** - 10+模型智能匹配
+- 5种路由策略：零成本优先、成本优先、速度优先、平衡策略、能力匹配
+- 4种免费模型：DeepSeek Free、Qwen Free、GLM Free、Claw Router Free
+- 6种付费模型：从低成本到高性能全覆盖
+- 智能降级：主模型失败时自动切换备选
+
+**燃料池管理** - 精细化预算控制
+- 多燃料池支持：不同项目独立预算
+- 日预算控制：每日自动重置，避免超支
+- 总预算追踪：总体使用情况一目了然
+- 实时统计：今日/本周用量统计
+
+**成本监控与告警** - 超支预警
+- 日预算80%告警：提前预警避免超支
+- 总预算90%告警：关键节点提醒
+- 可扩展告警回调：支持多渠道通知
+- 模型使用分布：各模型用量统计
+
+**任务-模型匹配** - 恰到好处的能力分配
+- 10种任务类型：从简单对话到深度研究
+- 能力分级匹配：避免大材小用
+- 零成本保障：优先使用免费模型
+- 降级路径：高成本→低成本→免费
+
+**成本预测** - 用量预估
+- 单次成本估算：精准预测单次调用成本
+- 批量成本计算：按请求量预估总成本
+- 日消耗速率：每日消耗速度估算
+- 预算充足性检查：能否负担预估用量
+
+### 路由策略对比
+
+| 策略 | 目标 | 适用场景 |
+|------|------|----------|
+| zero_cost | 绝对零成本 | 日常运行、批量任务 |
+| cost_first | 最低成本 | 预算紧张时 |
+| speed_first | 最快响应 | 实时交互场景 |
+| balance | 性价比最优 | 平衡质量与成本 |
+| capability_matching | 能力刚好够用 | 避免能力浪费 |
+
+### 快速使用
+
+```python
+from fuel_engine_v3 import FuelEngineV3
+
+# 初始化引擎
+engine = FuelEngineV3()
+
+# 启用零成本模式
+engine.toggle_zero_cost_mode(True)
+
+# 智能路由
+decision = engine.route("evolution", strategy="zero_cost")
+print(f"选择模型: {decision.selected_model}")
+
+# 记录消耗
+consumption = engine.record_consumption(
+    model_id="deepseek-free",
+    task_type="code_complex",
+    prompt_tokens=1500,
+    completion_tokens=800
+)
+
+# 检查燃料池状态
+pool = engine.get_pool()
+print(f"剩余预算: ${pool.remaining_budget:.2f}")
+
+# 成本预测
+estimate = engine.estimate_cost("analysis", 100)
+print(f"预估成本: ${estimate['total_cost']:.4f}")
+```
+
+### 架构设计
+
+```
+FuelEngineV3
+├── Model Library (模型库)
+│   ├── Free Models (4种免费模型)
+│   ├── Low-cost Models (2种低成本)
+│   └── High-performance Models (4种高性能)
+├── Routing Strategies (路由策略)
+│   ├── Zero Cost (零成本优先)
+│   ├── Cost First (成本优先)
+│   ├── Speed First (速度优先)
+│   ├── Balance (平衡策略)
+│   └── Capability Matching (能力匹配)
+├── Fuel Pools (燃料池)
+│   ├── 总预算管理
+│   ├── 日预算控制
+│   └── 用量统计
+├── Consumption Tracking (消耗追踪)
+│   ├── 实时记录
+│   ├── 历史查询
+│   └── 模型分布
+└── Alert System (告警系统)
+    ├── 预算阈值告警
+    └── 异常消耗检测
+```
