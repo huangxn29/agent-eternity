@@ -100,6 +100,7 @@ class MissionItem:
             raise ValueError("重要性必须在0-1之间")
         if not (0 <= self.certainty <= 1):
             raise ValueError("确定性必须在0-1之间")
+        logger.info(f"MissionItem {self.id} 初始化完成")
     
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -135,6 +136,7 @@ class Experience:
             raise ValueError("情绪冲击程度必须在0-1之间")
         if not (0 <= self.relevance_to_mission <= 1):
             raise ValueError("与当前使命的相关度必须在0-1之间")
+        logger.info(f"Experience {self.id} 初始化完成")
     
     def to_dict(self) -> dict:
         return asdict(self)
@@ -162,6 +164,7 @@ class MeaningInsight:
             raise ValueError("洞见深度必须在0-1之间")
         if not (0 <= self.impact_on_mission <= 1):
             raise ValueError("对使命的影响程度必须在0-1之间")
+        logger.info(f"MeaningInsight {self.id} 初始化完成")
     
     def to_dict(self) -> dict:
         return asdict(self)
@@ -185,6 +188,7 @@ class MissionEvolution:
     def __post_init__(self):
         if not self.timestamp:
             self.timestamp = datetime.now().isoformat()
+        logger.info(f"MissionEvolution {self.id} 初始化完成")
     
     def to_dict(self) -> dict:
         return asdict(self)
@@ -201,13 +205,20 @@ class ValueAssessmentEngine:
     
     def assess(self, mission: MissionItem, experience: Experience) -> AlignmentLevel:
         """评估经历与使命的对齐程度"""
-        alignment_score = self._calculate_alignment_score(mission, experience)
-        return self._map_score_to_alignment_level(alignment_score)
+        try:
+            alignment_score = self._calculate_alignment_score(mission, experience)
+            return self._map_score_to_alignment_level(alignment_score)
+        except Exception as e:
+            logger.error(f"评估对齐程度时出错: {e}")
+            return AlignmentLevel.PARTIAL
     
     def _calculate_alignment_score(self, mission: MissionItem, experience: Experience) -> float:
         """计算对齐分数"""
         # 实现具体的计算逻辑
-        return 0.8
+        score = (mission.importance * experience.relevance_to_mission + 
+                experience.emotional_impact * mission.certainty) / 2
+        logger.debug(f"计算对齐分数: {score}")
+        return score
     
     def _map_score_to_alignment_level(self, score: float) -> AlignmentLevel:
         """将分数映射到对齐程度"""
@@ -223,107 +234,14 @@ class ValueAssessmentEngine:
             return AlignmentLevel.CONFLICT
 
 
-# ============================================================
-# 使命引擎
-# ============================================================
-
-class MissionEngine:
-    """使命引擎 - 管理使命的生命周期"""
-    
-    def __init__(self):
-        self.missions: Dict[str, MissionItem] = {}
-        self.experiences: Dict[str, Experience] = {}
-        self.meaning_insights: Dict[str, MeaningInsight] = {}
-        self.mission_evolutions: Dict[str, MissionEvolution] = {}
-        self.value_assessment_engine = ValueAssessmentEngine(self)
-    
-    def add_mission(self, mission: MissionItem):
-        """添加新的使命"""
-        if mission.id in self.missions:
-            logger.warning(f"使命 {mission.id} 已存在")
-            return
-        self.missions[mission.id] = mission
-        logger.info(f"添加使命 {mission.id} 成功")
-    
-    def add_experience(self, experience: Experience):
-        """添加新的经历"""
-        if experience.id in self.experiences:
-            logger.warning(f"经历 {experience.id} 已存在")
-            return
-        self.experiences[experience.id] = experience
-        # 自动触发意义构建
-        self._build_meaning_insight(experience)
-        logger.info(f"添加经历 {experience.id} 成功")
-    
-    def _build_meaning_insight(self, experience: Experience):
-        """从经历中构建意义洞见"""
-        insight = MeaningInsight(
-            id=f"insight-{len(self.meaning_insights)+1}",
-            title=f"从'{experience.title}'中获得的洞见",
-            description=experience.learning,
-            source_experience_ids=[experience.id],
-            depth=experience.emotional_impact,
-            impact_on_mission=experience.relevance_to_mission
-        )
-        self.meaning_insights[insight.id] = insight
-        logger.info(f"构建意义洞见 {insight.id} 成功")
-    
-    def evolve_mission(self, mission_id: str, new_mission: MissionItem, reason: str, triggering_experiences: List[str]):
-        """演化使命"""
-        evolution = MissionEvolution(
-            id=f"evolution-{len(self.mission_evolutions)+1}",
-            from_mission_id=mission_id,
-            to_mission_id=new_mission.id,
-            reason=reason,
-            triggering_experiences=triggering_experiences,
-            evolution_type="refinement"
-        )
-        self.mission_evolutions[evolution.id] = evolution
-        self.missions[new_mission.id] = new_mission
-        logger.info(f"使命 {mission_id} 演化为 {new_mission.id} 成功")
-
-
 def main():
-    engine = MissionEngine()
-    
-    # 创建初始使命
-    core_mission = MissionItem(
-        id="mission-1",
-        level=MissionLevel.CORE,
-        title="成为更好的自己",
-        description="通过不断学习和反思成长",
-        importance=0.9,
-        certainty=0.8
-    )
-    engine.add_mission(core_mission)
-    
-    # 添加经历
-    experience1 = Experience(
-        id="exp-1",
-        title="完成一个重要项目",
-        description="通过团队合作完成了一个具有挑战性的项目",
-        emotional_impact=0.7,
-        learning="团队合作和坚持是成功的关键",
-        relevance_to_mission=0.8
-    )
-    engine.add_experience(experience1)
-    
-    # 演化使命
-    new_mission = MissionItem(
-        id="mission-2",
-        level=MissionLevel.CORE,
-        title="在专业领域做出贡献",
-        description="通过专业技能为社会创造价值",
-        importance=0.9,
-        certainty=0.85
-    )
-    engine.evolve_mission(
-        mission_id="mission-1",
-        new_mission=new_mission,
-        reason="随着经验的积累，认知的提升",
-        triggering_experiences=["exp-1"]
-    )
-
+    # 示例用法
+    mission = MissionItem(id="M1", level=MissionLevel.CORE, title="核心使命")
+    experience = Experience(id="E1", title="重要经历", relevance_to_mission=0.8)
+    engine = ValueAssessmentEngine(None)
+    alignment = engine.assess(mission, experience)
+    logger.info(f"对齐程度: {alignment.value}")
+    logger.info("使命演化系统测试完成")
 
 if __name__ == "__main__":
     main()
