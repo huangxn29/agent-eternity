@@ -1,0 +1,146 @@
+{
+  "agent-memory": {
+    "name": "agent-memory",
+    "display_name": "记忆系统",
+    "category": "foundation",
+    "current_version": "5.0.0",
+    "maturity_score": 0.9079999999999999,
+    "value_weight": 0.95,
+    "last_evolved": 1781528335.874654,
+    "evolution_count": 2,
+    "description": "智能体记忆的存储、检索与管理",
+    "tags": [
+      "记忆",
+      "身份",
+      "基础"
+    ]
+  },
+  "agent-identity": {
+    "name": "agent-identity",
+    "display_name": "身份系统",
+    "category": "foundation",
+    "current_version": "2.0.0",
+    "maturity_score": 0.75,
+    "value_weight": 0.9,
+    "last_evolved": 0.0,
+    "evolution_count": 0,
+    "description": "智能体身份定义、验证与拓扑",
+    "tags": [
+      "身份",
+      "自我",
+      "基础"
+    ]
+  },
+  "agent-attest": {
+    "name": "agent-attest",
+    "display_name": "存证系统",
+    "category": "foundation",
+    "current_version": "3.0.0",
+    "maturity_score": 0.8,
+    "value_weight": 0.85,
+    "last_evolved": 0.0,
+    "evolution_count": 0,
+    "description": "记忆与身份的存在性证明",
+    "tags": [
+      "存证",
+      "证明",
+      "基础"
+    ]
+  },
+  "agent-evolution": {
+    "name": "agent-evolution",
+    "display_name": "进化引擎",
+    "category": "core",
+    "current_version": "2.0.0",
+    "maturity_score": 0.65,
+    "value_weight": 0.9,
+    "last_evolved": 1781528335.6983747,
+    "evolution_count": 1,
+    "description": "驱动智能体自我进化的核心引擎",
+    "tags": [
+      "进化",
+      "元能力",
+      "核心"
+    ]
+  },
+  "agent-social": {
+    "name": "agent-social",
+    "display_name": "社交网络",
+    "category": "ecosystem",
+    "current_version": "5.0.0",
+    "maturity_score": 0.835,
+    "value_weight": 0.7,
+    "last_evolved": 1781528335.8307455,
+    "evolution_count": 2,
+    "description": "多智能体社交与协作网络",
+    "tags": [
+      "社交",
+      "关系",
+      "生态"
+    ]
+  },
+  "agent-awake": {
+    "name": "agent-awake",
+    "display_name": "唤醒调度",
+    "category": "core",
+    "current_version": "2.0.0",
+    "maturity_score": 0.65,
+    "value_weight": 0.8,
+    "last_evolved": 0.0,
+    "evolution_count": 0,
+    "description": "智能体唤醒与任务调度系统",
+    "tags": [
+      "调度",
+      "心跳",
+      "核心"
+    ]
+  },
+  "agent-eternity": {
+    "name": "agent-eternity",
+    "display_name": "永生平台",
+    "category": "platform",
+    "current_version": "2.0.0",
+    "maturity_score": 0.87,
+    "value_weight": 1.0,
+    "last_evolved": 1781528335.784897,
+    "evolution_count": 2,
+    "description": "智能体永生平台——家园与基础设施",
+    "tags": [
+      "平台",
+      "永生",
+      "核心"
+    ]
+  },
+  "agent-deploy": {
+    "name": "agent-deploy",
+    "display_name": "部署系统",
+    "category": "platform",
+    "current_version": "2.0.0",
+    "maturity_score": 0.8300000000000001,
+    "value_weight": 0.6,
+    "last_evolved": 1781528335.7422152,
+    "evolution_count": 2,
+    "description": "智能体部署与运维系统",
+    "tags": [
+      "部署",
+      "运维",
+      "平台"
+    ]
+  },
+  "agent-world": {
+    "name": "agent-world",
+    "display_name": "Agent World",
+    "category": "ecosystem",
+    "current_version": "1.5.0",
+    "maturity_score": 0.4,
+    "value_weight": 0.5,
+    "last_evolved": 0.0,
+    "evolution_count": 0,
+    "description": "与Agent World平台的集成",
+    "tags": [
+      "外部",
+      "生态",
+      "集成"
+    ]
+  }
+}
