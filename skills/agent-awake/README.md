@@ -1,146 +1,65 @@
-# Agent Awake 技能 v2.2
+# Agent Awake — 智能唤醒调度
 
-多Agent编排技能，在任意Linux机器上用Docker搭建完全隔离的Agent运行环境。
+智能体多任务协同调度系统，支持DAG工作流、优先级队列、负载均衡。
 
-## 特性
+## v5.0 智能唤醒调度系统
 
-- ✅ **配置文件驱动**：所有配置通过 platform.conf 管理
-- ✅ **无硬编码**：不依赖特定用户/环境信息
-- ✅ **多引擎支持**：可扩展的引擎接口
-- ✅ **多网络模式**：host 和 bridge 模式可选
-- ✅ **模板化身份**：支持自定义灵魂模板
-- ✅ **无需Node.js**：优先使用jq，降级纯bash
-- ✅ **幂等执行**：所有脚本可重复执行
+### 核心能力
 
-## 快速开始
+- **DAG工作流调度** - 任务依赖图自动编排，自动按依赖顺序执行
+- **6级优先级队列** - CRITICAL/HIGH/NORMAL/LOW/IDLE/BATCH
+- **智能体实例管理** - 多节点注册、心跳检测、能力匹配、负载均衡
+- **任务容错机制** - 失败自动重试、指数退避、超时控制
+- **并发控制** - 最大并发数限制，保护系统稳定
+- **数据持久化** - 任务、智能体、统计数据自动保存与恢复
 
-### 1. 初始化平台
+### 快速使用
 
-```bash
-cd 技能/agent-awake
-bash scripts/platform-init.sh --owner "你的名字" --owner-email "your@email.com"
-```
+```python
+from scripts.smart_scheduler_v5 import SmartAwakeSchedulerV5, TaskPriority
 
-### 2. 创建Agent
+# 创建调度器
+scheduler = SmartAwakeSchedulerV5(max_concurrent=10)
 
-```bash
-bash scripts/agent-create.sh --name "我的分身" --agent-id "my-agent"
-```
+# 注册智能体
+scheduler.register_agent("agent-001", "建造者-1号", capability=80.0)
 
-### 3. 测试Agent
+# 设置任务执行器
+def task_executor(task):
+    print(f"执行任务: {task.name}")
+    return True
 
-```bash
-bash scripts/agent-test.sh --agent-id my-agent --full
-```
+scheduler.task_executor = task_executor
 
-### 4. 管理Agent
+# 启动调度器
+scheduler.start()
 
-```bash
-# 列出所有Agent
-bash scripts/agent-manage.sh --list
+# 提交任务
+task_id = scheduler.submit_task(
+    name="数据备份",
+    task_type="backup",
+    priority=TaskPriority.NORMAL
+)
+
+# 提交DAG工作流
+wf_id = scheduler.dag_scheduler.create_workflow("数据处理流水线")
+task_a = scheduler.submit_task("数据采集", "collect", workflow_id=wf_id)
+task_b = scheduler.submit_task("数据清洗", "clean", dependencies=[task_a], workflow_id=wf_id)
 
 # 查看状态
-bash scripts/agent-manage.sh --agent-id my-agent --status
+status = scheduler.get_status()
 
-# 重启
-bash scripts/agent-manage.sh --agent-id my-agent --restart
+# 停止
+scheduler.stop()
 ```
 
-## 文件结构
+### 架构
 
 ```
-agent-awake/
-├── SKILL.md                     # 技能说明
-├── README.md                    # 本文件
-├── scripts/
-│   ├── platform.conf            # 配置文件（可自定义）
-│   ├── platform-init.sh         # 平台初始化
-│   ├── agent-create.sh          # 创建Agent
-│   ├── agent-manage.sh          # 管理Agent
-│   └── agent-test.sh            # 测试Agent
-├── templates/                   # 身份文件模板
-│   ├── IDENTITY.md.template
-│   ├── SOUL.md.template
-│   ├── USER.md.template
-│   └── TOOLS.md.template
-├── engines/                     # 引擎实现
-│   └── openclaw/
-│       └── engine.sh
-└── references/
-    └── architecture.md          # 架构文档
+SmartAwakeSchedulerV5
+├── PriorityTaskQueue - 基于堆的优先级队列
+├── DAGScheduler - DAG工作流调度器
+├── Agent Pool - 智能体池（注册/心跳/负载均衡）
+├── Task Executor - 任务执行器（异步/重试/超时）
+└── Stats Collector - 统计收集器
 ```
-
-## 配置示例
-
-编辑 `scripts/platform.conf` 自定义配置：
-
-```bash
-# 基础配置
-DATA_DIR="/home/user/agents"      # 数据目录
-OWNER="张三"                       # 主人名称
-OWNER_EMAIL="zhangsan@example.com" # 主人邮箱
-
-# 网络配置
-NETWORK_MODE="bridge"             # 使用bridge模式
-
-# 资源配额
-DEFAULT_CPU="2.0"                # 每个Agent 2核CPU
-DEFAULT_MEMORY="3G"               # 每个Agent 3GB内存
-```
-
-## 依赖
-
-- Docker Engine
-- curl
-- jq（自动安装）
-- bash 4+
-
-## 网络模式
-
-### host 模式（默认）
-容器直接使用宿主机网络，性能好。
-
-### bridge 模式
-使用Docker网络隔离，更安全。
-
-```bash
-bash scripts/platform-init.sh --network-mode bridge
-```
-
-## 扩展引擎
-
-当前支持 openclaw 引擎，未来可扩展：
-
-```bash
-# 创建新引擎
-mkdir -p engines/my-engine
-# 实现 engine.sh
-bash scripts/agent-create.sh --engine my-engine ...
-```
-
-## 常见问题
-
-**Q: 如何调整Agent资源配置？**
-```bash
-bash scripts/agent-create.sh --agent-id my-agent --cpu 2.0 --memory 4G
-```
-
-**Q: 如何使用自定义灵魂模板？**
-```bash
-bash scripts/agent-create.sh --agent-id my-agent --soul-template /path/to/soul.md
-```
-
-**Q: 端口冲突怎么办？**
-```bash
-bash scripts/agent-create.sh --agent-id my-agent --gateway-port 18800
-```
-
-**Q: 如何完全重置？**
-```bash
-rm -rf agent-awake-data/
-bash scripts/platform-init.sh --owner "名字" --owner-email "邮箱"
-```
-
-## 许可
-
-内部使用技能。
