@@ -307,6 +307,72 @@ def test_persistence():
         print("✅ 状态持久化测试通过")
 
 
+def test_logger_module():
+    """测试日志系统模块"""
+    import tempfile
+    from logger import get_logger, DeployLogger, OperationLogger
+    
+    # 测试基本日志功能
+    logger = get_logger("test-logger", log_level="DEBUG")
+    assert logger is not None
+    assert isinstance(logger, DeployLogger)
+    print("✅ 日志管理器创建测试通过")
+    
+    # 测试各级别日志输出（不抛错就是成功）
+    logger.debug("debug message")
+    logger.info("info message")
+    logger.warning("warning message")
+    logger.error("error message")
+    print("✅ 各级别日志输出测试通过")
+    
+    # 测试日志级别设置
+    logger.set_level("WARNING")
+    print("✅ 日志级别设置测试通过")
+    
+    # 测试单例模式 - 相同名称应该返回同一个实例
+    logger1 = get_logger("singleton-test")
+    logger2 = get_logger("singleton-test")
+    assert logger1 is logger2
+    print("✅ 日志单例模式测试通过")
+    
+    # 测试操作日志记录器
+    with tempfile.TemporaryDirectory() as tmpdir:
+        op_logger = OperationLogger(log_dir=tmpdir, operator="test-operator")
+        assert op_logger is not None
+        
+        # 记录各种操作
+        op_logger.log_operation("deploy", "agent-001", "success", "测试部署", 1.5)
+        op_logger.log_deploy("agent-002", "success", "部署成功")
+        op_logger.log_stop("agent-001", "success", "正常停止")
+        op_logger.log_delete("agent-003", "success", "清理删除")
+        op_logger.log_health_check("agent-001", "success", "健康")
+        
+        # 验证日志文件生成
+        log_file = Path(tmpdir) / "operations.log"
+        assert log_file.exists()
+        
+        content = log_file.read_text(encoding='utf-8')
+        assert "deploy" in content
+        assert "agent-001" in content
+        assert "SUCCESS" in content
+        assert "test-operator" in content
+        print("✅ 操作日志记录器测试通过")
+    
+    # 测试带文件输出的日志
+    with tempfile.TemporaryDirectory() as tmpdir:
+        file_logger = get_logger(
+            "file-test",
+            log_level="INFO",
+            log_dir=tmpdir
+        )
+        file_logger.info("测试文件日志输出")
+        
+        # 检查日志文件
+        log_files = list(Path(tmpdir).glob("*.log"))
+        assert len(log_files) > 0
+        print("✅ 文件日志输出测试通过")
+
+
 def main():
     print(f"运行 {SKILL_DIR.name} 技能测试套件")
     print("=" * 60)
@@ -321,6 +387,7 @@ def main():
         test_health_checker,
         test_size_parsing,
         test_persistence,
+        test_logger_module,
     ]
     
     passed = 0
