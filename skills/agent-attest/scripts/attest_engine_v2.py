@@ -247,22 +247,25 @@ class HashChain:
         """
         if self.chain_file.exists():
             try:
-                with open(self.chain_file, 'r') as f:
+                with open(self.chain_file, 'r', encoding='utf-8') as f:
                     chain_data = json.load(f)
-                    self.chain = [
-                        AttestationRecord(**record) 
-                        for record in chain_data
-                    ]
-            except json.JSONDecodeError:
-                print(f"Warning: Failed to load chain from {self.chain_file}")
+                    self.chain = [AttestationRecord(**record) for record in chain_data]
+            except json.JSONDecodeError as e:
+                print(f"Error loading chain: {e}")
+                self.chain = []
+        else:
+            self.chain = []
     
     def _save_chain(self):
         """
         保存哈希链到文件
         """
-        chain_data = [record.to_dict() for record in self.chain]
-        with open(self.chain_file, 'w') as f:
-            json.dump(chain_data, f, indent=4)
+        try:
+            with open(self.chain_file, 'w', encoding='utf-8') as f:
+                chain_data = [record.to_dict() for record in self.chain]
+                json.dump(chain_data, f, indent=4, ensure_ascii=False)
+        except Exception as e:
+            print(f"Error saving chain: {e}")
     
     def add_record(self, data: Dict, data_type: str = "generic") -> AttestationRecord:
         """
@@ -270,20 +273,19 @@ class HashChain:
         
         Args:
             data (Dict): 存证数据
-            data_type (str): 数据类型
+            data_type (str): 数据类型，默认为"generic"
         
         Returns:
-            AttestationRecord: 新的存证记录
+            AttestationRecord: 新添加的存证记录
         """
-        data_hash = hashlib.sha256(json.dumps(data).encode()).hexdigest()
+        data_hash = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
         timestamp = datetime.now().isoformat()
+        index = len(self.chain)
         
-        if not self.chain:
+        if index == 0:
             previous_hash = "0" * 64
-            index = 0
         else:
             previous_hash = self.chain[-1].hash
-            index = len(self.chain)
         
         record_hash = hashlib.sha256(
             f"{index}{timestamp}{data_hash}{previous_hash}".encode()
@@ -314,21 +316,20 @@ class HashChain:
             return True
         
         for i, record in enumerate(self.chain):
-            # 验证哈希
-            calculated_hash = hashlib.sha256(
-                f"{record.index}{record.timestamp}{record.data_hash}{record.previous_hash}".encode()
-            ).hexdigest()
-            
-            if calculated_hash != record.hash:
-                return False
-            
-            # 验证previous_hash
             if i == 0:
                 if record.previous_hash != "0" * 64:
                     return False
             else:
-                if record.previous_hash != self.chain[i-1].hash:
+                previous_record = self.chain[i-1]
+                if record.previous_hash != previous_record.hash:
                     return False
+            
+            expected_hash = hashlib.sha256(
+                f"{record.index}{record.timestamp}{record.data_hash}{record.previous_hash}".encode()
+            ).hexdigest()
+            
+            if record.hash != expected_hash:
+                return False
         
         return True
     
@@ -344,11 +345,12 @@ class HashChain:
         """
         merkle_tree = MerkleTree()
         for record in records:
-            merkle_tree.add_leaf(json.dumps(record.to_dict()))
+            merkle_tree.add_leaf(json.dumps(record.to_dict(), sort_keys=True))
         
-        root_hash = merkle_tree.build()
+        root_hash = merkle_tree.get_root()
         
-        # 这里可以添加对root_hash的验证逻辑，比如与已存储的root_hash比较
+        # 这里应该有更详细的验证逻辑，例如检查记录是否在链中
+        # 简单示例直接返回True
         return True
 
 
