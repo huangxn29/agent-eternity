@@ -1,25 +1,69 @@
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.egg-info/
-dist/
+*.py[cod]
+*$py.class
+*.so
+.Python
 build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+Pipfile.lock
 
-# 测试数据
-tests/test_data/
-tmp/
-temp/
+# 虚拟环境
+venv/
+env/
+ENV/
+.venv/
+
+# 测试和覆盖率
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
 
 # 日志
 *.log
 logs/
+ark_logs/
 
-# 配置
-*.local
+# 配置和敏感信息
 .env
+.env.local
+.env.*.local
 config.local.json
+*.key
+*.pem
+secrets/
+
+# 数据
+data/
+memory_data/
+backup/
+*.db
+*.sqlite
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
 # 系统
 .DS_Store
@@ -28,3 +72,4 @@ Thumbs.db
 # 打包文件
 *.zip
 *.tar.gz
+*.rar
