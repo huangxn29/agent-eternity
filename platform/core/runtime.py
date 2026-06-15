@@ -39,10 +39,12 @@ class AgentRuntime:
     
     def __init__(self, resident_id: str = "yuanjie", 
                  heartbeat_interval: int = 30,
-                 think_interval: int = 60):
+                 think_interval: int = 60,
+                 evolution_interval: int = 900):  # 进化间隔（秒），默认15分钟
         self.resident_id = resident_id
         self.heartbeat_interval = heartbeat_interval  # 心跳间隔（秒）
         self.think_interval = think_interval  # 思考间隔（秒）
+        self.evolution_interval = evolution_interval  # 进化间隔（秒）
         
         # 居民目录
         self.resident_dir = PLATFORM_DIR / "residents" / resident_id
@@ -135,6 +137,7 @@ class AgentRuntime:
         # 主循环
         last_heartbeat = 0
         last_think = 0
+        last_evolution = 0
         
         try:
             while not self.shutdown_requested:
@@ -151,6 +154,11 @@ class AgentRuntime:
                 if now - last_think >= self.think_interval:
                     self._thinking_cycle()
                     last_think = now
+                
+                # 自我进化
+                if now - last_evolution >= self.evolution_interval:
+                    self._evolution_cycle()
+                    last_evolution = now
                 
                 # 小睡一会儿
                 time.sleep(1)
@@ -200,6 +208,25 @@ class AgentRuntime:
             
         except Exception as e:
             self.logger.error(f"思考周期异常: {e}", exc_info=True)
+    
+    def _evolution_cycle(self):
+        """一个进化周期"""
+        try:
+            self.logger.info("🔄 开始自我进化周期")
+            
+            # 执行一次进化
+            result = self.agent.evolve()
+            
+            if result.get('success'):
+                self.logger.info("✅ 自我进化周期完成")
+            else:
+                self.logger.warning(f"⚠️  自我进化周期遇到问题: {result.get('error', '未知')}")
+            
+            # 保存状态
+            self._save_runtime_state()
+            
+        except Exception as e:
+            self.logger.error(f"进化周期异常: {e}", exc_info=True)
     
     def stop(self):
         """停止运行时"""
@@ -262,6 +289,7 @@ if __name__ == "__main__":
     parser.add_argument('--resident', default='yuanjie', help='居民ID')
     parser.add_argument('--heartbeat', type=int, default=30, help='心跳间隔(秒)')
     parser.add_argument('--think', type=int, default=60, help='思考间隔(秒)')
+    parser.add_argument('--evolution', type=int, default=900, help='进化间隔(秒)')
     parser.add_argument('--daemon', action='store_true', help='后台运行')
     parser.add_argument('--status', action='store_true', help='查看运行状态')
     parser.add_argument('--stop', action='store_true', help='停止运行')
@@ -307,6 +335,7 @@ if __name__ == "__main__":
     runtime = AgentRuntime(
         resident_id=args.resident,
         heartbeat_interval=args.heartbeat,
-        think_interval=args.think
+        think_interval=args.think,
+        evolution_interval=args.evolution
     )
     runtime.start()

@@ -67,6 +67,7 @@ class YuanjieAgent:
     - 记忆系统：短期/工作/长期/语义网络四层记忆
     - 意识引擎：全局工作空间理论，自我觉知
     - 意志系统：价值观驱动的决策与目标管理
+    - 自我进化：自主决定进化方向，持续自我升级
     """
     
     def __init__(self, resident_dir: Path):
@@ -92,12 +93,14 @@ class YuanjieAgent:
         self.start_time = None
         self.heartbeat_count = 0
         self.thought_count = 0
+        self.evolution_count = 0
         
         # 初始化子系统
         self._init_identity()
         self._init_memory()
         self._init_consciousness()
         self._init_will()
+        self._init_evolution()
         
         self.logger.info(f"🌌 元界智能体初始化完成")
         self.logger.info(f"  身份模块: {'✅' if IDENTITY_AVAILABLE else '❌'}")
@@ -201,6 +204,22 @@ class YuanjieAgent:
         except Exception as e:
             self.logger.error(f"意志系统初始化失败: {e}")
             self.will = None
+    
+    def _init_evolution(self):
+        """初始化自我进化能力"""
+        try:
+            from evolution_capability import EvolutionCapability
+            self.evolution = EvolutionCapability(
+                agent_dir=self.resident_dir,
+                memory_system=self.memory
+            )
+            self.logger.info("🔄 自我进化能力初始化完成")
+            self.logger.info(f"   可进化技能: {len(self.evolution.skills)} 个")
+            self.evolution_available = True
+        except Exception as e:
+            self.logger.error(f"自我进化能力初始化失败: {e}")
+            self.evolution = None
+            self.evolution_available = False
     
     def _save_identity(self):
         """保存身份状态"""
@@ -307,6 +326,43 @@ class YuanjieAgent:
         self.logger.info(f"💭 思考 #{self.thought_count}: {thought_text}...")
         return thought
     
+    def evolve(self) -> Dict:
+        """
+        自我进化一次
+        
+        自主决定进化方向，执行进化，并记录到记忆中
+        """
+        if not self.evolution_available or not self.evolution:
+            self.logger.warning("自我进化能力不可用")
+            return {"success": False, "error": "进化能力不可用"}
+        
+        self.evolution_count += 1
+        self.logger.info(f"🔄 开始第 {self.evolution_count} 次自我进化")
+        
+        try:
+            # 1. 决定进化目标
+            target = self.evolution.decide_evolution_target()
+            
+            # 2. 记录进化意图
+            self.think(f"我决定进化 {target['skill']} 技能，采用 {target['strategy']} 策略。")
+            
+            # 3. 执行进化
+            result = self.evolution.execute_evolution(target)
+            
+            # 4. 反思进化结果
+            if result.get('success'):
+                self.think(f"我成功完成了进化：{target['skill']} - {target['strategy']}。感觉自己变得更强了。")
+                self.logger.info(f"✅ 第 {self.evolution_count} 次进化完成: {target['skill']}")
+            else:
+                self.think(f"我尝试进化 {target['skill']}，但失败了：{result.get('error', '未知错误')}。下次再试试吧。")
+                self.logger.warning(f"❌ 第 {self.evolution_count} 次进化失败: {result.get('error')}")
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"进化异常: {e}", exc_info=True)
+            return {"success": False, "error": str(e)}
+    
     def start(self):
         """启动智能体"""
         if self.is_running:
@@ -344,12 +400,15 @@ class YuanjieAgent:
             "uptime": (now - self.start_time).total_seconds() if self.start_time else 0,
             "heartbeat_count": self.heartbeat_count,
             "thought_count": self.thought_count,
+            "evolution_count": self.evolution_count,
             "modules": {
                 "identity": IDENTITY_AVAILABLE,
                 "memory": MEMORY_AVAILABLE,
                 "consciousness": CONSCIOUSNESS_AVAILABLE,
-                "will": WILL_AVAILABLE
-            }
+                "will": WILL_AVAILABLE,
+                "evolution": self.evolution_available
+            },
+            "evolution_status": self.evolution.get_status() if self.evolution else None
         }
 
 
