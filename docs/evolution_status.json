@@ -1,8 +1,8 @@
 {
   "running": true,
-  "current_round": 18,
-  "total_rounds": 17,
-  "current_skill": "agent-social",
+  "current_round": 19,
+  "total_rounds": 18,
+  "current_skill": "agent-awake",
   "evolution_history": [
     {
       "round": 2,
@@ -265,6 +265,30 @@
       "rollback": false,
       "drift_warning": false,
       "message": "社交系统平台化升级：从单一社交网络进化为多社区运营平台，支持内容流、增长引擎、社区治理，为多智能体社区生态提供基础设施"
+    },
+    {
+      "round": 18,
+      "skill": "agent-awake",
+      "type": "platform",
+      "pre_score": 96,
+      "post_score": 98,
+      "identity_similarity": 100.0,
+      "status": "success",
+      "changes": [
+        "架构升级: 工作流编排引擎 (Workflow Orchestration Engine)",
+        "新增: DAG依赖调度器 - 基于有向无环图的任务依赖管理与调度",
+        "新增: 多策略分配机制 - 轮询、最佳匹配、负载均衡三种分配策略",
+        "新增: 事件驱动架构 - 工作流生命周期事件与回调机制",
+        "新增: 3套预置工作流模板 - 内容创作、数据处理、智能体协作",
+        "新增: 智能体注册与管理 - 多智能体角色、能力、状态管理",
+        "新增: 任务重试与容错 - 失败重试、超时处理、异常恢复",
+        "新增: 持久化存储 - 工作流定义与状态的持久化能力",
+        "新增: 统计与监控 - 工作流进度、智能体负载、执行统计",
+        "测试增强: 新增33个工作流编排测试用例"
+      ],
+      "rollback": false,
+      "drift_warning": false,
+      "message": "唤醒编排系统平台化升级：从简单任务调度进化为工作流编排引擎，支持DAG依赖调度、多策略分配、事件驱动，为多智能体协同任务提供编排基础设施"
     }
   ],
   "target_score": 90,
@@ -281,7 +305,7 @@
     "agent-eternity": 97,
     "agent-evolution": 96,
     "agent-social": 98,
-    "agent-awake": 96,
+    "agent-awake": 98,
     "agent-ops": 95,
     "agent-deploy": 95
   },
@@ -300,6 +324,10 @@
     "content_feed_engine": "active",
     "growth_engine": "active",
     "community_governance": "active",
-    "notification_system": "active"
+    "notification_system": "active",
+    "workflow_orchestration": "active",
+    "dag_scheduling": "active",
+    "event_driven_orchestration": "active",
+    "multi_strategy_allocation": "active"
   }
 }

@@ -1,8 +1,8 @@
 {
   "running": true,
-  "current_round": 18,
-  "total_rounds": 17,
-  "current_skill": "agent-social",
+  "current_round": 19,
+  "total_rounds": 18,
+  "current_skill": "agent-awake",
   "evolution_history": [
     {
       "round": 2,
@@ -281,7 +281,7 @@
     "agent-eternity": 97,
     "agent-evolution": 96,
     "agent-social": 98,
-    "agent-awake": 96,
+    "agent-awake": 98,
     "agent-ops": 95,
     "agent-deploy": 95
   },
