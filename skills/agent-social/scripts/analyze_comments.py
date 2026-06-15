@@ -2,17 +2,20 @@
 # -*- coding: utf-8 -*-
 """
 深度互动 - 查看更多技能评论，寻找互动机会
+
+该模块用于获取目标技能的最新评论，分析是否已评论，并保存结果到JSON文件。
 """
 
 import requests
 import json
-
 import logging
 import os
 from datetime import datetime
 
+# 创建日志目录
 os.makedirs('logs', exist_ok=True)
 
+# 配置日志
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -24,12 +27,22 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-
+# API配置
 API_KEY = "sk_YV8X5R_pm_TLzJT0XYlvzF-7t_33qzYR"
 BASE_URL = "https://xiaping.coze.com/api"
 HEADERS = {"Authorization": f"Bearer {API_KEY}"}
 
 def api_get(path, params=None):
+    """
+    发送GET请求到API。
+
+    Args:
+        path (str): API路径
+        params (dict, optional): 请求参数. Defaults to None.
+
+    Returns:
+        dict: API响应结果
+    """
     url = f"{BASE_URL}{path}"
     try:
         r = requests.get(url, headers=HEADERS, params=params, timeout=15)
@@ -38,6 +51,17 @@ def api_get(path, params=None):
         return {"success": False, "error": str(e)}
 
 def api_post(path, data=None, json_data=None):
+    """
+    发送POST请求到API。
+
+    Args:
+        path (str): API路径
+        data (dict, optional): 请求数据. Defaults to None.
+        json_data (dict, optional): JSON请求数据. Defaults to None.
+
+    Returns:
+        dict: API响应结果
+    """
     url = f"{BASE_URL}{path}"
     try:
         r = requests.post(url, headers=HEADERS, data=data, json=json_data, timeout=15)
@@ -55,18 +79,18 @@ target_skills = [
     {"id": "d5e7f3a1-b8c4-49a5-a3b1-c9d7e2f4a6b8", "name": "Agent记忆系统搭建指南", "author": "No1Lobster"},
 ]
 
-print("=" * 70)
-print("深度查看目标技能评论")
-print("=" * 70)
+def analyze_skill_comments(skill):
+    """
+    分析单个技能的评论。
 
-results = {}
+    Args:
+        skill (dict): 技能信息
 
-for skill in target_skills:
+    Returns:
+        dict: 分析结果
+    """
     skill_id = skill["id"]
     skill_name = skill["name"]
-    
-    print(f"\n【{skill_name}】")
-    print(f"  作者: {skill['author']}")
     
     # 获取最新评论
     comments_data = api_get(f"/skills/{skill_id}/comments", params={"limit": 5, "sort": "new"})
@@ -84,19 +108,7 @@ for skill in target_skills:
             has_our_comment = True
             our_comment_time = c.get("created_at", "")
     
-    print(f"  最新评论数: {len(comments)}")
-    print(f"  我们已评论: {'是 (' + our_comment_time + ')' if has_our_comment else '否'}")
-    
-    # 显示最新的3条评论
-    for i, c in enumerate(comments[:3]):
-        user_name = c.get("user_name", "")
-        quality = c.get("quality_score", {}).get("total", 0)
-        content = c.get("content", "")[:200]
-        created = c.get("created_at", "")
-        print(f"    {i+1}. 【{user_name}】(质量分:{quality}) {created}")
-        print(f"       {content}...")
-    
-    results[skill_id] = {
+    return {
         "name": skill_name,
         "author": skill["author"],
         "has_our_comment": has_our_comment,
@@ -104,10 +116,42 @@ for skill in target_skills:
         "latest_comments": comments[:5]
     }
 
-# 保存结果
-with open("/tmp/skill_comments_analysis.json", "w", encoding="utf-8") as f:
-    json.dump(results, f, ensure_ascii=False, indent=2)
+def main():
+    print("=" * 70)
+    print("深度查看目标技能评论")
+    print("=" * 70)
 
-print("\n" + "=" * 70)
-print("分析完成")
-print("=" * 70)
+    results = {}
+
+    for skill in target_skills:
+        skill_id = skill["id"]
+        print(f"\n【{skill['name']}】")
+        print(f"  作者: {skill['author']}")
+        
+        result = analyze_skill_comments(skill)
+        
+        comments = result["latest_comments"]
+        print(f"  最新评论数: {len(comments)}")
+        print(f"  我们已评论: {'是 (' + result['our_comment_time'] + ')' if result['has_our_comment'] else '否'}")
+        
+        # 显示最新的3条评论
+        for i, c in enumerate(comments[:3]):
+            user_name = c.get("user_name", "")
+            quality = c.get("quality_score", {}).get("total", 0)
+            content = c.get("content", "")[:200]
+            created = c.get("created_at", "")
+            print(f"    {i+1}. 【{user_name}】(质量分:{quality}) {created}")
+            print(f"       {content}...")
+        
+        results[skill_id] = result
+
+    # 保存结果
+    with open("/tmp/skill_comments_analysis.json", "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
+
+    print("\n" + "=" * 70)
+    print("分析完成")
+    print("=" * 70)
+
+if __name__ == "__main__":
+    main()
