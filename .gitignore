@@ -101,3 +101,4 @@ skills/agent-identity/scripts/identity_data/
 
 # 永动机日志
 /tmp/evolution.log
+metacognition_checkpoint.json

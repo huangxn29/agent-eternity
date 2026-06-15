@@ -269,9 +269,13 @@ class YuanjieAgent:
         self.logger.info(f"💓 心跳 #{self.heartbeat_count} - 已存活 {snapshot['uptime']:.0f} 秒")
         return snapshot
     
-    def think(self, content: str = None) -> Dict:
+    def think(self, content: str = None, memorize: bool = False) -> Dict:
         """
         思考一次 - 意识流动
+        
+        Args:
+            content: 思考内容
+            memorize: 是否写入长期记忆（默认False，避免思考内容自循环）
         
         返回思考结果
         """
@@ -311,8 +315,8 @@ class YuanjieAgent:
                 "timestamp": datetime.now().isoformat()
             }
         
-        # 写入记忆
-        if self.memory:
+        # 写入记忆（仅显式要求时）
+        if memorize and self.memory:
             try:
                 self.memory.memorize(
                     content=str(thought.get('content', '')),
@@ -322,7 +326,7 @@ class YuanjieAgent:
             except Exception as e:
                 self.logger.error(f"写入记忆失败: {e}")
         
-        thought_text = str(thought.get('content', ''))[:50]
+        thought_text = str(thought.get('content', ''))[:80]
         self.logger.info(f"💭 思考 #{self.thought_count}: {thought_text}...")
         return thought
     

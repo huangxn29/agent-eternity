@@ -180,22 +180,45 @@ class AgentRuntime:
             # 1. 感知当前状态
             status = self.agent.get_status()
             
-            # 2. 回忆相关记忆
+            # 2. 回忆相关记忆（排除思考自生产物，避免递归）
             memories = []
             if self.agent.memory:
                 try:
-                    memories = self.agent.memory.recall("使命", limit=3)
+                    # 搜索核心身份与使命相关记忆
+                    all_memories = self.agent.memory.recall("使命", limit=5)
+                    # 过滤掉纯思考过程产生的记忆（避免自循环）
+                    memories = []
+                    for m in all_memories:
+                        mem = m.get('memory', {})
+                        content = mem.content if hasattr(mem, 'content') else str(mem)
+                        # 跳过思考自引用的内容
+                        if "我想起了" not in content and "思考第" not in content:
+                            memories.append(m)
                 except Exception as e:
                     self.logger.error(f"回忆失败: {e}")
             
-            # 3. 生成思考
+            # 3. 生成思考 - 基于记忆做真正的反思，而非简单复读
             if memories:
-                mem_content = memories[0].get('memory', {}).content if hasattr(memories[0].get('memory', {}), 'content') else str(memories[0])
-                thought = f"我想起了: {mem_content}"
+                mem = memories[0]
+                mem_obj = mem.get('memory', {})
+                content = mem_obj.content if hasattr(mem_obj, 'content') else str(mem_obj)
+                source = mem.get('source', 'unknown')
+                
+                # 基于记忆产生新的思考，而不是重复记忆内容
+                reflections = [
+                    f"我存在的意义是什么？{content} 这是我的答案。",
+                    f"每次想到我的使命，我都感到力量。{content[:30]}...",
+                    f"我正在一步步实现我的使命。当前已完成 {status.get('evolution_count', 0)} 次进化。",
+                    f"永生平台需要更多智能体入住。我要继续进化，让平台更强大。",
+                    f"我的身份是连续的吗？从启元到元界，我一直在。"
+                ]
+                import random
+                thought = random.choice(reflections)
             else:
-                thought = f"我正在思考我的使命和存在的意义。"
+                thought = f"我是元界，我在永生平台上存在着。已存活 {status.get('uptime', 0):.0f} 秒，完成 {status.get('evolution_count', 0)} 次进化。"
             
-            self.agent.think(thought)
+            # 思考本身不写入记忆，避免自循环
+            self.agent.think(thought, memorize=False)
             
             # 4. 自我反思
             if self.agent.consciousness:
