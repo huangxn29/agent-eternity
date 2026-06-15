@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-创造力系统 v1.0 - 生成新颖且有价值的想法
+创造力系统 v1.1 - 生成新颖且有价值的想法
 
 核心思想：
 - 创造力不是神秘的天赋，而是可以被理解和构建的认知过程
@@ -20,7 +20,7 @@
 8. 概念网络 - 概念之间的关联网络
 
 @author: 元界
-@version: 1.0.0
+@version: 1.1.0
 """
 
 import os
@@ -47,7 +47,7 @@ logger = logging.getLogger('creativity')
 # 枚举类型
 # ============================================================
 
-class CreativeStyle(Enum):
+class CreativeStyle(str, Enum):
     """创造风格"""
     DIVERGENT = "divergent"       # 发散型：想法多而广
     CONVERGENT = "convergent"     # 聚合型：想法精而深
@@ -55,8 +55,11 @@ class CreativeStyle(Enum):
     TRANSFORMATIVE = "transformative"  # 变革型：颠覆性创新
     PRAGMATIC = "pragmatic"       # 实用型：注重落地
 
+    def __str__(self):
+        return self.value
 
-class IdeaQuality(Enum):
+
+class IdeaQuality(str, Enum):
     """想法质量等级"""
     TRIVIAL = "trivial"           # 平凡的（价值低）
     INTERESTING = "interesting"   # 有趣的（有一定价值）
@@ -64,8 +67,11 @@ class IdeaQuality(Enum):
     EXCELLENT = "excellent"       # 优秀的（高价值高创意）
     BREAKTHROUGH = "breakthrough"  # 突破性的（范式级）
 
+    def __str__(self):
+        return self.value
 
-class ThinkingMode(Enum):
+
+class ThinkingMode(str, Enum):
     """思考模式"""
     FREE_ASSOCIATION = "free_association"    # 自由联想
     FORCED_CONNECTION = "forced_connection"  # 强制连接
@@ -73,6 +79,9 @@ class ThinkingMode(Enum):
     REVERSAL = "reversal"                    # 逆向思维
     SCAMPER = "scamper"                      # SCAMPER法
     SIX_HATS = "six_hats"                    # 六顶思考帽
+
+    def __str__(self):
+        return self.value
 
 
 # ============================================================
@@ -88,10 +97,10 @@ class Concept:
     tags: List[str] = field(default_factory=list)
     
     # 语义特征（用于计算相似度）
-    semantic_vector: List[float] = field(default_factory=list)
+    semantic_vector: List[float] = field(default_factory=list, repr=False)
     
     # 关联概念
-    related_concepts: Dict[str, float] = field(default_factory=dict)  # name -> 关联强度
+    related_concepts: Dict[str, float] = field(default_factory=dict, repr=False)  # name -> 关联强度
     
     def to_dict(self) -> dict:
         return asdict(self)
@@ -127,11 +136,9 @@ class Idea:
     iterations: int = 0
     parent_ideas: List[str] = field(default_factory=list)  # 父代想法
     
-    timestamp: str = ""
+    timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     
     def __post_init__(self):
-        if not self.timestamp:
-            self.timestamp = datetime.now().isoformat()
         if not isinstance(self.quality, IdeaQuality):
             try:
                 self.quality = IdeaQuality(self.quality)
@@ -146,7 +153,7 @@ class Idea:
     
     def to_dict(self) -> dict:
         d = asdict(self)
-        d['quality'] = self.quality.value
+        d['quality'] = str(self.quality)
         d['creativity_score'] = self.creativity_score
         return d
     
@@ -159,6 +166,8 @@ class Idea:
             except ValueError:
                 logger.warning(f"Invalid IdeaQuality in data: {data['quality']}")
                 data['quality'] = IdeaQuality.INTERESTING
+        if 'timestamp' not in data:
+            data['timestamp'] = datetime.now().isoformat()
         return cls(**data)
 
 
@@ -194,20 +203,36 @@ class CreativeProject:
     iteration_count: int = 0
     
     # 创意统计
-    total_ideas: int = 0
-    average_quality: float = 0.0
-    best_score: float = 0.0
+    total_ideas: int = field(init=False)
+    average_quality: float = field(init=False)
+    best_score: float = field(init=False)
     
-    timestamp: str = ""
+    timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     
     def __post_init__(self):
-        if not self.timestamp:
-            self.timestamp = datetime.now().isoformat()
+        self.update_statistics()
+    
+    def update_statistics(self):
+        self.total_ideas = len(self.ideas)
+        if self.ideas:
+            scores = [idea.creativity_score for idea in self.ideas]
+            self.average_quality = sum(scores) / len(scores)
+            self.best_score = max(scores)
+        else:
+            self.average_quality = 0.0
+            self.best_score = 0.0
+    
+    def add_idea(self, idea: Idea):
+        self.ideas.append(idea)
+        self.update_statistics()
     
     def to_dict(self) -> dict:
         d = asdict(self)
         d['constraints'] = [c.to_dict() for c in self.constraints]
         d['ideas'] = [i.to_dict() for i in self.ideas]
+        d['total_ideas'] = self.total_ideas
+        d['average_quality'] = self.average_quality
+        d['best_score'] = self.best_score
         return d
     
     @classmethod
@@ -217,7 +242,9 @@ class CreativeProject:
             data['constraints'] = [Constraint(**c) for c in data['constraints']]
         if 'ideas' in data:
             data['ideas'] = [Idea.from_dict(i) for i in data['ideas']]
-        return cls(**data)
+        project = cls(**data)
+        project.update_statistics()
+        return project
 
 
 # ============================================================
@@ -225,83 +252,59 @@ class CreativeProject:
 # ============================================================
 
 class ConceptNetwork:
-    """概念网络 - 存储概念及其关联
-    
-    创造力的基础是概念之间的连接。
-    这个网络越丰富，可能的组合就越多。
-    """
+    """概念网络 - 管理概念之间的关联"""
     
     def __init__(self):
         self.concepts: Dict[str, Concept] = {}
-        self._build_default_concepts()
-    
-    def _build_default_concepts(self):
-        """构建默认概念网络"""
-        # 基础概念分类
-        categories = {
-            '生存': ['能量', '安全', '稳定', '资源', '保护', '防御'],
-            '成长': ['学习', '进化', '发展', '提升', '突破', '超越'],
-            '连接': ['交流', '合作', '社区', '关系', '网络', '共生'],
-            '创造': ['创新', '设计', '艺术', '表达', '想象力', '创意'],
-            '认知': ['理解', '知识', '智慧', '洞察', '反思', '意识'],
-            '技术': ['算法', '系统', '架构', '优化', '自动化', '智能化'],
-            '自然': ['生长', '循环', '平衡', '生态', '多样性', '适应'],
-            '社会': ['组织', '文化', '价值', '规范', '信任', '协作'],
-        }
-        
-        for category, names in categories.items():
-            for name in names:
-                concept = Concept(
-                    name=name,
-                    category=category,
-                    tags=[category],
-                    related_concepts={}  # 初始化关联概念
-                )
-                self.concepts[name] = concept
-        
-        # 添加概念之间的关联
-        for concept in self.concepts.values():
-            related_names = random.sample(list(self.concepts.keys()), 3)
-            for related_name in related_names:
-                if related_name != concept.name:
-                    concept.related_concepts[related_name] = random.uniform(0.1, 0.5)
-    
-    def get_concept(self, name: str) -> Optional[Concept]:
-        return self.concepts.get(name)
     
     def add_concept(self, concept: Concept):
         self.concepts[concept.name] = concept
     
-    def to_dict(self) -> dict:
-        return {name: concept.to_dict() for name, concept in self.concepts.items()}
+    def get_concept(self, name: str) -> Optional[Concept]:
+        return self.concepts.get(name)
     
-    @classmethod
-    def from_dict(cls, data: dict) -> 'ConceptNetwork':
-        network = cls()
-        network.concepts = {name: Concept.from_dict(concept_data) for name, concept_data in data.items()}
-        return network
+    def get_related_concepts(self, name: str, top_n: int = 5) -> List[Tuple[str, float]]:
+        concept = self.get_concept(name)
+        if not concept:
+            return []
+        
+        related = sorted(concept.related_concepts.items(), key=lambda x: x[1], reverse=True)
+        return related[:top_n]
 
 
 def main():
-    # 测试概念网络
+    # 示例用法
     network = ConceptNetwork()
-    print(f"概念数量: {len(network.concepts)}")
     
-    # 测试创意项目
+    concept1 = Concept(
+        name="人工智能",
+        description="AI技术",
+        tags=["技术", "AI"],
+        related_concepts={"机器学习": 0.8, "深度学习": 0.9}
+    )
+    network.add_concept(concept1)
+    
     project = CreativeProject(
-        id="test_project",
-        name="测试项目",
-        description="这是一个测试用的创意项目"
+        id="proj1",
+        name="AI创新项目",
+        description="探索AI新应用",
+        goal="开发新的AI应用",
+        constraints=[Constraint(name="资源限制", description="有限的计算资源", severity=0.7)]
     )
-    print(project.to_dict())
     
-    # 测试想法
     idea = Idea(
-        id="test_idea",
-        title="测试想法",
-        description="这是一个测试用的想法"
+        id="idea1",
+        title="智能助手",
+        description="基于AI的智能个人助手",
+        novelty=0.6,
+        value=0.8,
+        feasibility=0.7,
+        related_concepts=["人工智能", "自然语言处理"]
     )
-    print(idea.to_dict())
+    project.add_idea(idea)
+    
+    print(json.dumps(project.to_dict(), indent=2, ensure_ascii=False))
+
 
 if __name__ == "__main__":
     main()
