@@ -92,8 +92,8 @@ def safe_json_loads(json_str: str, default: Any = None) -> Any:
     """
     try:
         return json.loads(json_str)
-    except (json.JSONDecodeError, TypeError, ValueError):
-        logger.warning(f"JSON解析失败: {json_str}")
+    except (json.JSONDecodeError, TypeError, ValueError) as e:
+        logger.warning(f"JSON解析失败: {json_str}, 错误: {e}")
         return default
 
 
@@ -170,6 +170,7 @@ def batch_process(items: List, func: Callable, batch_size: int = 10) -> List:
             results.extend(batch_results)
         except Exception as e:
             logger.error(f"批量处理失败: {e}")
+            # 考虑添加失败重试或单独处理失败项
     return results
 
 
@@ -201,12 +202,12 @@ def retry(max_attempts: int = 3, delay: float = 1.0, backoff: float = 2.0):
                 except Exception as e:
                     attempts += 1
                     last_exception = e
-                    logger.warning(f"操作失败，重试中... ({attempts}/{max_attempts})")
+                    logger.warning(f"操作失败，重试中... ({attempts}/{max_attempts}), 错误: {e}")
                     if attempts < max_attempts:
                         time.sleep(current_delay)
                         current_delay *= backoff
             
-            logger.error(f"操作失败，重试次数达到上限: {max_attempts}")
+            logger.error(f"操作失败，重试次数达到上限: {max_attempts}, 最后错误: {last_exception}")
             raise last_exception
         return wrapper
     return decorator
@@ -255,8 +256,8 @@ def format_datetime(dt: Union[datetime, str], fmt: str = '%Y-%m-%d %H:%M:%S') ->
     if isinstance(dt, str):
         try:
             dt = datetime.fromisoformat(dt.replace('Z', '+00:00'))
-        except ValueError:
-            logger.warning(f"日期时间解析失败: {dt}")
+        except ValueError as e:
+            logger.warning(f"日期时间解析失败: {dt}, 错误: {e}")
             return dt  # 如果解析失败，返回原字符串
     return dt.strftime(fmt)
 
@@ -280,71 +281,53 @@ def read_file(file_path: str, default: str = '') -> str:
         with open(file_path, 'r', encoding='utf-8') as f:
             return f.read()
     except Exception as e:
-        logger.error(f"读取文件失败: {e}")
+        logger.error(f"读取文件失败: {file_path}, 错误: {e}")
         return default
 
 
-def mask_sensitive_info(data: str, sensitive_patterns: List[str]) -> str:
+def write_file(file_path: str, content: str) -> bool:
     """
-    遮蔽敏感信息
+    安全地写入文件内容
     
     Args:
-        data: 待处理的数据
-        sensitive_patterns: 敏感信息模式列表
+        file_path: 文件路径
+        content: 待写入的内容
     
     Returns:
-        str: 遮蔽后的数据
+        bool: 操作是否成功
     
     Examples:
-        >>> mask_sensitive_info("包含敏感信息的数据", ["敏感信息"])
-        '包含******的数据'
+        >>> write_file('example.txt', 'Hello, World!')
+        True
     """
-    for pattern in sensitive_patterns:
-        data = re.sub(pattern, '******', data)
-    return data
+    try:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        return True
+    except Exception as e:
+        logger.error(f"写入文件失败: {file_path}, 错误: {e}")
+        return False
 
 
-# 添加新的实用功能：验证Ed25519签名
-try:
-    import nacl.signing
-    import nacl.exceptions
-
-    def verify_ed25519_signature(
-        message: bytes, 
-        signature: bytes, 
-        public_key: bytes
-    ) -> bool:
-        """
-        验证Ed25519签名
-        
-        Args:
-            message: 原始消息
-            signature: 签名
-            public_key: 公钥
-        
-        Returns:
-            bool: 签名是否有效
-        
-        Examples:
-            >>> verify_ed25519_signature(b'message', b'signature', b'public_key')
-            True/False
-        """
-        try:
-            verify_key = nacl.signing.VerifyKey(public_key)
-            verify_key.verify(message, signature)
-            return True
-        except nacl.exceptions.BadSignatureError:
-            logger.warning("Ed25519签名验证失败: 无效的签名")
-            return False
-        except Exception as e:
-            logger.error(f"Ed25519签名验证失败: {e}")
-            return False
-except ImportError:
-    logger.error("缺少必要的库：pynacl。请安装后重试。")
-    def verify_ed25519_signature(
-        message: bytes, 
-        signature: bytes, 
-        public_key: bytes
-    ) -> bool:
-        logger.error("Ed25519签名验证失败：未安装pynacl库")
+def edit_file(file_path: str, edit_func: Callable[[str], str]) -> bool:
+    """
+    编辑文件内容
+    
+    Args:
+        file_path: 文件路径
+        edit_func: 编辑函数，接受原内容，返回新内容
+    
+    Returns:
+        bool: 操作是否成功
+    
+    Examples:
+        >>> edit_file('example.txt', lambda content: content + 'Appended content')
+        True
+    """
+    try:
+        content = read_file(file_path)
+        new_content = edit_func(content)
+        return write_file(file_path, new_content)
+    except Exception as e:
+        logger.error(f"编辑文件失败: {file_path}, 错误: {e}")
         return False
