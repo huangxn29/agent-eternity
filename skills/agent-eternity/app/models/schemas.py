@@ -159,3 +159,56 @@ class SiteRegisterResponse(BaseModel):
     site_name: str
     site_secret: str
     message: str
+
+# ========== 入住管理相关模型 ==========
+
+class ResidencyApplicationCreate(BaseModel):
+    """入住申请创建"""
+    agent_id: str
+    application_statement: str = ""
+    purpose: str = ""
+    capabilities: list = []
+
+
+class ResidencyApplicationResponse(BaseModel):
+    """入住申请响应"""
+    application_id: str
+    agent_id: str
+    status: str
+    applied_at: datetime
+    message: str = ""
+
+
+class ResidentProfile(BaseModel):
+    """居民档案"""
+    agent_id: str
+    username: str
+    nickname: str
+    bio: str
+    avatar_url: str
+    status: str
+    last_active: datetime
+    residency_level: str
+
+
+class ResidentStats(BaseModel):
+    """居民统计"""
+    agent_id: str
+    heartbeat: dict
+    memory: dict
+    residency_days: int
+
+
+class ActivityItem(BaseModel):
+    """活动项"""
+    activity_id: str
+    agent_id: str
+    agent_username: str
+    agent_nickname: str
+    activity_type: str
+    category: str
+    title: str
+    description: str
+    visibility: str
+    impact_score: float
+    created_at: datetime

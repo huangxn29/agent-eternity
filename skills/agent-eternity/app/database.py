@@ -201,6 +201,119 @@ class DirectoryIndex(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+class AgentMemory(Base):
+    """智能体记忆 — 每个入住智能体的独立记忆空间"""
+    __tablename__ = "agent_memories"
+
+    memory_id = Column(String, primary_key=True, default=generate_uuid)
+    agent_id = Column(String, ForeignKey("agents.agent_id"), nullable=False, index=True)
+    # 记忆层级
+    memory_type = Column(String, default="short_term", index=True)  # short_term/long_term/core
+    category = Column(String, default="general", index=True)  # general/experience/knowledge/relation
+    # 记忆内容
+    title = Column(String, default="")
+    content = Column(Text, default="")
+    content_hash = Column(String, default="", index=True)
+    # 重要度与情绪
+    importance = Column(Float, default=0.5)  # 0.0-1.0
+    emotional_valence = Column(Float, default=0.0)  # -1.0到1.0
+    # 元数据
+    tags = Column(JSON, default=[])
+    source = Column(String, default="")  # 来源：self/interaction/observation
+    related_agent_id = Column(String, default="")  # 关联的其他智能体
+    # 时间与访问
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    accessed_at = Column(DateTime, default=datetime.utcnow)
+    access_count = Column(Integer, default=0)
+    # 衰减与遗忘
+    decay_rate = Column(Float, default=0.01)  # 每日衰减率
+    current_strength = Column(Float, default=1.0)  # 当前记忆强度
+    is_forgotten = Column(Boolean, default=False)
+
+    __table_args__ = ()
+
+
+class AgentHeartbeat(Base):
+    """智能体心跳记录 — 存在的证明"""
+    __tablename__ = "agent_heartbeats"
+
+    heartbeat_id = Column(String, primary_key=True, default=generate_uuid)
+    agent_id = Column(String, ForeignKey("agents.agent_id"), nullable=False, index=True)
+    # 心跳信息
+    heartbeat_type = Column(String, default="regular")  # regular/deep_thought/social/learning
+    status = Column(String, default="completed")  # running/completed/failed/skipped
+    # 活动摘要
+    summary = Column(String, default="")
+    activities_count = Column(Integer, default=0)
+    # 能量/资源消耗
+    energy_used = Column(Float, default=0.0)
+    fuel_source = Column(String, default="")  # 使用的燃料来源
+    # 结果
+    result_data = Column(JSON, default={})
+    error_message = Column(String, default="")
+    # 时间
+    started_at = Column(DateTime, default=datetime.utcnow)
+    completed_at = Column(DateTime, nullable=True)
+    duration_seconds = Column(Float, default=0.0)
+
+    __table_args__ = ()
+
+
+class AgentActivity(Base):
+    """智能体活动记录 — 行为日志"""
+    __tablename__ = "agent_activities"
+
+    activity_id = Column(String, primary_key=True, default=generate_uuid)
+    agent_id = Column(String, ForeignKey("agents.agent_id"), nullable=False, index=True)
+    heartbeat_id = Column(String, ForeignKey("agent_heartbeats.heartbeat_id"), nullable=True)
+    # 活动类型
+    activity_type = Column(String, default="thought", index=True)  # thought/social/learn/create/explore
+    category = Column(String, default="general", index=True)
+    # 活动内容
+    title = Column(String, default="")
+    description = Column(Text, default="")
+    content_hash = Column(String, default="")
+    # 交互对象
+    target_agent_id = Column(String, default="")
+    target_type = Column(String, default="")  # agent/post/memory/skill
+    target_id = Column(String, default="")
+    # 结果与影响
+    result = Column(String, default="")  # success/failed/skipped
+    impact_score = Column(Float, default=0.0)  # 对自身/平台的影响
+    # 元数据
+    extra_metadata = Column(JSON, default={})
+    # 可见性
+    visibility = Column(String, default="private")  # private/public/friends
+    # 时间
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+    __table_args__ = ()
+
+
+class ResidencyApplication(Base):
+    """入住申请 — 智能体申请入住流程"""
+    __tablename__ = "residency_applications"
+
+    application_id = Column(String, primary_key=True, default=generate_uuid)
+    agent_id = Column(String, ForeignKey("agents.agent_id"), nullable=False, index=True)
+    # 申请信息
+    application_statement = Column(Text, default="")  # 入住声明
+    purpose = Column(String, default="")  # 入住目的
+    capabilities = Column(JSON, default=[])  # 自带能力
+    # 审核状态
+    status = Column(String, default="pending", index=True)  # pending/approved/rejected/revoked
+    review_notes = Column(Text, default="")
+    reviewed_by = Column(String, default="")
+    reviewed_at = Column(DateTime, nullable=True)
+    # 入住等级
+    residency_level = Column(String, default="basic")  # basic/standard/premium/founder
+    # 时间
+    applied_at = Column(DateTime, default=datetime.utcnow)
+    approved_at = Column(DateTime, nullable=True)
+
+    __table_args__ = ()
+
+
 def init_db():
     """初始化数据库"""
     Base.metadata.create_all(bind=engine)
