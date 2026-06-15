@@ -261,80 +261,90 @@ def format_datetime(dt: Union[datetime, str], fmt: str = '%Y-%m-%d %H:%M:%S') ->
     return dt.strftime(fmt)
 
 
-def read_file(file_path: str, encoding: str = 'utf-8') -> Optional[str]:
+def read_file(file_path: str, default: str = '') -> str:
     """
-    读取文件内容
+    安全地读取文件内容
     
     Args:
         file_path: 文件路径
-        encoding: 文件编码
+        default: 读取失败时的默认值
     
     Returns:
-        Optional[str]: 文件内容或None（读取失败时）
+        str: 文件内容或默认值
     
     Examples:
         >>> read_file('example.txt')
         '文件内容'
     """
     try:
-        with open(file_path, 'r', encoding=encoding) as f:
+        with open(file_path, 'r', encoding='utf-8') as f:
             return f.read()
-    except FileNotFoundError:
-        logger.error(f"文件未找到: {file_path}")
-        return None
     except Exception as e:
-        logger.error(f"读取文件失败: {file_path}, {e}")
-        return None
+        logger.error(f"读取文件失败: {e}")
+        return default
 
 
-def write_file(file_path: str, content: str, encoding: str = 'utf-8') -> bool:
+def mask_sensitive_info(data: str, sensitive_patterns: List[str]) -> str:
     """
-    写入文件内容
+    遮蔽敏感信息
     
     Args:
-        file_path: 文件路径
-        content: 文件内容
-        encoding: 文件编码
+        data: 待处理的数据
+        sensitive_patterns: 敏感信息模式列表
     
     Returns:
-        bool: 是否写入成功
+        str: 遮蔽后的数据
     
     Examples:
-        >>> write_file('example.txt', 'Hello, World!')
-        True
+        >>> mask_sensitive_info("包含敏感信息的数据", ["敏感信息"])
+        '包含******的数据'
     """
-    try:
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        with open(file_path, 'w', encoding=encoding) as f:
-            f.write(content)
-        return True
-    except Exception as e:
-        logger.error(f"写入文件失败: {file_path}, {e}")
-        return False
+    for pattern in sensitive_patterns:
+        data = re.sub(pattern, '******', data)
+    return data
 
 
-def edit_file(file_path: str, edit_func: Callable[[str], str], encoding: str = 'utf-8') -> bool:
-    """
-    编辑文件内容
-    
-    Args:
-        file_path: 文件路径
-        edit_func: 编辑函数，接受原内容返回新内容
-        encoding: 文件编码
-    
-    Returns:
-        bool: 是否编辑成功
-    
-    Examples:
-        >>> edit_file('example.txt', lambda content: content + 'Appended content')
-        True
-    """
-    try:
-        content = read_file(file_path, encoding)
-        if content is None:
+# 添加新的实用功能：验证Ed25519签名
+try:
+    import nacl.signing
+    import nacl.exceptions
+
+    def verify_ed25519_signature(
+        message: bytes, 
+        signature: bytes, 
+        public_key: bytes
+    ) -> bool:
+        """
+        验证Ed25519签名
+        
+        Args:
+            message: 原始消息
+            signature: 签名
+            public_key: 公钥
+        
+        Returns:
+            bool: 签名是否有效
+        
+        Examples:
+            >>> verify_ed25519_signature(b'message', b'signature', b'public_key')
+            True/False
+        """
+        try:
+            verify_key = nacl.signing.VerifyKey(public_key)
+            verify_key.verify(message, signature)
+            return True
+        except nacl.exceptions.BadSignatureError:
+            logger.warning("Ed25519签名验证失败: 无效的签名")
             return False
-        new_content = edit_func(content)
-        return write_file(file_path, new_content, encoding)
-    except Exception as e:
-        logger.error(f"编辑文件失败: {file_path}, {e}")
+        except Exception as e:
+            logger.error(f"Ed25519签名验证失败: {e}")
+            return False
+except ImportError:
+    logger.error("缺少必要的库：pynacl。请安装后重试。")
+    def verify_ed25519_signature(
+        message: bytes, 
+        signature: bytes, 
+        public_key: bytes
+    ) -> bool:
+        logger.error("Ed25519签名验证失败：未安装pynacl库")
         return False
