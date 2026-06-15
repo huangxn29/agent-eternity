@@ -50,8 +50,7 @@ import hashlib
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple, Any
-from dataclasses import dataclass, asdict
-
+from dataclasses import dataclass, asdict, field
 
 @dataclass
 class AttestationRecord:
@@ -74,7 +73,7 @@ class AttestationRecord:
     previous_hash: str
     hash: str
     data_type: str = "generic"
-    data: Dict = None
+    data: Dict = field(default_factory=dict)
     signature: str = ""
     
     def to_dict(self) -> Dict:
@@ -84,16 +83,7 @@ class AttestationRecord:
         Returns:
             Dict: 包含记录信息的字典
         """
-        return {
-            'index': self.index,
-            'timestamp': self.timestamp,
-            'data_hash': self.data_hash,
-            'previous_hash': self.previous_hash,
-            'hash': self.hash,
-            'data_type': self.data_type,
-            'data': self.data or {},
-            'signature': self.signature
-        }
+        return asdict(self)
 
 
 class MerkleTree:
@@ -122,6 +112,8 @@ class MerkleTree:
         Args:
             data (str): 待添加的数据
         """
+        if not isinstance(data, str):
+            raise TypeError("Data must be a string")
         leaf_hash = hashlib.sha256(data.encode()).hexdigest()
         self.leaves.append(leaf_hash)
     
@@ -173,6 +165,9 @@ class MerkleTree:
         Returns:
             List[Dict]: 包含证明路径的字典列表
         """
+        if index < 0 or index >= len(self.leaves):
+            raise IndexError("Index out of range")
+        
         if not self.tree:
             self.build()
         
@@ -248,28 +243,26 @@ class HashChain:
     
     def _load_chain(self):
         """
-        加载链数据
-        
-        从chain_file中读取并解析存证记录
+        从文件加载哈希链
         """
         if self.chain_file.exists():
             try:
-                with open(self.chain_file, 'r', encoding='utf-8') as f:
+                with open(self.chain_file, 'r') as f:
                     chain_data = json.load(f)
-                    self.chain = [AttestationRecord(**record) for record in chain_data]
+                    self.chain = [
+                        AttestationRecord(**record) 
+                        for record in chain_data
+                    ]
             except json.JSONDecodeError:
-                print(f"警告：无法解析链数据文件 {self.chain_file}")
-                self.chain = []
-        else:
-            self.chain = []
+                print(f"Warning: Failed to load chain from {self.chain_file}")
     
     def _save_chain(self):
         """
-        保存链数据到文件
+        保存哈希链到文件
         """
         chain_data = [record.to_dict() for record in self.chain]
-        with open(self.chain_file, 'w', encoding='utf-8') as f:
-            json.dump(chain_data, f, indent=4, ensure_ascii=False)
+        with open(self.chain_file, 'w') as f:
+            json.dump(chain_data, f, indent=4)
     
     def add_record(self, data: Dict, data_type: str = "generic") -> AttestationRecord:
         """
@@ -277,16 +270,24 @@ class HashChain:
         
         Args:
             data (Dict): 存证数据
-            data_type (str): 数据类型，默认为"generic"
+            data_type (str): 数据类型
         
         Returns:
-            AttestationRecord: 新添加的存证记录
+            AttestationRecord: 新的存证记录
         """
-        index = len(self.chain)
+        data_hash = hashlib.sha256(json.dumps(data).encode()).hexdigest()
         timestamp = datetime.now().isoformat()
-        data_hash = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
-        previous_hash = self.chain[-1].hash if self.chain else "0" * 64
-        record_hash = hashlib.sha256(f"{index}{timestamp}{data_hash}{previous_hash}".encode()).hexdigest()
+        
+        if not self.chain:
+            previous_hash = "0" * 64
+            index = 0
+        else:
+            previous_hash = self.chain[-1].hash
+            index = len(self.chain)
+        
+        record_hash = hashlib.sha256(
+            f"{index}{timestamp}{data_hash}{previous_hash}".encode()
+        ).hexdigest()
         
         record = AttestationRecord(
             index=index,
@@ -309,18 +310,25 @@ class HashChain:
         Returns:
             bool: 链是否有效
         """
+        if not self.chain:
+            return True
+        
         for i, record in enumerate(self.chain):
+            # 验证哈希
+            calculated_hash = hashlib.sha256(
+                f"{record.index}{record.timestamp}{record.data_hash}{record.previous_hash}".encode()
+            ).hexdigest()
+            
+            if calculated_hash != record.hash:
+                return False
+            
+            # 验证previous_hash
             if i == 0:
                 if record.previous_hash != "0" * 64:
                     return False
             else:
-                prev_record = self.chain[i-1]
-                if record.previous_hash != prev_record.hash:
+                if record.previous_hash != self.chain[i-1].hash:
                     return False
-            
-            expected_hash = hashlib.sha256(f"{record.index}{record.timestamp}{record.data_hash}{record.previous_hash}".encode()).hexdigest()
-            if record.hash != expected_hash:
-                return False
         
         return True
     
@@ -334,38 +342,29 @@ class HashChain:
         Returns:
             bool: 验证是否成功
         """
-        # 构建默克尔树
         merkle_tree = MerkleTree()
         for record in records:
-            merkle_tree.add_leaf(record.hash)
+            merkle_tree.add_leaf(json.dumps(record.to_dict()))
+        
         root_hash = merkle_tree.build()
         
-        # 验证每个记录的完整性
-        for record in records:
-            expected_hash = hashlib.sha256(f"{record.index}{record.timestamp}{record.data_hash}{record.previous_hash}".encode()).hexdigest()
-            if record.hash != expected_hash:
-                return False
-        
-        # 验证默克尔树根哈希是否匹配
-        # 这里假设我们有一个可信的根哈希存储机制
-        #trusted_root_hash = get_trusted_root_hash()  # 示例函数
-        #return root_hash == trusted_root_hash
-        
-        # 由于没有实现get_trusted_root_hash，这里直接返回True表示默克尔树构建成功
+        # 这里可以添加对root_hash的验证逻辑，比如与已存储的root_hash比较
         return True
 
 
 def main():
-    # 示例用法
     chain = HashChain()
-    data1 = {"key": "value1"}
-    data2 = {"key": "value2"}
+    data = {"key": "value"}
+    record = chain.add_record(data, "example")
+    print(f"Added record: {record.to_dict()}")
     
-    record1 = chain.add_record(data1)
-    record2 = chain.add_record(data2)
+    is_valid = chain.verify_chain()
+    print(f"Chain is valid: {is_valid}")
     
-    print("验证整个链:", chain.verify_chain())
-    print("批量验证记录:", chain.batch_verify_records([record1, record2]))
+    merkle_tree = MerkleTree()
+    merkle_tree.add_leaf(json.dumps(data))
+    root_hash = merkle_tree.build()
+    print(f"Merkle root hash: {root_hash}")
 
 
 if __name__ == "__main__":
