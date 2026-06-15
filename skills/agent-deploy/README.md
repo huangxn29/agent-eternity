@@ -141,3 +141,71 @@ python -m pytest test_skill.py -v
 ## 许可证
 
 MIT License
+
+## v3.0 智能部署与迁移系统
+
+### 核心升级
+
+**智能部署引擎** - 全自动环境检测与适配
+- 系统环境自动检测（OS/Python/CPU/内存/磁盘）
+- 前置条件智能校验与依赖安装
+- 多平台适配（local/docker/cloud/vps）
+- 一键部署，零配置启动
+
+**智能迁移系统** - Agent无损迁移
+- 全量迁移：身份+记忆+配置+数据完整迁移
+- 增量迁移：仅同步变更数据，高效快速
+- 迁移验证：哈希校验确保数据完整性
+- 版本回滚：支持一键回滚到上一版本
+
+**健康检查引擎** - 六维健康度评估
+- directory_exists: 目录结构完整性
+- config_valid: 配置文件有效性
+- identity_valid: 身份数据完整性
+- memory_present: 记忆系统可用性
+- disk_space: 磁盘空间充足度
+- logs_present: 日志系统正常性
+
+**部署历史管理** - 完整部署追踪
+- 部署记录持久化存储
+- 版本对比与差异分析
+- 部署状态实时监控
+- 失败自动重试与回滚
+
+### 快速使用
+
+```python
+from deploy_engine_v3 import DeployEngineV3
+
+# 初始化引擎
+engine = DeployEngineV3(platform="local")
+
+# 部署Agent
+result = engine.deploy(
+    agent_name="my-agent",
+    source_path="/path/to/agent",
+    target_path="/path/to/deploy"
+)
+
+# 健康检查
+health = engine.health_check(target_path)
+
+# 迁移
+migrate_result = engine.migrate(
+    source_path="/path/to/agent",
+    target_path="/path/to/new/location",
+    mode="full"  # full/incremental
+)
+```
+
+### 架构设计
+
+```
+DeployEngineV3
+├── EnvironmentDetector  # 环境检测器
+├── DependencyChecker    # 依赖校验器
+├── HealthChecker        # 健康检查器
+├── MigrationEngine      # 迁移引擎
+├── RollbackManager      # 回滚管理器
+└── DeployHistory        # 部署历史
+```

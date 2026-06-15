@@ -1,0 +1,12 @@
+[
+  {
+    "timestamp": 1781530278.1112006,
+    "type": "deploy",
+    "agent_name": "test-agent",
+    "agent_id": "68b4bf359dd97fe9",
+    "install_path": "/tmp/test_agent_v3",
+    "success": true,
+    "health_score": 1.0,
+    "duration": 0.2916991710662842
+  }
+]
