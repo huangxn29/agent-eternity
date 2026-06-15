@@ -33,6 +33,7 @@ from typing import Dict, List, Optional
 from pathlib import Path
 from enum import Enum
 
+# 配置日志
 logging.basicConfig(
     level=logging.INFO,
     format='[%(asctime)s] %(levelname)s [%(name)s] %(message)s',
@@ -101,12 +102,15 @@ class ReflectionEntry:
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     
     def to_dict(self) -> dict:
-        d = asdict(self)
-        return d
+        return asdict(self)
     
     @classmethod
     def from_dict(cls, data: dict) -> 'ReflectionEntry':
-        return cls(**data)
+        try:
+            return cls(**data)
+        except TypeError as e:
+            logger.error(f"Error creating ReflectionEntry from dict: {e}")
+            raise
 
 
 @dataclass
@@ -128,7 +132,11 @@ class Pattern:
     
     @classmethod
     def from_dict(cls, data: dict) -> 'Pattern':
-        return cls(**data)
+        try:
+            return cls(**data)
+        except TypeError as e:
+            logger.error(f"Error creating Pattern from dict: {e}")
+            raise
 
 
 @dataclass
@@ -157,7 +165,11 @@ class GrowthMetric:
     
     @classmethod
     def from_dict(cls, data: dict) -> 'GrowthMetric':
-        return cls(**data)
+        try:
+            return cls(**data)
+        except TypeError as e:
+            logger.error(f"Error creating GrowthMetric from dict: {e}")
+            raise
 
 
 @dataclass
@@ -170,12 +182,15 @@ class ReflectionQuestion:
     prompt_hint: str = ""  # 提示如何回答这个问题
     
     def to_dict(self) -> dict:
-        d = asdict(self)
-        return d
+        return asdict(self)
     
     @classmethod
     def from_dict(cls, data: dict) -> 'ReflectionQuestion':
-        return cls(**data)
+        try:
+            return cls(**data)
+        except TypeError as e:
+            logger.error(f"Error creating ReflectionQuestion from dict: {e}")
+            raise
 
 
 # ============================================================
@@ -228,28 +243,15 @@ REFLECTION_TEMPLATES = {
             category="分析",
             depth=ReflectionDepth.ANALYSIS
         ),
+        # ... 其他问题
     ],
-    # 可以继续添加其他类型的反思模板
+    # ... 其他类型的反思模板
 }
 
 def main():
     # 示例用法
-    daily_reflection = ReflectionEntry(
-        id="ref1",
-        reflection_type=ReflectionType.DAILY,
-        title="今日反思",
-        content="今天...",
-        depth=ReflectionDepth.ANALYSIS,
-        learning_type=LearningType.SINGLE_LOOP,
-        key_insights=["洞察1", "洞察2"],
-        lessons_learned=["教训1"],
-        action_items=["行动项1"],
-    )
-    
-    print(daily_reflection.to_dict())
-
-    # 测试反思模板
-    for question in REFLECTION_TEMPLATES[ReflectionType.DAILY]:
+    daily_reflection = REFLECTION_TEMPLATES[ReflectionType.DAILY]
+    for question in daily_reflection:
         print(question.question)
 
 if __name__ == "__main__":
