@@ -1,0 +1,152 @@
+{
+  "foundation_upgrade": {
+    "template_id": "foundation_upgrade",
+    "name": "基础层升级模板",
+    "description": "身份/记忆/存证等基础模块的标准化升级流程",
+    "target_category": "foundation",
+    "steps": [
+      {
+        "step": 1,
+        "name": "现状评估",
+        "description": "评估当前模块成熟度和功能缺口"
+      },
+      {
+        "step": 2,
+        "name": "方案设计",
+        "description": "设计升级方案和新功能列表"
+      },
+      {
+        "step": 3,
+        "name": "核心实现",
+        "description": "实现核心功能代码"
+      },
+      {
+        "step": 4,
+        "name": "集成测试",
+        "description": "与现有系统集成测试"
+      },
+      {
+        "step": 5,
+        "name": "文档更新",
+        "description": "更新SKILL.md和README.md"
+      },
+      {
+        "step": 6,
+        "name": "提交发布",
+        "description": "提交代码并记录进化"
+      }
+    ],
+    "estimated_effort": 2.0,
+    "expected_maturity_gain": 0.1
+  },
+  "core_upgrade": {
+    "template_id": "core_upgrade",
+    "name": "核心层升级模板",
+    "description": "进化/调度/部署等核心模块的升级流程",
+    "target_category": "core",
+    "steps": [
+      {
+        "step": 1,
+        "name": "元能力评估",
+        "description": "评估当前元能力水平"
+      },
+      {
+        "step": 2,
+        "name": "自举设计",
+        "description": "设计能够自我增强的升级方案"
+      },
+      {
+        "step": 3,
+        "name": "核心实现",
+        "description": "实现核心引擎升级"
+      },
+      {
+        "step": 4,
+        "name": "自验证",
+        "description": "使用新引擎验证自身"
+      },
+      {
+        "step": 5,
+        "name": "文档与提交",
+        "description": "更新文档并提交"
+      }
+    ],
+    "estimated_effort": 2.5,
+    "expected_maturity_gain": 0.08
+  },
+  "platform_upgrade": {
+    "template_id": "platform_upgrade",
+    "name": "平台层升级模板",
+    "description": "家园/世界等平台模块的升级流程",
+    "target_category": "platform",
+    "steps": [
+      {
+        "step": 1,
+        "name": "平台现状评估",
+        "description": "评估平台当前能力和用户体验"
+      },
+      {
+        "step": 2,
+        "name": "生态设计",
+        "description": "设计生态扩展和新功能"
+      },
+      {
+        "step": 3,
+        "name": "API实现",
+        "description": "实现新的API端点"
+      },
+      {
+        "step": 4,
+        "name": "UI/UX优化",
+        "description": "优化用户界面和体验"
+      },
+      {
+        "step": 5,
+        "name": "集成测试",
+        "description": "全链路集成测试"
+      },
+      {
+        "step": 6,
+        "name": "发布上线",
+        "description": "发布并记录"
+      }
+    ],
+    "estimated_effort": 3.0,
+    "expected_maturity_gain": 0.12
+  },
+  "ecosystem_upgrade": {
+    "template_id": "ecosystem_upgrade",
+    "name": "生态层升级模板",
+    "description": "社交/运营等生态模块的升级流程",
+    "target_category": "ecosystem",
+    "steps": [
+      {
+        "step": 1,
+        "name": "生态现状分析",
+        "description": "分析当前生态状态和增长机会"
+      },
+      {
+        "step": 2,
+        "name": "增长策略设计",
+        "description": "设计增长飞轮和用户激励"
+      },
+      {
+        "step": 3,
+        "name": "功能实现",
+        "description": "实现新的生态功能"
+      },
+      {
+        "step": 4,
+        "name": "效果验证",
+        "description": "验证增长效果"
+      },
+      {
+        "step": 5,
+        "name": "迭代优化",
+        "description": "根据反馈优化"
+      }
+    ],
+    "estimated_effort": 1.5,
+    "expected_maturity_gain": 0.08
+  }
+}

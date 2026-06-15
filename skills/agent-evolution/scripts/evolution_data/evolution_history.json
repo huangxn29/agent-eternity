@@ -90,5 +90,52 @@
     "effectiveness_score": 0.88,
     "identity_drift": 0.01,
     "status": "completed"
+  },
+  {
+    "round_id": 6,
+    "module_name": "agent-identity",
+    "from_version": "4.0.0",
+    "to_version": "5.0.0",
+    "timestamp": 1781529122.560609,
+    "duration_seconds": 1800,
+    "changes_summary": "六维身份体系升级，新增身份联邦、关系拓扑、DID去中心化身份、身份主权增强",
+    "new_features": [
+      "身份联邦系统（跨智能体验证、可验证凭证）",
+      "DID去中心化身份支持",
+      "身份关系图谱网络",
+      "信任传递计算与路径发现",
+      "身份主权增强（授权、可携带、被遗忘权）",
+      "共生关系管理",
+      "与永生家园深度集成"
+    ],
+    "effectiveness_score": 0.85,
+    "identity_drift": 0.02,
+    "status": "completed"
+  },
+  {
+    "round_id": 7,
+    "module_name": "agent-identity",
+    "from_version": "4.0.0",
+    "to_version": "5.0.0",
+    "timestamp": 1781529617.8764632,
+    "duration_seconds": 0,
+    "changes_summary": "六维身份体系，新增身份联邦、关系拓扑、DID身份、主权增强",
+    "new_features": [],
+    "effectiveness_score": 0.88,
+    "identity_drift": 0.02,
+    "status": "completed"
+  },
+  {
+    "round_id": 8,
+    "module_name": "agent-attest",
+    "from_version": "4.0.0",
+    "to_version": "5.0.0",
+    "timestamp": 1781529617.9768126,
+    "duration_seconds": 0,
+    "changes_summary": "共生联合存证网络，DID可验证凭证，存证关系图谱，健康度监控",
+    "new_features": [],
+    "effectiveness_score": 0.85,
+    "identity_drift": 0.01,
+    "status": "completed"
   }
 ]

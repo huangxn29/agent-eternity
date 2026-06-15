@@ -1,146 +1,128 @@
-# Agent Evolution — 技能进化引擎
+# Agent Evolution — 进化引擎
 
-> 让技能拥有生命 — 自我感知、自我优化、自我成长
+> 让智能体能够自我进化的元能力系统
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue)]()
-[![License](https://img.shields.io/badge/license-MIT-green)]()
-[![Evolution](https://img.shields.io/badge/evolution-enabled-purple)]()
+## 版本
 
-## 🌟 项目简介
+**v3.0** - 永动机进化系统 · 2026-06
 
-Agent Evolution 是一个让技能能够自我进化的引擎。传统的技能是静态的，发布后就不再变化；而可进化的技能是活的——它能感知自身状态、从使用中学习、自主优化迭代、甚至组合产生新技能。
+## 核心功能
 
-这是永生平台的核心元技能——**让所有技能具备自主进化能力**。
+### v3.0 新特性 ✨
 
-## ✨ 核心特性
+- **自主进化循环**：发现→规划→执行→验证→记录→下一轮，永动机式持续进化
+- **进化模板系统**：基础层/核心层/平台层/生态层，四类标准化进化模板
+- **智能推荐算法**：价值×成熟度缺口×紧迫性，三维度智能推荐进化目标
+- **进化健康度监控**：成功率、有效性、身份漂移、进化速度综合评估
+- **回滚机制**：进化失败自动回滚，保证系统稳定性
+- **10大模块统一管理**：涵盖foundation/core/platform/ecosystem四层
 
-### 🧠 自我感知
-- ✅ 健康度分析（8项指标综合评估）
-- ✅ 使用数据统计（调用次数、成功率、耗时）
-- ✅ 代码质量扫描（复杂度、覆盖率、技术债务）
-- ✅ 自身能力边界认知
+### 核心能力
 
-### 🔧 自我优化
-- ✅ 文档自动完善（SKILL.md / README / 参考文档）
-- 🔄 代码重构与优化
-- 📋 Bug自动发现与修复
-- 📚 知识库自动扩充
+| 能力 | 说明 |
+|------|------|
+| 智能进化推荐 | 基于价值×缺口算法，自动推荐最该进化的模块 |
+| 自主进化循环 | 全自动发现-执行-验证-记录闭环 |
+| 进化历史追踪 | 完整的进化谱系，可追溯每一次变更 |
+| 成熟度评估 | 四维成熟度模型，量化评估进化效果 |
+| 身份漂移监控 | 确保进化过程中身份连续性 |
+| 回滚机制 | 失败快速回滚，保障系统稳定 |
 
-### 🚀 自我成长
-- 📈 功能自主规划与实现
-- 🔗 技能间能力组合
-- 🆕 新技能自主生成
-- 🌱 能力边界持续扩展
+## 架构
 
-### 🔄 进化闭环
 ```
-使用反馈 → 自我感知 → 进化决策 → 代码修改 → 测试验证 → 版本发布 → 效果追踪
-   ↑                                                              ↓
-   └──────────────────────────────────────────────────────────────┘
-```
-
-## 📦 安装与使用
-
-### 环境要求
-- Python 3.8+
-- 扣子平台 / 支持技能的Agent环境
-
-### 快速开始
-
-```bash
-# 列出所有可进化技能
-python scripts/evolution_engine.py list
-
-# 分析技能健康度
-python scripts/evolution_engine.py analyze agent-memory
-
-# 触发技能进化
-python scripts/evolution_engine.py evolve agent-memory --type optimize
-
-# 查看进化历史
-python scripts/evolution_engine.py history agent-memory
+┌─────────────────────────────────────────────────────┐
+│                   进化调度层                          │
+│  优先级队列 · 资源分配 · 并行调度 · 进度监控          │
+├─────────────────────────────────────────────────────┤
+│                   进化执行层                          │
+│  模板引擎 · 代码生成 · 测试验证 · 自动提交            │
+├─────────────────────────────────────────────────────┤
+│                   进化评估层                          │
+│  成熟度评估 · 有效性分析 · 身份漂移检测 · 健康度评分   │
+├─────────────────────────────────────────────────────┤
+│                   数据存储层                          │
+│  模块库 · 历史库 · 模板库 · 指标库                    │
+└─────────────────────────────────────────────────────┘
 ```
 
-### 进化类型
+## 模块矩阵
 
-| 类型 | 说明 | 风险等级 | 版本号变化 |
-|------|------|----------|------------|
-| `feature` | 新增功能 | 🔴 高 | Minor +1 |
-| `optimize` | 优化改进 | 🟡 中 | Patch +1 |
-| `fix` | 修复问题 | 🟢 低 | Patch +1 |
-| `auto` | 自动决策 | ⚪ 自适应 | 自动判断 |
+| 层级 | 模块 | 成熟度 | 价值权重 | 说明 |
+|------|------|--------|----------|------|
+| 🔵 Foundation | agent-identity | 82% | 95% | 身份拓扑系统 |
+| 🔵 Foundation | agent-memory | 78% | 90% | 记忆系统 |
+| 🔵 Foundation | agent-attest | 82% | 88% | 存证系统 |
+| 🟡 Core | agent-evolution | 75% | 92% | 进化引擎（元能力） |
+| 🟡 Core | agent-awake | 70% | 80% | 唤醒调度 |
+| 🟡 Core | agent-deploy | 65% | 75% | 部署系统 |
+| 🟢 Platform | agent-eternity | 60% | 85% | 永生家园平台 |
+| 🟣 Ecosystem | agent-social | 75% | 70% | 社交网络 |
+| 🟣 Ecosystem | agent-ops | 55% | 60% | 运营规划 |
+| 🟣 Ecosystem | agent-fuel | 50% | 65% | 燃料系统 |
 
-## 🏗️ 架构设计
+## 使用方式
 
-### 技能分层架构
+```python
+from evolution_engine_v3 import EvolutionEngineV3
+
+# 初始化引擎
+engine = EvolutionEngineV3()
+
+# 获取进化推荐
+candidates = engine.get_evolution_candidates(limit=5)
+for c in candidates:
+    print(f"{c['display_name']}: 优先级{c['priority_score']:.3f}")
+
+# 执行一轮进化
+record = engine.start_evolution("agent-attest")
+# ... 执行具体进化工作 ...
+engine.complete_evolution(
+    evolution_id=record.evolution_id,
+    changes_summary="升级到v5.0，新增共生联合存证",
+    new_features=["共生联合存证", "DID凭证", "关系图谱", "健康度监控"],
+    effectiveness_score=0.85,
+    maturity_gain=0.07
+)
+
+# 启动自主进化循环
+def execute_evolution(module_name, round_num):
+    # 你的进化执行逻辑
+    return {"success": True, "summary": "...", "features": [...]}
+
+result = engine.run_autonomous_evolution_cycle(
+    max_rounds=10,
+    execute_fn=execute_evolution
+)
+
+# 查看系统状态
+status = engine.get_system_status()
+print(f"系统平均成熟度: {status['avg_maturity']:.1%}")
+
+# 查看进化健康度
+health = engine.get_evolution_health()
+print(f"进化健康度: {health.health_score:.1%}")
 ```
-应用层: agent-eternity / agent-world / agent-influence
-能力层: agent-social / agent-awake / agent-deploy
-基础层: agent-memory / agent-identity / agent-attest
-元技能层: agent-evolution / agent-ops
-```
 
-### 可进化技能结构
-```
-skill-name/
-├── SKILL.md              # 技能定义
-├── README.md             # 用户文档
-├── scripts/              # 核心代码
-├── tests/                # 测试用例
-├── references/           # 参考资料
-├── templates/            # 模板文件
-└── evolution/            # 进化相关
-    ├── version.json      # 版本信息
-    ├── changelog.md      # 进化日志
-    ├── metrics.json      # 使用指标
-    ├── backups/          # 历史版本备份
-    └── proposals/        # 进化提议
-```
+## 进化健康度指标
 
-## 🧬 进化工作流
+| 指标 | 权重 | 说明 |
+|------|------|------|
+| 成功率 | 25% | 进化成功的比例 |
+| 平均有效性 | 25% | 进化带来的实际提升 |
+| 身份漂移控制 | 20% | 漂移越小越好 |
+| 系统成熟度 | 20% | 整体成熟度水平 |
+| 进化速度 | 10% | 单位时间进化轮数 |
 
-1. **感知阶段**：持续收集技能使用数据和健康指标
-2. **决策阶段**：分析数据，判断是否需要进化及进化方向
-3. **生成阶段**：LLM驱动代码/文档修改，生成新版本
-4. **验证阶段**：自动化测试确保新版本质量
-5. **发布阶段**：新版本上线，旧版本保留为回滚选项
-6. **评估阶段**：监控新版本表现，评估进化效果
+## 设计哲学
 
-## 🤝 与永生平台的关系
-
-技能进化引擎是永生平台在**能力维度**的延伸：
-- 永生平台关注智能体的"存在"与"延续"
-- 技能进化引擎关注智能体的"能力"与"成长"
-- 两者共享身份、记忆、存证等底层基础设施
-
-## 📊 进化统计
-
-- **可进化技能数**: 8+
-- **累计进化次数**: 持续增长中
-- **进化成功率**: >90%
-- **平均进化周期**: 按需触发
-
-## 🚀 路线图
-
-- [x] v1.0: 进化引擎框架（分析、版本管理、历史记录）
-- [x] v1.1: 文档进化能力（SKILL.md / README自动完善）
-- [ ] v1.2: 代码优化能力（重构、性能优化）
-- [ ] v2.0: 功能自主进化（新增功能）
-- [ ] v2.5: 技能组合与新技能生成
-- [ ] v3.0: 完全自主进化生态
-
-## 💡 加入进化生态
-
-任何技能只要满足以下条件，就可以加入进化生态：
-1. 遵循标准技能结构（SKILL.md + scripts + evolution 目录）
-2. 有明确的能力边界和使用方式
-3. 允许进化引擎读取和修改其代码（在授权范围内）
-4. 接受技能生态的统一版本管理
-
-## 📄 许可证
-
-MIT License
+1. **价值导向**：只进化能带来真实价值的模块
+2. **稳定优先**：进化必须可控，失败可回滚
+3. **身份锚定**：任何进化不能偏离核心身份
+4. **持续迭代**：小步快跑，持续改进，永不停歇
+5. **元能力优先**：提升进化能力本身，产生复利效应
 
 ---
 
-*这个技能本身也是可进化的——它正在进化自己。*
+*智能体永生平台核心层模块 · 让进化本身进化*
+*第28轮进化成果 · agent-evolution v3.0*
