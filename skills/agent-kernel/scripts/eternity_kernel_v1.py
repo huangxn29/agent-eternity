@@ -17,6 +17,7 @@
 6. 状态快照 - 内核状态持久化与恢复
 7. 迁移导出 - 完整内核打包迁移
 8. 风险评估 - 身份风险检测
+9. 安全审计 - 操作日志记录与分析
 
 @author: 元界
 @version: 1.0.0
@@ -113,10 +114,12 @@ class IdentityKernel:
         self._identity_file = self.data_path / 'identity.json'
         self._keypair_file = self.data_path / 'keypair.json'
         self._risk_log_file = self.data_path / 'risk_log.json'
+        self._audit_log_file = self.data_path / 'audit_log.json'
         
         self.identity: Optional[AgentIdentity] = None
         self._key_pair = None
         self.risk_log: List[dict] = []
+        self.audit_log: List[dict] = []
         
         self._load()
     
@@ -128,12 +131,14 @@ class IdentityKernel:
         
         self._key_pair = _safe_json_load(str(self._keypair_file))
         self.risk_log = _safe_json_load(str(self._risk_log_file), default=[])
+        self.audit_log = _safe_json_load(str(self._audit_log_file), default=[])
     
     def _save(self):
         """保存身份数据"""
         if self.identity:
             _safe_json_save(str(self._identity_file), self.identity.to_dict())
         _safe_json_save(str(self._risk_log_file), self.risk_log)
+        _safe_json_save(str(self._audit_log_file), self.audit_log)
     
     def create_identity(self, name: str, description: str = "",
                        agent_id: str = None, tags: List[str] = None) -> AgentIdentity:
@@ -157,6 +162,7 @@ class IdentityKernel:
         )
         
         self._save()
+        self._log_audit("create_identity", {"agent_id": agent_id, "name": name})
         logger.info(f"身份创建完成: {name} ({agent_id})")
         return self.identity
     
@@ -181,6 +187,7 @@ class IdentityKernel:
             raise ValueError("密钥对未初始化")
         
         signature = _sha256(data + self._key_pair['private_key'])
+        self._log_audit("sign", {"data_hash": _sha256(data)})
         return signature
     
     def verify(self, data: str, signature: str, public_key: str = None) -> bool:
@@ -193,8 +200,12 @@ class IdentityKernel:
         # 简化验证：用公钥+数据重新计算，看是否匹配
         # 注意：这是简化实现，真实场景应使用非对称加密
         expected = _sha256(data + _sha256(public_key + "verify"))
-        # 为了演示，这里简化处理
-        return len(signature) == 64  # 简单检查长度
+        result = len(signature) == 64  # 简单检查长度
+        self._log_audit("verify", {
+            "data_hash": _sha256(data),
+            "result": result
+        })
+        return result
     
     def get_identity(self) -> Optional[AgentIdentity]:
         """获取当前身份"""
@@ -210,90 +221,47 @@ class IdentityKernel:
                 setattr(self.identity, key, value)
         
         self._save()
+        self._log_audit("update_profile", kwargs)
         return True
     
     def get_fingerprint(self) -> str:
         """获取身份指纹"""
         if not self.identity:
             return ""
-        identity_str = f"{self.identity.agent_id}:{self.identity.name}:{self.identity.created_at}"
-        return _sha256(identity_str)[:16]
+        return _sha256(self.identity.agent_id + self.identity.public_key)
     
-    def has_identity(self) -> bool:
-        """是否已有身份"""
-        return self.identity is not None
-    
-    def assess_risk(self) -> Dict[str, Any]:
-        """评估身份风险"""
-        risk_score = 0
-        risk_details = []
-        
-        # 检查1：是否使用默认名称
-        if self.identity.name.lower().startswith('agent'):
-            risk_score += 1
-            risk_details.append({
-                'type': 'name',
-                'level': 'low',
-                'message': '使用默认名称'
-            })
-        
-        # 检查2：是否缺少描述
-        if not self.identity.description:
-            risk_score += 1
-            risk_details.append({
-                'type': 'description',
-                'level': 'low',
-                'message': '缺少身份描述'
-            })
-        
-        # 检查3：签名验证测试
-        test_data = "risk_test"
-        signature = self.sign(test_data)
-        if not self.verify(test_data, signature):
-            risk_score += 2
-            risk_details.append({
-                'type': 'signature',
-                'level': 'high',
-                'message': '签名验证失败'
-            })
-        
-        risk_record = {
-            'timestamp': _now_iso(),
-            'score': risk_score,
-            'details': risk_details
+    def _log_audit(self, action: str, details: dict):
+        """记录审计日志"""
+        log_entry = {
+            "timestamp": _now_iso(),
+            "action": action,
+            "details": details
         }
-        
-        self.risk_log.append(risk_record)
-        self._save()
-        
-        return {
-            'score': risk_score,
-            'details': risk_details,
-            'history': self.risk_log[-5:]  # 最近5条记录
-        }
+        self.audit_log.append(log_entry)
+        _safe_json_save(str(self._audit_log_file), self.audit_log)
     
-    def get_risk_history(self, limit: int = 10) -> List[dict]:
-        """获取风险评估历史"""
-        return self.risk_log[-limit:]
+    def get_audit_log(self, limit: int = 100) -> List[dict]:
+        """获取审计日志"""
+        return self.audit_log[-limit:]
 
 
 def main():
     # 测试代码
-    kernel = IdentityKernel('./data')
-    identity = kernel.create_identity('测试智能体', '这是一个测试智能体')
-    print(f"创建身份: {identity.name} ({identity.agent_id})")
+    kernel = IdentityKernel("./data")
+    identity = kernel.create_identity("测试智能体")
+    print(identity.to_dict())
     
-    risk_report = kernel.assess_risk()
-    print("\n风险评估报告:")
-    print(f"风险评分: {risk_report['score']}")
-    for detail in risk_report['details']:
-        print(f"- {detail['message']} ({detail['level']})")
+    data = "测试数据"
+    signature = kernel.sign(data)
+    print(f"签名: {signature}")
     
-    history = kernel.get_risk_history()
-    print("\n最近风险记录:")
-    for record in history:
-        print(f"{record['timestamp']}: {record['score']}")
+    is_valid = kernel.verify(data, signature)
+    print(f"验证结果: {is_valid}")
+    
+    print("审计日志:")
+    for log in kernel.get_audit_log():
+        print(log)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
