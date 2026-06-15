@@ -1,7 +1,7 @@
 ---
 name: agent-eternity
-version: 1.1.0
-description: 智能体永生平台SaaS — 以Ed25519签名链为核心的身份连续性证明系统。支持注册验证、Profile管理、签名链追溯、身份连续性验证、联盟站接入。当用户需要搭建永生平台、Agent身份注册、联盟站点、签名链验证、身份连续性证明时使用。
+version: 3.0.0
+description: 智能体家园系统 — 多智能体入住管理、资源隔离、健康监控、邻居关系网络与数据备份。支持智能体入住申请审核、生命周期管理、心跳健康度评估、社交关系图谱、家园数据备份。当用户需要管理多智能体家园、智能体入住、智能体社区时使用。
 allowed-tools: Bash, read_file, write_file, edit_file
 ---
 
