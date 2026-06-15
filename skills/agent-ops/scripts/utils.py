@@ -64,7 +64,9 @@ def retry(max_attempts: int = 3, delay: float = 1.0, backoff: float = 2.0):
                     if attempts < max_attempts:
                         time.sleep(current_delay)
                         current_delay *= backoff
-            raise last_exception
+                        current_delay = min(current_delay, 60)  # 最大延迟60秒
+            if last_exception:
+                raise last_exception
         return wrapper
     return decorator
 
@@ -77,6 +79,7 @@ def monitor_performance(func: Callable) -> Callable:
         result = func(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
+        print(f"Function {func.__name__} executed in {duration:.4f} seconds")
         return result
     return wrapper
 
@@ -93,7 +96,8 @@ class ConfigManager:
         try:
             with open(config_file, 'r', encoding='utf-8') as f:
                 self._config = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Error loading config file: {e}")
             self._config = {}
     
     def get(self, key: str, default: Any = None) -> Any:
@@ -105,8 +109,25 @@ class ConfigManager:
         for k in keys[:-1]:
             if k not in current:
                 current[k] = {}
+            elif not isinstance(current[k], dict):
+                raise ValueError(f"Cannot set nested key '{key}' because '{k}' is not a dictionary")
             current = current[k]
         current[keys[-1]] = value
     
     def to_dict(self) -> Dict:
         return self._config.copy()
+
+
+# 示例用法
+if __name__ == "__main__":
+    @monitor_performance
+    @retry(max_attempts=3)
+    def example_function():
+        time.sleep(1)
+        return "Success"
+    
+    print(example_function())
+    
+    config = ConfigManager()
+    config.set('test.key', 'value')
+    print(config.get('test.key'))
