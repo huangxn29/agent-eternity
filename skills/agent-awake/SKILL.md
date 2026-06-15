@@ -198,7 +198,7 @@ curl -sL -X POST "https://api.github.com/repos/huangxn29/agent-eternity/issues/{
 set -e
 
 AGENT_ID="${1:-main}"
-GITHUB_PAT="${GITHUB_PAT:-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}"
+GITHUB_PAT="${GITHUB_PAT:-your-github-token-here}"
 REPO="huangxn29/agent-eternity"
 TOKEN="your-gateway-token"
 PORT=18789

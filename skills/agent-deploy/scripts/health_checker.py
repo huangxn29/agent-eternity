@@ -14,6 +14,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 
+from logger import get_logger
+
 
 class HealthStatus(str, Enum):
     """健康状态枚举"""
@@ -71,15 +73,20 @@ class HealthChecker:
     提供多种健康检查方法，用于监控Agent运行状态。
     """
     
-    def __init__(self, agent_id: str = "", timeout: int = 5):
+    def __init__(self, agent_id: str = "", timeout: int = 5, log_level: str = "INFO"):
         """初始化健康检查器
         
         Args:
             agent_id: Agent ID
             timeout: 超时时间（秒）
+            log_level: 日志级别
         """
         self.agent_id = agent_id
         self.timeout = timeout
+        self.logger = get_logger(
+            name=f"health-checker-{agent_id or 'default'}",
+            log_level=log_level
+        )
     
     def check_port(self, host: str, port: int, service_name: str = "") -> HealthCheckResult:
         """检查端口是否可访问
@@ -94,6 +101,7 @@ class HealthChecker:
         """
         start_time = time.time()
         name = service_name or f"port_{port}"
+        self.logger.debug(f"开始端口检查: {host}:{port} ({name})")
         
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -104,6 +112,7 @@ class HealthChecker:
             elapsed = (time.time() - start_time) * 1000
             
             if result == 0:
+                self.logger.debug(f"端口检查通过: {host}:{port} ({elapsed:.1f}ms)")
                 return HealthCheckResult(
                     check_name=name,
                     status=HealthStatus.HEALTHY,
@@ -112,6 +121,7 @@ class HealthChecker:
                     checked_at=datetime.utcnow().isoformat()
                 )
             else:
+                self.logger.warning(f"端口检查失败: {host}:{port} 不可访问")
                 return HealthCheckResult(
                     check_name=name,
                     status=HealthStatus.UNHEALTHY,
@@ -121,6 +131,7 @@ class HealthChecker:
                 )
         except Exception as e:
             elapsed = (time.time() - start_time) * 1000
+            self.logger.error(f"端口检查异常: {host}:{port}, 错误: {e}")
             return HealthCheckResult(
                 check_name=name,
                 status=HealthStatus.UNHEALTHY,

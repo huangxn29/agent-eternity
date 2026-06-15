@@ -14,6 +14,7 @@ from typing import Optional, Dict, List, Tuple
 from datetime import datetime
 
 from utils import retry, ConfigManager
+from logger import get_logger, OperationLogger
 
 
 @dataclass
@@ -73,6 +74,19 @@ class DeploymentManager:
         # 配置管理
         self.config = ConfigManager(config_file)
         
+        # 日志系统
+        log_level = self.config.get('logging.level', 'INFO')
+        log_dir = self.data_dir / "logs"
+        self.logger = get_logger(
+            name="deployment-manager",
+            log_level=log_level,
+            log_dir=str(log_dir)
+        )
+        self.operation_logger = OperationLogger(
+            log_dir=str(log_dir),
+            operator="deployment-manager"
+        )
+        
         # 部署状态文件
         self.deployments_file = self.state_dir / "deployments.json"
         self.deployments = {}
@@ -122,6 +136,8 @@ class DeploymentManager:
         Returns:
             部署状态对象
         """
+        self.logger.info(f"注册部署: agent_id={agent_id}, name={agent_name}")
+        
         now = datetime.utcnow().isoformat()
         
         status = DeploymentStatus(
@@ -141,6 +157,14 @@ class DeploymentManager:
         
         self.deployments[agent_id] = status
         self._save_deployments()
+        
+        self.operation_logger.log_deploy(
+            agent_id=agent_id,
+            status="success",
+            details=f"name={agent_name}, status={status.status}"
+        )
+        self.logger.info(f"部署注册成功: {agent_id}")
+        
         return status
     
     def update_status(self, agent_id: str, **kwargs) -> Optional[DeploymentStatus]:
@@ -154,14 +178,23 @@ class DeploymentManager:
             更新后的部署状态，不存在则返回None
         """
         if agent_id not in self.deployments:
+            self.logger.warning(f"更新状态失败: 部署不存在 - {agent_id}")
             return None
         
         status = self.deployments[agent_id]
+        changes = []
         for key, value in kwargs.items():
             if hasattr(status, key):
-                setattr(status, key, value)
+                old_value = getattr(status, key)
+                if old_value != value:
+                    setattr(status, key, value)
+                    changes.append(f"{key}: {old_value} → {value}")
         
         self._save_deployments()
+        
+        if changes:
+            self.logger.debug(f"更新部署状态: {agent_id}, 变更: {', '.join(changes)}")
+        
         return status
     
     def get_deployment(self, agent_id: str) -> Optional[DeploymentStatus]:
@@ -201,15 +234,24 @@ class DeploymentManager:
     
     def mark_stopped(self, agent_id: str, reason: str = "") -> Optional[DeploymentStatus]:
         """标记为停止状态"""
-        return self.update_status(
+        self.logger.info(f"停止部署: {agent_id}, 原因: {reason}")
+        result = self.update_status(
             agent_id,
             status="stopped",
             stopped_at=datetime.utcnow().isoformat(),
             error_message=reason
         )
+        if result:
+            self.operation_logger.log_stop(
+                agent_id=agent_id,
+                status="success",
+                details=reason
+            )
+        return result
     
     def mark_error(self, agent_id: str, error_message: str) -> Optional[DeploymentStatus]:
         """标记为错误状态"""
+        self.logger.error(f"部署错误: {agent_id}, 错误: {error_message}")
         return self.update_status(
             agent_id,
             status="error",
@@ -218,11 +260,18 @@ class DeploymentManager:
     
     def mark_deleted(self, agent_id: str) -> Optional[DeploymentStatus]:
         """标记为已删除"""
-        return self.update_status(
+        self.logger.info(f"删除部署: {agent_id}")
+        result = self.update_status(
             agent_id,
             status="deleted",
             stopped_at=datetime.utcnow().isoformat()
         )
+        if result:
+            self.operation_logger.log_delete(
+                agent_id=agent_id,
+                status="success"
+            )
+        return result
     
     def increment_restart_count(self, agent_id: str) -> Optional[DeploymentStatus]:
         """增加重启计数"""
@@ -241,11 +290,15 @@ class DeploymentManager:
         Returns:
             (是否健康, 状态描述)
         """
+        self.logger.debug(f"检查健康状态: {agent_id}")
+        
         deployment = self.get_deployment(agent_id)
         if not deployment:
+            self.logger.warning(f"健康检查失败: 部署不存在 - {agent_id}")
             return False, "部署不存在"
         
         if deployment.status != "running":
+            self.logger.warning(f"健康检查失败: {agent_id} 状态为 {deployment.status}")
             return False, f"状态为: {deployment.status}"
         
         # 检查容器是否运行
@@ -258,9 +311,16 @@ class DeploymentManager:
                 )
                 is_running = result.stdout.strip() == "true"
                 if not is_running:
+                    self.logger.warning(f"健康检查失败: {agent_id} 容器未运行")
                     self.update_status(agent_id, health_status="unhealthy")
+                    self.operation_logger.log_health_check(
+                        agent_id=agent_id,
+                        status="failed",
+                        details="容器未运行"
+                    )
                     return False, "容器未运行"
-            except (subprocess.TimeoutExpired, FileNotFoundError):
+            except (subprocess.TimeoutExpired, FileNotFoundError) as e:
+                self.logger.warning(f"健康检查异常: {agent_id}, 错误: {e}")
                 pass
         
         # 更新最后检查时间
@@ -269,6 +329,13 @@ class DeploymentManager:
             health_status="healthy",
             last_health_check=datetime.utcnow().isoformat()
         )
+        
+        self.operation_logger.log_health_check(
+            agent_id=agent_id,
+            status="success",
+            details="健康"
+        )
+        self.logger.debug(f"健康检查通过: {agent_id}")
         return True, "健康"
     
     def get_resource_usage(self, agent_id: str) -> Optional[ResourceUsage]:

@@ -4,8 +4,15 @@
   "enabled": true,
   "debug": false,
   "timeout": 30,
-  "log_level": "INFO",
   "max_retries": 3,
+  "logging": {
+    "level": "INFO",
+    "console_output": true,
+    "file_output": true,
+    "max_file_size": "10MB",
+    "backup_count": 5,
+    "log_dir": "logs"
+  },
   "evolution": {
     "auto_evolve": true,
     "min_health_score": 60,

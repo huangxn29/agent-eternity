@@ -1,5 +1,5 @@
 {
-  "running": true,
+  "running": false,
   "current_round": 20,
   "total_rounds": 19,
   "current_skill": "agent-awake",
@@ -315,8 +315,8 @@
       "message": "唤醒编排系统通信层升级：新增智能体通信系统，支持直接消息、发布订阅、优先级队列、工作流集成，为多智能体协同提供实时通信基础设施"
     }
   ],
-  "target_score": 90,
-  "started_at": "2026-06-15T15:46:57.278793",
+  "target_score": 95,
+  "started_at": "2026-06-15T18:30:35.152058",
   "last_report_round": 15,
   "rollback_count": 1,
   "drift_warnings": 0,
