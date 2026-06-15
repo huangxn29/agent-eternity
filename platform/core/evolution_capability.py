@@ -277,19 +277,30 @@ class EvolutionCapability:
             )
             
             if result.returncode == 0:
-                # 尝试从输出中提取commit hash
+                # 直接获取最新的commit hash（最可靠的方式）
                 commit_hash = ""
+                try:
+                    git_result = subprocess.run(
+                        ["git", "rev-parse", "HEAD"],
+                        capture_output=True,
+                        text=True,
+                        cwd=str(BASE_DIR)
+                    )
+                    if git_result.returncode == 0:
+                        commit_hash = git_result.stdout.strip()
+                except Exception:
+                    pass
+                
+                # 从输出中提取描述信息
+                description = ""
                 for line in result.stdout.split('\n'):
-                    if '已提交' in line or 'commit' in line.lower():
-                        parts = line.split()
-                        for p in parts:
-                            if len(p) == 40 or (len(p) == 7 and all(c in '0123456789abcdef' for c in p)):
-                                commit_hash = p
-                                break
+                    if '进化成功' in line or '策略:' in line:
+                        description += line.strip() + " "
                 
                 return {
                     "success": True,
                     "commit_hash": commit_hash,
+                    "description": description.strip(),
                     "output": result.stdout[-500:]  # 最后500字符
                 }
             else:
