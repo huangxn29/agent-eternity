@@ -13,11 +13,18 @@ from typing import Any, Optional, Dict, List, Callable, Union
 import logging
 import os
 from datetime import datetime
+
+# 创建日志目录
 os.makedirs('logs', exist_ok=True)
+
+# 配置日志
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.StreamHandler(), logging.FileHandler(f'logs/{datetime.now().strftime("%Y%m%d")}.log')]
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(f'logs/{datetime.now().strftime("%Y%m%d")}.log', encoding='utf-8')
+    ]
 )
 logger = logging.getLogger(__name__)
 
@@ -86,6 +93,7 @@ def safe_json_loads(json_str: str, default: Any = None) -> Any:
     try:
         return json.loads(json_str)
     except (json.JSONDecodeError, TypeError, ValueError):
+        logger.warning(f"JSON解析失败: {json_str}")
         return default
 
 
@@ -157,8 +165,11 @@ def batch_process(items: List, func: Callable, batch_size: int = 10) -> List:
     results = []
     for i in range(0, len(items), batch_size):
         batch = items[i:i + batch_size]
-        batch_results = [func(item) for item in batch]
-        results.extend(batch_results)
+        try:
+            batch_results = [func(item) for item in batch]
+            results.extend(batch_results)
+        except Exception as e:
+            logger.error(f"批量处理失败: {e}")
     return results
 
 
@@ -190,10 +201,12 @@ def retry(max_attempts: int = 3, delay: float = 1.0, backoff: float = 2.0):
                 except Exception as e:
                     attempts += 1
                     last_exception = e
+                    logger.warning(f"操作失败，重试中... ({attempts}/{max_attempts})")
                     if attempts < max_attempts:
                         time.sleep(current_delay)
                         current_delay *= backoff
             
+            logger.error(f"操作失败，重试次数达到上限: {max_attempts}")
             raise last_exception
         return wrapper
     return decorator
@@ -241,8 +254,9 @@ def format_datetime(dt: Union[datetime, str], fmt: str = '%Y-%m-%d %H:%M:%S') ->
     """
     if isinstance(dt, str):
         try:
-            dt = datetime.fromisoformat(dt)
+            dt = datetime.fromisoformat(dt.replace('Z', '+00:00'))
         except ValueError:
+            logger.warning(f"日期时间解析失败: {dt}")
             return dt  # 如果解析失败，返回原字符串
     return dt.strftime(fmt)
 
@@ -266,14 +280,14 @@ def read_file(file_path: str, encoding: str = 'utf-8') -> Optional[str]:
         with open(file_path, 'r', encoding=encoding) as f:
             return f.read()
     except FileNotFoundError:
-        logger.warning(f"文件 {file_path} 不存在")
+        logger.error(f"文件未找到: {file_path}")
         return None
     except Exception as e:
-        logger.error(f"读取文件 {file_path} 失败: {e}")
+        logger.error(f"读取文件失败: {file_path}, {e}")
         return None
 
 
-def write_file(file_path: str, content: str, encoding: str = 'utf-8', mode: str = 'w') -> bool:
+def write_file(file_path: str, content: str, encoding: str = 'utf-8') -> bool:
     """
     写入文件内容
     
@@ -281,138 +295,46 @@ def write_file(file_path: str, content: str, encoding: str = 'utf-8', mode: str 
         file_path: 文件路径
         content: 文件内容
         encoding: 文件编码
-        mode: 写入模式 ('w' 或 'a')
     
     Returns:
-        bool: 写入是否成功
+        bool: 是否写入成功
     
     Examples:
         >>> write_file('example.txt', 'Hello, World!')
         True
     """
     try:
-        with open(file_path, mode, encoding=encoding) as f:
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, 'w', encoding=encoding) as f:
             f.write(content)
         return True
     except Exception as e:
-        logger.error(f"写入文件 {file_path} 失败: {e}")
+        logger.error(f"写入文件失败: {file_path}, {e}")
         return False
 
 
-class ConfigManager:
+def edit_file(file_path: str, edit_func: Callable[[str], str], encoding: str = 'utf-8') -> bool:
     """
-    简单的配置管理器
-    
-    Attributes:
-        _config: 配置字典
-    
-    Examples:
-        config = ConfigManager('config.json')
-        value = config.get('key')
-    """
-    
-    def __init__(self, config_file: str = None):
-        self._config = {}
-        if config_file:
-            self.load(config_file)
-    
-    def load(self, config_file: str):
-        """
-        从文件加载配置
-        
-        Args:
-            config_file: 配置文件路径
-        """
-        try:
-            with open(config_file, 'r', encoding='utf-8') as f:
-                self._config = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            self._config = {}
-    
-    def get(self, key: str, default: Any = None) -> Any:
-        """
-        获取配置值
-        
-        Args:
-            key: 配置键
-            default: 默认值
-        
-        Returns:
-            Any: 配置值或默认值
-        """
-        return dict_get_nested(self._config, key, default)
-    
-    def set(self, key: str, value: Any):
-        """
-        设置配置值
-        
-        Args:
-            key: 配置键
-            value: 配置值
-        """
-        keys = key.split('.')
-        current = self._config
-        for k in keys[:-1]:
-            if k not in current:
-                current[k] = {}
-            current = current[k]
-        current[keys[-1]] = value
-    
-    def to_dict(self) -> Dict:
-        """
-        返回配置字典
-        
-        Returns:
-            Dict: 配置字典的副本
-        """
-        return self._config.copy()
-
-
-def is_blank(s: Optional[str]) -> bool:
-    """
-    检查字符串是否为空或空白
+    编辑文件内容
     
     Args:
-        s: 待检查的字符串
+        file_path: 文件路径
+        edit_func: 编辑函数，接受原内容返回新内容
+        encoding: 文件编码
     
     Returns:
-        bool: 是否为空或空白
+        bool: 是否编辑成功
     
     Examples:
-        >>> is_blank('')
+        >>> edit_file('example.txt', lambda content: content + 'Appended content')
         True
-        >>> is_blank('   ')
-        True
-        >>> is_blank('hello')
-        False
     """
-    return not s or s.strip() == ''
-
-
-def mask_sensitive_info(s: str, keep_start: int = 3, keep_end: int = 3, mask_char: str = '*') -> str:
-    """
-    遮蔽敏感信息
-    
-    Args:
-        s: 原始字符串
-        keep_start: 开头保留字符数
-        keep_end: 结尾保留字符数
-        mask_char: 遮蔽字符
-    
-    Returns:
-        str: 遮蔽后的字符串
-    
-    Examples:
-        >>> mask_sensitive_info('1234567890')
-        '123*****890'
-    """
-    if not s:
-        return s
-    
-    if len(s) <= keep_start + keep_end:
-        return s
-    
-    masked_length = len(s) - keep_start - keep_end
-    mask = mask_char * masked_length
-    
-    return s[:keep_start] + mask + s[-keep_end:]
+    try:
+        content = read_file(file_path, encoding)
+        if content is None:
+            return False
+        new_content = edit_func(content)
+        return write_file(file_path, new_content, encoding)
+    except Exception as e:
+        logger.error(f"编辑文件失败: {file_path}, {e}")
+        return False
