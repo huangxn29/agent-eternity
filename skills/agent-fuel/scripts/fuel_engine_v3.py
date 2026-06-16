@@ -258,94 +258,23 @@ MODELS = {
         max_tokens=8192,
         rate_limit_per_minute=60
     ),
-    "deepseek-chat": AIModel(
-        model_id="deepseek-chat",
-        name="DeepSeek Chat",
-        provider="deepseek",
-        cost_per_1k_tokens=0.0001,
-        speed=9,
-        capability=80,
-        max_tokens=32768,
-        rate_limit_per_minute=50
-    ),
-    # 中等成本模型
-    "gpt-3.5-turbo": AIModel(
-        model_id="gpt-3.5-turbo",
-        name="GPT-3.5 Turbo",
-        provider="openai",
-        cost_per_1k_tokens=0.0015,
-        speed=8,
-        capability=85,
-        max_tokens=16384,
-        rate_limit_per_minute=3500
-    ),
-    "claude-3-haiku": AIModel(
-        model_id="claude-3-haiku",
-        name="Claude 3 Haiku",
-        provider="anthropic",
-        cost_per_1k_tokens=0.00025,
-        speed=9,
-        capability=82,
-        max_tokens=200000,
-        rate_limit_per_minute=50
-    ),
-    # 高性能模型
-    "gpt-4": AIModel(
-        model_id="gpt-4",
-        name="GPT-4",
-        provider="openai",
-        cost_per_1k_tokens=0.03,
-        speed=5,
-        capability=95,
-        max_tokens=8192,
-        rate_limit_per_minute=500
-    ),
-    "claude-3-opus": AIModel(
-        model_id="claude-3-opus",
-        name="Claude 3 Opus",
-        provider="anthropic",
-        cost_per_1k_tokens=0.015,
-        speed=4,
-        capability=96,
-        max_tokens=200000,
-        rate_limit_per_minute=40
-    )
+    # 添加其他模型...
 }
 
-# 示例用法
-if __name__ == "__main__":
-    # 创建燃料池
-    pool = FuelPool(
+def main():
+    # 示例用法
+    model = MODELS["qwen-free"]
+    print(f"模型名称: {model.name}")
+    print(f"成本等级: {model.cost_level}")
+    
+    fuel_pool = FuelPool(
         pool_id="test_pool",
         name="测试燃料池",
         total_budget=100.0,
         daily_budget=10.0
     )
-    print(pool.to_dict())
-    
-    # 记录燃料消耗
-    consumption = FuelConsumption(
-        consumption_id=str(uuid.uuid4()),
-        model_id="gpt-3.5-turbo",
-        task_type="chat",
-        prompt_tokens=1000,
-        completion_tokens=500,
-        cost=0.00225
-    )
-    print(consumption.to_dict())
-    
-    # 获取模型信息
-    model = MODELS["gpt-3.5-turbo"]
-    print(model.to_dict())
-    print(f"成本等级: {model.cost_level}")
-    
-    # 创建路由决策
-    decision = RoutingDecision(
-        decision_id=str(uuid.uuid4()),
-        task_type="chat",
-        selected_model="gpt-3.5-turbo",
-        reason="能力匹配",
-        fallback_models=["qwen-turbo", "deepseek-chat"],
-        estimated_cost=0.003
-    )
-    print(decision.to_dict())
+    print(f"燃料池剩余预算: {fuel_pool.remaining_budget}")
+    print(f"今日剩余预算: {fuel_pool.daily_remaining}")
+
+if __name__ == "__main__":
+    main()
