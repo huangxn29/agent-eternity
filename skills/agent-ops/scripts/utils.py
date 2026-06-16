@@ -162,6 +162,36 @@ def generate_project_timeline(tasks: List[Dict]) -> List[Dict]:
     return sorted_tasks
 
 
+def calculate_project_duration(tasks: List[Dict]) -> int:
+    """
+    计算项目总时长
+    
+    Args:
+    tasks: 包含任务信息的字典列表，每个字典应包含'start_date'和'end_date'键
+    
+    Returns:
+    项目总时长（天数）
+    """
+    if not tasks:
+        return 0
+    
+    # 验证日期格式
+    date_pattern = r'^\d{4}-\d{2}-\d{2}$'
+    for task in tasks:
+        if not re.match(date_pattern, task['start_date']) or not re.match(date_pattern, task['end_date']):
+            raise ValueError(f"任务 {task['name']} 的日期格式不正确")
+    
+    # 计算项目开始和结束日期
+    from datetime import datetime
+    
+    start_date = min(datetime.strptime(task['start_date'], '%Y-%m-%d') for task in tasks)
+    end_date = max(datetime.strptime(task['end_date'], '%Y-%m-%d') for task in tasks)
+    
+    duration = (end_date - start_date).days + 1  # 加1包含开始和结束日期
+    
+    return duration
+
+
 # 示例用法
 if __name__ == "__main__":
     tasks = [
@@ -173,3 +203,6 @@ if __name__ == "__main__":
     timeline = generate_project_timeline(tasks)
     for task in timeline:
         print(task['name'], task['start_date'], task['end_date'])
+    
+    duration = calculate_project_duration(timeline)
+    print(f"项目总时长: {duration} 天")
