@@ -222,13 +222,7 @@ REFLECTION_TEMPLATES = {
             question="今天我学到了什么新东西？",
             category="学习",
             depth=ReflectionDepth.INSIGHT
-        ),
-        ReflectionQuestion(
-            id="daily_5",
-            question="今天的我和昨天的我有什么不同？",
-            category="自我认知",
-            depth=ReflectionDepth.INSIGHT
-        ),
+        )
     ],
     ReflectionType.WEEKLY: [
         ReflectionQuestion(
@@ -242,10 +236,8 @@ REFLECTION_TEMPLATES = {
             question="本周有哪些重要的经验教训？",
             category="分析",
             depth=ReflectionDepth.ANALYSIS
-        ),
-        # ... 其他问题
-    ],
-    # ... 其他类型的反思模板
+        )
+    ]
 }
 
 def main():
