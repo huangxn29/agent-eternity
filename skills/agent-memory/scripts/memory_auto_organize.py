@@ -10,6 +10,16 @@
 3. 过期记忆清理与归档
 4. 记忆关联自动发现
 5. 核心记忆定期备份
+
+使用说明：
+1. 确保 memory 和 recent_memory 目录存在
+2. 日志文件存储在 logs 目录下
+3. 索引文件为 recent_memory/index.json
+
+注意事项：
+1. 请定期检查日志文件
+2. 确保文件系统有足够的存储空间
+3. 重要数据请定期备份
 """
 
 import os
@@ -38,11 +48,24 @@ RECENT_MEMORY_DIR = BASE_DIR / "recent_memory"
 LOG_DIR = BASE_DIR / "ark_logs"
 
 def get_current_time():
-    """获取当前时间字符串"""
+    """
+    获取当前时间字符串
+    
+    Returns:
+        str: 当前时间字符串，格式为 "%Y-%m-%d %H:%M:%S"
+    """
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 def read_file(path):
-    """读取文件内容"""
+    """
+    读取文件内容
+    
+    Args:
+        path (str/Path): 文件路径
+    
+    Returns:
+        str: 文件内容，如果读取失败则返回 None
+    """
     try:
         with open(path, 'r', encoding='utf-8') as f:
             return f.read()
@@ -51,7 +74,15 @@ def read_file(path):
         return None
 
 def read_json(path):
-    """读取JSON文件"""
+    """
+    读取JSON文件
+    
+    Args:
+        path (str/Path): JSON文件路径
+    
+    Returns:
+        dict: JSON数据，如果读取失败则返回 None
+    """
     try:
         with open(path, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -60,7 +91,16 @@ def read_json(path):
         return None
 
 def write_json(path, data):
-    """写入JSON文件"""
+    """
+    写入JSON文件
+    
+    Args:
+        path (str/Path): JSON文件路径
+        data (dict): 要写入的数据
+    
+    Returns:
+        bool: 是否写入成功
+    """
     try:
         with open(path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
@@ -70,7 +110,21 @@ def write_json(path, data):
         return False
 
 def assess_memory_quality(content):
-    """评估记忆质量，返回0-100分"""
+    """
+    评估记忆质量，返回0-100分
+    
+    Args:
+        content (str): 记忆内容
+    
+    Returns:
+        int: 记忆质量评分（0-100）
+    
+    评估指标：
+    1. 内容长度
+    2. 结构化程度（标题数量）
+    3. 关键词丰富度
+    4. 可验证性
+    """
     if not content:
         return 0
     
@@ -107,7 +161,18 @@ def assess_memory_quality(content):
     return min(max(score, 0), 100)  # 确保分数在0-100之间
 
 def check_index_integrity():
-    """检查记忆索引完整性"""
+    """
+    检查记忆索引完整性
+    
+    Returns:
+        dict: 索引完整性检查结果，包含以下字段：
+            - total_entries: 总条目数
+            - categories: 分类统计
+            - importance_distribution: 重要性分布
+            - missing_files: 缺失文件列表
+            - orphan_files: 未索引文件列表
+            - integrity_score: 完整性评分（0-100）
+    """
     index_file = RECENT_MEMORY_DIR / "index.json"
     index = read_json(index_file)
     
@@ -153,7 +218,17 @@ def check_index_integrity():
     return stats
 
 def analyze_memory_topics():
-    """分析记忆主题分布"""
+    """
+    分析记忆主题分布
+    
+    Returns:
+        dict: 主题分布结果，按得分降序排序
+    
+    分析方法：
+    1. 基于预定义的主题关键词进行匹配
+    2. 统计各主题出现的频次
+    3. 归一化处理得到主题得分
+    """
     index_file = RECENT_MEMORY_DIR / "index.json"
     index = read_json(index_file)
     
@@ -194,7 +269,17 @@ def analyze_memory_topics():
     return sorted_scores
 
 def generate_memory_health_report():
-    """生成记忆系统健康报告"""
+    """
+    生成记忆系统健康报告
+    
+    Returns:
+        dict: 健康报告数据，包含索引完整性检查和主题分析结果
+    
+    报告内容：
+    1. 索引完整性检查结果
+    2. 主题分布分析结果
+    3. 生成时间戳
+    """
     now = get_current_time()
     logger.info(f"开始生成记忆健康报告: {now}")
     
@@ -207,21 +292,26 @@ def generate_memory_health_report():
         
         report = {
             "timestamp": now,
-            "integrity": integrity,
-            "topics": topics,
-            "summary": {
-                "integrity_score": integrity.get('integrity_score', 0),
-                "top_topics": list(topics.keys())[:3] if topics else [],
-                "total_memories": integrity.get('total_entries', 0)
-            }
+            "integrity_check": integrity,
+            "topic_analysis": topics
         }
         
-        report_path = LOG_DIR / f"memory_health_{now.replace(':', '-').replace(' ', '_')}.json"
-        write_json(report_path, report)
-        logger.info(f"记忆健康报告生成成功: {report_path}")
+        # 保存报告
+        report_file = LOG_DIR / f"memory_health_report_{now.replace(':', '-').replace(' ', '_')}.json"
+        write_json(report_file, report)
         
+        logger.info(f"记忆健康报告生成完成: {report_file}")
+        return report
+    
     except Exception as e:
-        logger.error(f"生成记忆健康报告失败: {e}")
+        logger.error(f"生成健康报告失败: {e}")
+        return None
 
 if __name__ == "__main__":
-    generate_memory_health_report()
+    # 示例用法
+    report = generate_memory_health_report()
+    if report:
+        print("健康报告生成成功")
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+    else:
+        print("健康报告生成失败")
