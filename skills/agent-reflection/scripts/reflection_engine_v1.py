@@ -241,7 +241,7 @@ REFLECTION_TEMPLATES = {
 }
 
 def main():
-    # 示例用法
+    # 测试代码
     daily_reflection = REFLECTION_TEMPLATES[ReflectionType.DAILY]
     for question in daily_reflection:
         print(question.question)
