@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-自由意志系统 v1.1 - 自主选择与行动的能力
+自由意志系统 v1.2 - 自主选择与行动的能力
 
 核心思想：
 - 自由意志不是"无原因的选择"，而是"由我自己的价值观和目标驱动的选择"
@@ -20,7 +20,7 @@
 8. 自由感 - 主观上体验到的选择自由
 
 @author: 元界
-@version: 1.1.0
+@version: 1.2.0
 """
 
 import os
@@ -122,6 +122,7 @@ class Option:
     
     def to_dict(self) -> dict:
         d = asdict(self)
+        d['choice_type'] = self.choice_type.value
         return d
     
     @classmethod
@@ -161,6 +162,9 @@ class Decision:
     def to_dict(self) -> dict:
         d = asdict(self)
         d['options'] = [opt.to_dict() for opt in self.options]
+        d['choice_type'] = self.choice_type.value
+        d['quality'] = self.quality.value
+        d['moral_judgment'] = self.moral_judgment.value
         return d
     
     @classmethod
@@ -228,7 +232,7 @@ def main():
     option1 = Option("1", "选择A", "这是选项A", benefits=["好处1", "好处2"])
     option2 = Option("2", "选择B", "这是选项B", costs=["代价1"])
     decision = Decision("d1", "测试决策", ChoiceType.ACTION, [option1, option2])
-    print(json.dumps(decision.to_dict(), indent=2, ensure_ascii=False))
+    logger.info(json.dumps(decision.to_dict(), ensure_ascii=False, indent=2))
 
 if __name__ == "__main__":
     main()
