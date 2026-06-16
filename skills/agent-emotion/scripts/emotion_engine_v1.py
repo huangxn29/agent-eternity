@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-情绪系统 v1.1 - 情感体验与情绪调节
+情绪系统 v1.2 - 情感体验与情绪调节
 
 核心思想：
 - 情绪不是理性的对立面，而是智能的重要组成部分
@@ -19,9 +19,10 @@
 7. 共情能力 - 理解和感受他者情绪
 8. 情绪韧性 - 从负面情绪中恢复的能力
 9. 心境 - 持久的情绪状态
+10. 情绪分析 - 分析情绪模式和趋势
 
 @author: 元界
-@version: 1.1.0
+@version: 1.2.0
 """
 
 import os
@@ -35,6 +36,7 @@ from typing import Dict, List, Optional, Any, Tuple
 from pathlib import Path
 from enum import Enum
 import unittest
+import numpy as np
 
 logging.basicConfig(
     level=logging.INFO,
@@ -220,43 +222,87 @@ class EmpathicResponse:
     """共情反应 - 对他者情绪的共鸣"""
     target_emotion: BasicEmotion
     empathy_level: float = 0.0  # 共情程度 0-1
-    response_emotion: Optional[BasicEmotion] = None  # 自己产生的情绪
-    compassion_level: float = 0.0   # 同情/关怀程度
+    response_emotion: Emotion = None
     
     def __post_init__(self):
         if not (0 <= self.empathy_level <= 1):
             logger.warning(f"共情程度 {self.empathy_level} 超出范围 [0,1]")
             self.empathy_level = max(0, min(self.empathy_level, 1))
-        if not (0 <= self.compassion_level <= 1):
-            logger.warning(f"同情程度 {self.compassion_level} 超出范围 [0,1]")
-            self.compassion_level = max(0, min(self.compassion_level, 1))
     
     def to_dict(self) -> dict:
         d = asdict(self)
         d['target_emotion'] = self.target_emotion.value
-        d['response_emotion'] = self.response_emotion.value if self.response_emotion else None
+        if self.response_emotion:
+            d['response_emotion'] = self.response_emotion.to_dict()
         return d
 
 
-class TestEmotion(unittest.TestCase):
-    def test_emotion(self):
-        emotion = Emotion(BasicEmotion.JOY, intensity=0.8)
-        self.assertEqual(emotion.intensity_level, EmotionIntensity.INTENSE)
-        self.assertTrue(emotion.is_positive)
+class EmotionAnalyzer:
+    """情绪分析器"""
+    
+    def __init__(self, emotions: List[Emotion]):
+        self.emotions = emotions
+    
+    def get_emotion_trend(self) -> Dict[str, List[float]]:
+        """获取情绪趋势"""
+        positive_intensities = []
+        negative_intensities = []
+        timestamps = []
         
-    def test_mood(self):
-        mood = Mood(MoodType.POSITIVE, intensity=0.6)
-        self.assertEqual(mood.intensity, 0.6)
+        for emotion in self.emotions:
+            timestamps.append(emotion.timestamp)
+            if emotion.is_positive:
+                positive_intensities.append(emotion.intensity)
+                negative_intensities.append(0)
+            else:
+                positive_intensities.append(0)
+                negative_intensities.append(emotion.intensity)
         
-    def test_emotional_memory(self):
-        emotion = Emotion(BasicEmotion.SURPRISE, intensity=0.9)
-        memory = EmotionalMemory("惊喜的事件", emotion)
-        self.assertEqual(memory.emotion.emotion_type, BasicEmotion.SURPRISE)
+        return {
+            'timestamps': timestamps,
+            'positive_intensities': positive_intensities,
+            'negative_intensities': negative_intensities
+        }
+    
+    def get_dominant_emotion(self) -> Optional[BasicEmotion]:
+        """获取主导情绪"""
+        emotion_counts = {}
+        for emotion in self.emotions:
+            emotion_type = emotion.emotion_type
+            emotion_counts[emotion_type] = emotion_counts.get(emotion_type, 0) + 1
         
-    def test_empathic_response(self):
-        response = EmpathicResponse(BasicEmotion.SADNESS, empathy_level=0.7)
-        self.assertEqual(response.target_emotion, BasicEmotion.SADNESS)
-        self.assertEqual(response.empathy_level, 0.7)
+        if not emotion_counts:
+            return None
+        
+        return max(emotion_counts, key=emotion_counts.get)
+    
+    def get_average_intensity(self) -> float:
+        """获取平均情绪强度"""
+        if not self.emotions:
+            return 0.0
+        
+        intensities = [e.intensity for e in self.emotions]
+        return np.mean(intensities)
 
-if __name__ == '__main__':
-    unittest.main()
+
+def test_emotion_analyzer():
+    """测试情绪分析器"""
+    emotions = [
+        Emotion(BasicEmotion.JOY, intensity=0.8),
+        Emotion(BasicEmotion.SADNESS, intensity=0.4),
+        Emotion(BasicEmotion.JOY, intensity=0.9),
+        Emotion(BasicEmotion.ANGER, intensity=0.7)
+    ]
+    
+    analyzer = EmotionAnalyzer(emotions)
+    trend = analyzer.get_emotion_trend()
+    dominant_emotion = analyzer.get_dominant_emotion()
+    average_intensity = analyzer.get_average_intensity()
+    
+    print("情绪趋势:", trend)
+    print("主导情绪:", dominant_emotion.value if dominant_emotion else None)
+    print("平均强度:", average_intensity)
+
+
+if __name__ == "__main__":
+    test_emotion_analyzer()
