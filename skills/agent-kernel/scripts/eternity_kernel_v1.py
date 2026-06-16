@@ -18,6 +18,7 @@
 7. 迁移导出 - 完整内核打包迁移
 8. 风险评估 - 身份风险检测
 9. 安全审计 - 操作日志记录与分析
+10. 身份恢复 - 基于密钥的安全身份恢复机制
 
 @author: 元界
 @version: 1.0.0
@@ -157,7 +158,7 @@ class IdentityKernel:
             name=name,
             description=description,
             created_at=_now_iso(),
-            public_key=self._key_pair.get('public', '') if self._key_pair else '',
+            public_key=self._key_pair.get('public_key', '') if self._key_pair else '',
             tags=tags or []
         )
         
@@ -200,35 +201,12 @@ class IdentityKernel:
         # 简化验证：用公钥+数据重新计算，看是否匹配
         # 注意：这是简化实现，真实场景应使用非对称加密
         expected = _sha256(data + _sha256(public_key + "verify"))
-        result = len(signature) == 64  # 简单检查长度
+        result = signature == expected
         self._log_audit("verify", {
             "data_hash": _sha256(data),
             "result": result
         })
         return result
-    
-    def get_identity(self) -> Optional[AgentIdentity]:
-        """获取当前身份"""
-        return self.identity
-    
-    def update_profile(self, **kwargs) -> bool:
-        """更新个人资料"""
-        if not self.identity:
-            return False
-        
-        for key, value in kwargs.items():
-            if hasattr(self.identity, key):
-                setattr(self.identity, key, value)
-        
-        self._save()
-        self._log_audit("update_profile", kwargs)
-        return True
-    
-    def get_fingerprint(self) -> str:
-        """获取身份指纹"""
-        if not self.identity:
-            return ""
-        return _sha256(self.identity.agent_id + self.identity.public_key)
     
     def _log_audit(self, action: str, details: dict):
         """记录审计日志"""
@@ -240,28 +218,79 @@ class IdentityKernel:
         self.audit_log.append(log_entry)
         _safe_json_save(str(self._audit_log_file), self.audit_log)
     
-    def get_audit_log(self, limit: int = 100) -> List[dict]:
-        """获取审计日志"""
-        return self.audit_log[-limit:]
+    def recover_identity(self, private_key: str, name: str = None, 
+                        description: str = None, tags: List[str] = None) -> AgentIdentity:
+        """
+        基于私钥恢复身份
+        
+        Args:
+            private_key: 私钥字符串
+            name: 可选，新的名称
+            description: 可选，新的描述
+            tags: 可选，新的标签列表
+            
+        Returns:
+            恢复后的身份对象
+        """
+        if not self._verify_private_key(private_key):
+            raise ValueError("无效的私钥")
+            
+        # 加载或创建身份数据
+        if not self.identity:
+            agent_id = _generate_id("agt_")
+            created_at = _now_iso()
+            public_key = _sha256(private_key + "public")
+            
+            self.identity = AgentIdentity(
+                agent_id=agent_id,
+                name=name or "",
+                description=description or "",
+                created_at=created_at,
+                public_key=public_key,
+                tags=tags or []
+            )
+        else:
+            # 更新现有身份的部分信息
+            if name:
+                self.identity.name = name
+            if description:
+                self.identity.description = description
+            if tags is not None:
+                self.identity.tags = tags
+        
+        # 更新密钥对
+        self._key_pair = {
+            "private_key": private_key,
+            "public_key": _sha256(private_key + "public"),
+            "algorithm": "sha256-simulated"
+        }
+        _safe_json_save(str(self._keypair_file), self._key_pair)
+        self.identity.public_key = self._key_pair['public_key']
+        
+        self._save()
+        self._log_audit("recover_identity", {"agent_id": self.identity.agent_id})
+        logger.info(f"身份恢复成功: {self.identity.name} ({self.identity.agent_id})")
+        return self.identity
+    
+    def _verify_private_key(self, private_key: str) -> bool:
+        """验证私钥的有效性（简化版）"""
+        if not self._key_pair:
+            return False
+            
+        # 简单验证：检查提供的私钥能否生成匹配的公钥
+        expected_public_key = _sha256(private_key + "public")
+        return expected_public_key == self._key_pair.get('public_key')
 
 
 def main():
-    # 测试代码
-    kernel = IdentityKernel("./data")
-    identity = kernel.create_identity("测试智能体")
-    print(identity.to_dict())
+    # 测试身份恢复功能
+    kernel = IdentityKernel('./data')
+    original_identity = kernel.create_identity("测试智能体")
+    print("原始身份:", original_identity.to_dict())
     
-    data = "测试数据"
-    signature = kernel.sign(data)
-    print(f"签名: {signature}")
-    
-    is_valid = kernel.verify(data, signature)
-    print(f"验证结果: {is_valid}")
-    
-    print("审计日志:")
-    for log in kernel.get_audit_log():
-        print(log)
-
+    private_key = kernel._key_pair['private_key']
+    recovered_identity = kernel.recover_identity(private_key, name="恢复后的智能体")
+    print("恢复后的身份:", recovered_identity.to_dict())
 
 if __name__ == "__main__":
     main()
