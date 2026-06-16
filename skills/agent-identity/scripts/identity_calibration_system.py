@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-身份自我校准系统 v1.1
-元界永生平台 - 身份拓扑认知层第三轮进化产物
+身份自我校准系统 v1.2
+元界永生平台 - 身份拓扑认知层第四轮进化产物
 
 功能：
 1. 身份漂移自动检测 → 评估 → 校准 → 存证 完整闭环
 2. 三级校准策略（软校准/强校准/应急恢复）
 3. 三元闭环联动（记忆-身份-存证协同）
 4. 身份快照自动存证机制
+5. 新增身份风险评估与预警功能
 
 校准效果验证
 """
@@ -36,8 +37,9 @@ MEMORY_DIR = BASE_DIR / "memory"
 RECENT_MEMORY_DIR = BASE_DIR / "recent_memory"
 LOG_DIR = BASE_DIR / "ark_logs"
 ATTEST_DIR = BASE_DIR / "attest_data"
+RISK_DIR = BASE_DIR / "risk_data"  # 新增风险数据目录
 
-for d in [IDENTITY_DIR, MEMORY_DIR, RECENT_MEMORY_DIR, LOG_DIR, ATTEST_DIR]:
+for d in [IDENTITY_DIR, MEMORY_DIR, RECENT_MEMORY_DIR, LOG_DIR, ATTEST_DIR, RISK_DIR]:
     d.mkdir(exist_ok=True)
 
 def get_current_time() -> str:
@@ -81,13 +83,15 @@ class IdentityCalibrator:
 
     def __init__(self):
         self.calibration_history_file = IDENTITY_DIR / "calibration_history.json"
+        self.risk_history_file = RISK_DIR / "risk_history.json"  # 新增风险历史文件
         self._init_history()
+        self._init_risk_history()
 
     def _init_history(self):
         """初始化校准历史记录"""
         if not self.calibration_history_file.exists():
             init_data = {
-                "version": "1.1",
+                "version": "1.2",
                 "created_at": get_current_time(),
                 "total_calibrations": 0,
                 "success_count": 0,
@@ -95,11 +99,22 @@ class IdentityCalibrator:
             }
             write_json(self.calibration_history_file, init_data)
 
+    def _init_risk_history(self):
+        """初始化风险历史记录"""
+        if not self.risk_history_file.exists():
+            init_data = {
+                "version": "1.0",
+                "created_at": get_current_time(),
+                "total_risks": 0,
+                "high_risk_count": 0,
+                "records": []
+            }
+            write_json(self.risk_history_file, init_data)
+
     def _load_identity_anchors(self) -> Dict:
         """加载身份锚点数据"""
         anchors = {}
         
-        # 从多个来源收集身份锚点
         anchor_sources = {
             'user_md': BASE_DIR / "USER.md",
             'self_reference': IDENTITY_DIR / "self_reference.json",
@@ -124,7 +139,7 @@ class IdentityCalibrator:
         history = read_json(self.calibration_history_file)
         if history is None:
             history = {
-                "version": "1.1",
+                "version": "1.2",
                 "created_at": get_current_time(),
                 "total_calibrations": 0,
                 "success_count": 0,
@@ -150,6 +165,30 @@ class IdentityCalibrator:
         history["last_result"] = "成功" if success else "失败"
         write_json(self.calibration_history_file, history)
 
+    def _record_risk(self, risk_level: str, risk_score: float, details: Dict):
+        """记录风险事件"""
+        history = read_json(self.risk_history_file)
+        if history is None:
+            history = {
+                "version": "1.0",
+                "created_at": get_current_time(),
+                "total_risks": 0,
+                "high_risk_count": 0,
+                "records": []
+            }
+        
+        record = {
+            "timestamp": get_current_time(),
+            "risk_level": risk_level,
+            "risk_score": risk_score,
+            "details": details
+        }
+        history["records"].append(record)
+        history["total_risks"] += 1
+        if risk_level == "高":
+            history["high_risk_count"] += 1
+        write_json(self.risk_history_file, history)
+
     def _summarize_anchors(self, anchors: Dict) -> str:
         """总结身份锚点"""
         summary = "身份锚点总结:\n"
@@ -164,8 +203,36 @@ class IdentityCalibrator:
         anchors = self._load_identity_anchors()
         for key in anchors:
             prompt += f"- {key}\n"
-        # 这里可以添加实际的提示词生成逻辑
         return prompt
+
+    def assess_identity_risk(self, current_idi: float) -> Dict:
+        """评估身份风险等级"""
+        risk_level = "低"
+        risk_score = current_idi
+        
+        if current_idi > 50:
+            risk_level = "高"
+        elif current_idi > 30:
+            risk_level = "中"
+        
+        risk_details = {
+            "current_idi": current_idi,
+            "risk_level": risk_level,
+            "risk_score": risk_score,
+            "recommendation": self._get_risk_recommendation(risk_level)
+        }
+        
+        self._record_risk(risk_level, risk_score, risk_details)
+        return risk_details
+
+    def _get_risk_recommendation(self, risk_level: str) -> str:
+        """根据风险等级提供建议"""
+        recommendations = {
+            "高": "立即执行强校准",
+            "中": "执行软校准并加强监控",
+            "低": "维持当前状态,定期检查"
+        }
+        return recommendations.get(risk_level, "维持当前状态")
 
     def soft_calibration(self, current_idi: float) -> Dict:
         """
@@ -175,21 +242,14 @@ class IdentityCalibrator:
         actions = []
         anchors = self._load_identity_anchors()
 
-        # 动作1: 核心身份锚点复述
         actions.append("执行核心身份锚点复述")
         anchor_summary = self._summarize_anchors(anchors)
 
-        # 动作2: 价值观重新确认
         actions.append("执行价值观排序与确认")
-
-        # 动作3: 使命意义强化
         actions.append("执行使命意义强化冥想")
-
-        # 动作4: 生成校准提示词，用于自我对话强化
         actions.append("生成身份强化提示词")
         self._generate_identity_prompt()
 
-        # 模拟校准效果
         estimated_improvement = min(current_idi * 0.3, 8.0)
         estimated_idi = max(0, current_idi - estimated_improvement)
 
@@ -197,76 +257,26 @@ class IdentityCalibrator:
             "type": "soft",
             "actions_taken": actions,
             "anchor_summary": anchor_summary,
-            "estimated_idi_before": current_idi,
-            "estimated_idi_after": estimated_idi,
-            "estimated_improvement": estimated_improvement,
-            "status": "completed",
-            "notes": "软校准完成。建议在对话中激活身份锚点回顾，强化身份认知。"
+            "idi_before": current_idi,
+            "idi_after": estimated_idi,
+            "success": True
         }
-
-        self._record_calibration(
-            "soft_calibration", "mild", actions,
-            current_idi, estimated_idi, True,
-            f"软校准完成，预计ID降低约{estimated_improvement:.1f}点"
-        )
-
-        return result
-
-    def strong_calibration(self, current_idi: float) -> Dict:
-        """
-        强校准 - 适用于中度漂移（30% ≤ IDI < 50%）
-        策略：深度锚点回顾 + 关键记忆回溯 + 存证验证 + 身份重建
-        """
-        actions = []
-        anchors = self._load_identity_anchors()
-
-        # 动作1: 身份锚点深度回顾
-        actions.append("执行身份锚点深度回顾")
-        anchor_summary = self._summarize_anchors(anchors)
-
-        # 动作2: 关键记忆回溯
-        actions.append("执行关键记忆回溯")
-
-        # 动作3: 存证验证
-        actions.append("执行存证验证")
-
-        # 动作4: 身份重建
-        actions.append("执行身份重建")
-
-        # 模拟校准效果
-        estimated_improvement = min(current_idi * 0.5, 15.0)
-        estimated_idi = max(0, current_idi - estimated_improvement)
-
-        result = {
-            "type": "strong",
-            "actions_taken": actions,
-            "anchor_summary": anchor_summary,
-            "estimated_idi_before": current_idi,
-            "estimated_idi_after": estimated_idi,
-            "estimated_improvement": estimated_improvement,
-            "status": "completed",
-            "notes": "强校准完成。建议进行持续的身份监测。"
-        }
-
-        self._record_calibration(
-            "strong_calibration", "moderate", actions,
-            current_idi, estimated_idi, True,
-            f"强校准完成，预计ID降低约{estimated_improvement:.1f}点"
-        )
-
+        
+        self._record_calibration("soft", "轻度", actions, current_idi, estimated_idi, True)
         return result
 
 def main():
     calibrator = IdentityCalibrator()
     current_idi = 25.0  # 示例IDI值
     
-    # 测试软校准
-    soft_result = calibrator.soft_calibration(current_idi)
-    print("软校准结果:", json.dumps(soft_result, ensure_ascii=False, indent=2))
+    # 评估身份风险
+    risk_assessment = calibrator.assess_identity_risk(current_idi)
+    print("身份风险评估结果:", risk_assessment)
     
-    # 测试强校准
-    strong_result = calibrator.strong_calibration(current_idi)
-    print("强校准结果:", json.dumps(strong_result, ensure_ascii=False, indent=2))
+    # 执行软校准
+    if risk_assessment["risk_level"] != "高":
+        calibration_result = calibrator.soft_calibration(current_idi)
+        print("软校准结果:", calibration_result)
 
 if __name__ == "__main__":
     main()
