@@ -127,20 +127,85 @@ class ConfigManager:
     def to_dict(self) -> Dict:
         return self._config.copy()
 
-# 示例用法
+import unittest
+from tempfile import NamedTemporaryFile
+from unittest.mock import patch, MagicMock
+
+class TestUtils(unittest.TestCase):
+
+    def test_validate_email(self):
+        self.assertTrue(validate_email("test@example.com"))
+        self.assertFalse(validate_email("invalid_email"))
+        self.assertFalse(validate_email(""))
+
+    def test_validate_url(self):
+        self.assertTrue(validate_url("http://example.com"))
+        self.assertTrue(validate_url("https://example.com"))
+        self.assertFalse(validate_url("invalid_url"))
+        self.assertFalse(validate_url(""))
+
+    def test_safe_json_loads(self):
+        self.assertEqual(safe_json_loads('{"key": "value"}'), {"key": "value"})
+        self.assertIsNone(safe_json_loads('invalid_json'))
+        self.assertEqual(safe_json_loads('invalid_json', default="default"), "default")
+
+    def test_dict_get_nested(self):
+        d = {"a": {"b": {"c": "value"}}}
+        self.assertEqual(dict_get_nested(d, "a.b.c"), "value")
+        self.assertIsNone(dict_get_nested(d, "a.b.d"))
+        self.assertEqual(dict_get_nested(d, "a.b.d", default="default"), "default")
+
+    def test_retry(self):
+        @retry(max_attempts=3)
+        def mock_func():
+            raise Exception("Test exception")
+
+        with self.assertRaises(Exception):
+            mock_func()
+
+        @retry(max_attempts=3)
+        def mock_func_success():
+            return "Success"
+
+        self.assertEqual(mock_func_success(), "Success")
+
+    def test_monitor_performance(self):
+        @monitor_performance
+        def mock_func():
+            time.sleep(0.1)
+            return "Success"
+
+        self.assertEqual(mock_func(), "Success")
+
+    def test_config_manager_load(self):
+        with NamedTemporaryFile(mode='w', encoding='utf-8') as tmp_file:
+            json.dump({"key": "value"}, tmp_file)
+            tmp_file.flush()
+            config = ConfigManager(tmp_file.name)
+            self.assertEqual(config.get("key"), "value")
+
+    def test_config_manager_get_set(self):
+        config = ConfigManager()
+        config.set("a.b.c", "value")
+        self.assertEqual(config.get("a.b.c"), "value")
+
+    def test_config_manager_to_dict(self):
+        config = ConfigManager()
+        config.set("a.b.c", "value")
+        self.assertEqual(config.to_dict(), {"a": {"b": {"c": "value"}}})
+
+    def test_config_manager_load_invalid_json(self):
+        with NamedTemporaryFile(mode='w', encoding='utf-8') as tmp_file:
+            tmp_file.write("invalid_json")
+            tmp_file.flush()
+            config = ConfigManager(tmp_file.name)
+            self.assertEqual(config.to_dict(), {})
+
+    def test_config_manager_set_nested_key_error(self):
+        config = ConfigManager()
+        config.set("a.b", "value")
+        with self.assertRaises(ValueError):
+            config.set("a.b.c", "value")
+
 if __name__ == "__main__":
-    @monitor_performance
-    @retry(max_attempts=3)
-    def example_function() -> Union[str, None]:
-        time.sleep(1)
-        # 模拟可能失败的操作
-        import random
-        if random.random() < 0.5:
-            raise Exception("模拟错误")
-        return "成功"
-    
-    print(example_function())
-    
-    config = ConfigManager()
-    config.set('test.key', 'value')
-    print(config.get('test.key'))
+    unittest.main()
