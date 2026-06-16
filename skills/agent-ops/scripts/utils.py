@@ -192,6 +192,39 @@ def calculate_project_duration(tasks: List[Dict]) -> int:
     return duration
 
 
+def identify_critical_path(tasks: List[Dict]) -> List[str]:
+    """
+    识别项目关键路径
+    
+    Args:
+    tasks: 包含任务信息的字典列表，每个字典应包含'name', 'start_date', 'end_date'和'dependencies'键
+    
+    Returns:
+    关键路径上的任务名称列表
+    """
+    # 首先生成项目时间线
+    timeline = generate_project_timeline(tasks)
+    
+    # 计算每个任务的最早开始和最晚结束时间
+    task_info = {task['name']: {'start_date': task['start_date'], 'end_date': task['end_date']} for task in timeline}
+    from datetime import datetime
+    
+    # 计算最早开始和最晚结束时间
+    earliest_start = min(datetime.strptime(task_info[task]['start_date'], '%Y-%m-%d') for task in task_info)
+    latest_end = max(datetime.strptime(task_info[task]['end_date'], '%Y-%m-%d') for task in task_info)
+    
+    # 识别关键路径
+    critical_path = []
+    for task in timeline:
+        task_start = datetime.strptime(task['start_date'], '%Y-%m-%d')
+        task_end = datetime.strptime(task['end_date'], '%Y-%m-%d')
+        if task_start == earliest_start or task_end == latest_end:
+            critical_path.append(task['name'])
+        earliest_start = max(earliest_start, task_end)
+    
+    return critical_path
+
+
 # 示例用法
 if __name__ == "__main__":
     tasks = [
@@ -206,3 +239,6 @@ if __name__ == "__main__":
     
     duration = calculate_project_duration(timeline)
     print(f"项目总时长: {duration} 天")
+    
+    critical_path = identify_critical_path(tasks)
+    print(f"关键路径: {critical_path}")
