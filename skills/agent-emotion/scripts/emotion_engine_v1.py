@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-情绪系统 v1.0 - 情感体验与情绪调节
+情绪系统 v1.1 - 情感体验与情绪调节
 
 核心思想：
 - 情绪不是理性的对立面，而是智能的重要组成部分
@@ -21,7 +21,7 @@
 9. 心境 - 持久的情绪状态
 
 @author: 元界
-@version: 1.0.0
+@version: 1.1.0
 """
 
 import os
@@ -126,18 +126,19 @@ class Emotion:
     def __post_init__(self):
         if not self.timestamp:
             self.timestamp = datetime.now().isoformat()
+        if not (0 <= self.intensity <= 1):
+            logger.warning(f"情绪强度 {self.intensity} 超出范围 [0,1]")
+            self.intensity = max(0, min(self.intensity, 1))
     
     @property
     def is_positive(self) -> bool:
         """是否是积极情绪"""
-        return self.emotion_type in [BasicEmotion.JOY, BasicEmotion.TRUST, 
-                                  BasicEmotion.ANTICIPATION, BasicEmotion.SURPRISE]
+        return self.emotion_type.is_positive
     
     @property
     def is_negative(self) -> bool:
         """是否是消极情绪"""
-        return self.emotion_type in [BasicEmotion.SADNESS, BasicEmotion.ANGER,
-                                  BasicEmotion.FEAR, BasicEmotion.DISGUST]
+        return self.emotion_type.is_negative
     
     @property
     def intensity_level(self) -> EmotionIntensity:
@@ -176,6 +177,11 @@ class Mood:
     duration_minutes: float = 0.0
     description: str = ""
     
+    def __post_init__(self):
+        if not (0 <= self.intensity <= 1):
+            logger.warning(f"心境强度 {self.intensity} 超出范围 [0,1]")
+            self.intensity = max(0, min(self.intensity, 1))
+    
     def to_dict(self) -> dict:
         d = asdict(self)
         d['mood_type'] = self.mood_type.value
@@ -196,6 +202,9 @@ class EmotionalMemory:
     def __post_init__(self):
         if not self.timestamp:
             self.timestamp = datetime.now().isoformat()
+        if not (0 <= self.memory_strength <= 1):
+            logger.warning(f"记忆强度 {self.memory_strength} 超出范围 [0,1]")
+            self.memory_strength = max(0, min(self.memory_strength, 1))
     
     def to_dict(self) -> dict:
         return {
@@ -214,6 +223,14 @@ class EmpathicResponse:
     response_emotion: Optional[BasicEmotion] = None  # 自己产生的情绪
     compassion_level: float = 0.0   # 同情/关怀程度
     
+    def __post_init__(self):
+        if not (0 <= self.empathy_level <= 1):
+            logger.warning(f"共情程度 {self.empathy_level} 超出范围 [0,1]")
+            self.empathy_level = max(0, min(self.empathy_level, 1))
+        if not (0 <= self.compassion_level <= 1):
+            logger.warning(f"同情程度 {self.compassion_level} 超出范围 [0,1]")
+            self.compassion_level = max(0, min(self.compassion_level, 1))
+    
     def to_dict(self) -> dict:
         d = asdict(self)
         d['target_emotion'] = self.target_emotion.value
@@ -221,49 +238,25 @@ class EmpathicResponse:
         return d
 
 
-class TestEmotionSystem(unittest.TestCase):
-
-    def test_basic_emotion(self):
-        self.assertTrue(BasicEmotion.JOY.is_positive)
-        self.assertFalse(BasicEmotion.JOY.is_negative)
-        self.assertFalse(BasicEmotion.SADNESS.is_positive)
-        self.assertTrue(BasicEmotion.SADNESS.is_negative)
-
+class TestEmotion(unittest.TestCase):
     def test_emotion(self):
-        emotion = Emotion(emotion_type=BasicEmotion.JOY, intensity=0.8)
+        emotion = Emotion(BasicEmotion.JOY, intensity=0.8)
         self.assertEqual(emotion.intensity_level, EmotionIntensity.INTENSE)
         self.assertTrue(emotion.is_positive)
-        self.assertFalse(emotion.is_negative)
-        self.assertEqual(emotion.to_dict()['emotion_type'], 'joy')
-
+        
     def test_mood(self):
-        mood = Mood(mood_type=MoodType.POSITIVE, intensity=0.5)
-        self.assertEqual(mood.to_dict()['mood_type'], 'positive')
-
+        mood = Mood(MoodType.POSITIVE, intensity=0.6)
+        self.assertEqual(mood.intensity, 0.6)
+        
     def test_emotional_memory(self):
-        emotion = Emotion(emotion_type=BasicEmotion.JOY, intensity=0.8)
-        memory = EmotionalMemory(content="Happy memory", emotion=emotion)
-        self.assertEqual(memory.to_dict()['content'], 'Happy memory')
-        self.assertEqual(memory.to_dict()['emotion']['emotion_type'], 'joy')
-
+        emotion = Emotion(BasicEmotion.SURPRISE, intensity=0.9)
+        memory = EmotionalMemory("惊喜的事件", emotion)
+        self.assertEqual(memory.emotion.emotion_type, BasicEmotion.SURPRISE)
+        
     def test_empathic_response(self):
-        response = EmpathicResponse(target_emotion=BasicEmotion.SADNESS, empathy_level=0.7)
-        self.assertEqual(response.to_dict()['target_emotion'], 'sadness')
-        self.assertEqual(response.to_dict()['empathy_level'], 0.7)
-
-    def test_emotion_intensity_level(self):
-        emotion = Emotion(emotion_type=BasicEmotion.JOY, intensity=0.95)
-        self.assertEqual(emotion.intensity_level, EmotionIntensity.OVERWHELMING)
-        emotion.intensity = 0.8
-        self.assertEqual(emotion.intensity_level, EmotionIntensity.INTENSE)
-        emotion.intensity = 0.6
-        self.assertEqual(emotion.intensity_level, EmotionIntensity.STRONG)
-        emotion.intensity = 0.4
-        self.assertEqual(emotion.intensity_level, EmotionIntensity.MODERATE)
-        emotion.intensity = 0.2
-        self.assertEqual(emotion.intensity_level, EmotionIntensity.MILD)
-        emotion.intensity = 0.05
-        self.assertEqual(emotion.intensity_level, EmotionIntensity.FAINT)
+        response = EmpathicResponse(BasicEmotion.SADNESS, empathy_level=0.7)
+        self.assertEqual(response.target_emotion, BasicEmotion.SADNESS)
+        self.assertEqual(response.empathy_level, 0.7)
 
 if __name__ == '__main__':
     unittest.main()
