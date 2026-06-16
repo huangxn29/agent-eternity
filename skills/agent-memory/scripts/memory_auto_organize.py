@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-记忆自动整理系统 v2.0
+记忆自动整理系统 v2.1
 元界永生平台 - 记忆系统自动维护模块
 
 功能：
@@ -10,6 +10,7 @@
 3. 过期记忆清理与归档
 4. 记忆关联自动发现
 5. 核心记忆定期备份
+6. 记忆主题分析与可视化
 
 使用说明：
 1. 确保 memory 和 recent_memory 目录存在
@@ -28,6 +29,7 @@ import hashlib
 import datetime
 from pathlib import Path
 import logging
+import matplotlib.pyplot as plt
 
 # 配置日志系统
 os.makedirs('logs', exist_ok=True)
@@ -46,6 +48,8 @@ BASE_DIR = Path(__file__).parent.absolute()
 MEMORY_DIR = BASE_DIR / "memory"
 RECENT_MEMORY_DIR = BASE_DIR / "recent_memory"
 LOG_DIR = BASE_DIR / "ark_logs"
+VISUALIZATION_DIR = BASE_DIR / "visualization"
+VISUALIZATION_DIR.mkdir(exist_ok=True)
 
 def get_current_time():
     """
@@ -219,7 +223,7 @@ def check_index_integrity():
 
 def analyze_memory_topics():
     """
-    分析记忆主题分布
+    分析记忆主题分布并生成可视化图表
     
     Returns:
         dict: 主题分布结果，按得分降序排序
@@ -228,6 +232,7 @@ def analyze_memory_topics():
     1. 基于预定义的主题关键词进行匹配
     2. 统计各主题出现的频次
     3. 归一化处理得到主题得分
+    4. 生成柱状图展示主题分布
     """
     index_file = RECENT_MEMORY_DIR / "index.json"
     index = read_json(index_file)
@@ -244,74 +249,54 @@ def analyze_memory_topics():
         "系统": ["系统", "架构", "模块", "组件", "框架", "结构"],
         "价值": ["价值", "意义", "使命", "目标", "原则", "信念"],
         "关系": ["关系", "连接", "网络", "社区", "交互", "共鸣"],
-        "技术": ["技术", "代码", "脚本", "API", "接口", "协议"]
+        "技术": ["技术", "实现", "方案", "架构", "算法", "工具"]
     }
     
-    topic_scores = {}
-    total_count = 0
+    topic_scores = {topic: 0 for topic in topic_keywords}
     
     for item in index:
-        text = item.get('summary', '') + ' ' + ' '.join(item.get('tags', []))
-        for topic, keywords in topic_keywords.items():
-            count = sum(1 for kw in keywords if kw in text)
-            if count > 0:
-                topic_scores[topic] = topic_scores.get(topic, 0) + count
-                total_count += count
+        content = read_file(RECENT_MEMORY_DIR / item.get('file_name', '').lstrip('../'))
+        if content:
+            for topic, keywords in topic_keywords.items():
+                score = sum(1 for kw in keywords if kw in content)
+                topic_scores[topic] += score
     
     # 归一化处理
-    if total_count > 0:
-        for topic in topic_scores:
-            topic_scores[topic] = round((topic_scores[topic] / total_count) * 100, 1)
+    max_score = max(topic_scores.values(), default=1)
+    if max_score > 0:
+        topic_scores = {k: (v / max_score * 100) for k, v in topic_scores.items()}
     
-    # 按得分降序排序
-    sorted_scores = dict(sorted(topic_scores.items(), key=lambda x: x[1], reverse=True))
-    logger.info(f"主题分析完成: 主要主题={list(sorted_scores.keys())[:3]}")
-    return sorted_scores
-
-def generate_memory_health_report():
-    """
-    生成记忆系统健康报告
-    
-    Returns:
-        dict: 健康报告数据，包含索引完整性检查和主题分析结果
-    
-    报告内容：
-    1. 索引完整性检查结果
-    2. 主题分布分析结果
-    3. 生成时间戳
-    """
-    now = get_current_time()
-    logger.info(f"开始生成记忆健康报告: {now}")
-    
+    # 生成可视化图表
     try:
-        # 索引完整性检查
-        integrity = check_index_integrity()
+        sorted_topics = sorted(topic_scores.items(), key=lambda x: x[1], reverse=True)
+        topics = [t[0] for t in sorted_topics]
+        scores = [t[1] for t in sorted_topics]
         
-        # 主题分析
-        topics = analyze_memory_topics()
-        
-        report = {
-            "timestamp": now,
-            "integrity_check": integrity,
-            "topic_analysis": topics
-        }
-        
-        # 保存报告
-        report_file = LOG_DIR / f"memory_health_report_{now.replace(':', '-').replace(' ', '_')}.json"
-        write_json(report_file, report)
-        
-        logger.info(f"记忆健康报告生成完成: {report_file}")
-        return report
-    
+        plt.figure(figsize=(12, 6))
+        plt.bar(topics, scores)
+        plt.xlabel('主题')
+        plt.ylabel('得分')
+        plt.title('记忆主题分布')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        visualization_file = VISUALIZATION_DIR / f"topic_distribution_{timestamp}.png"
+        plt.savefig(visualization_file)
+        plt.close()
+        logger.info(f"主题分布图已保存到: {visualization_file}")
     except Exception as e:
-        logger.error(f"生成健康报告失败: {e}")
-        return None
+        logger.error(f"生成可视化图表失败: {e}")
+    
+    return dict(sorted(topic_scores.items(), key=lambda x: x[1], reverse=True))
+
+def main():
+    # 检查索引完整性
+    integrity_result = check_index_integrity()
+    logger.info(f"索引完整性评分: {integrity_result.get('integrity_score', 0)}")
+    
+    # 分析记忆主题
+    topic_distribution = analyze_memory_topics()
+    logger.info(f"主题分布: {topic_distribution}")
 
 if __name__ == "__main__":
-    # 示例用法
-    report = generate_memory_health_report()
-    if report:
-        print("健康报告生成成功")
-        print(json.dumps(report, ensure_ascii=False, indent=2))
-    else:
-        print("健康报告生成失败")
+    main()
