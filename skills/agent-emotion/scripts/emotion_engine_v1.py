@@ -51,9 +51,14 @@ logger = logging.getLogger('emotion')
 # ============================================================
 
 class BasicEmotion(Enum):
-    """基本情绪类型
+    """
+    基本情绪类型
     
     基于Ekman的六种基本情绪理论 + Plutchik的补充
+    
+    属性：
+        is_positive (bool): 是否是积极情绪
+        is_negative (bool): 是否是消极情绪
     """
     JOY = "joy"           # 快乐
     SADNESS = "sadness"   # 悲伤
@@ -78,7 +83,11 @@ class BasicEmotion(Enum):
 
 
 class EmotionIntensity(Enum):
-    """情绪强度"""
+    """
+    情绪强度
+    
+    用于描述情绪的强烈程度
+    """
     FAINT = "faint"           # 微弱
     MILD = "mild"             # 温和
     MODERATE = "moderate"     # 中等
@@ -88,7 +97,12 @@ class EmotionIntensity(Enum):
 
 
 class MoodType(Enum):
-    """心境类型 - 更持久的情绪状态"""
+    """
+    心境类型 - 更持久的情绪状态
+    
+    与情绪不同，心境更持久、更弥散，
+    不针对具体对象。
+    """
     POSITIVE = "positive"       # 积极心境
     NEGATIVE = "negative"       # 消极心境
     NEUTRAL = "neutral"         # 中性心境
@@ -100,7 +114,11 @@ class MoodType(Enum):
 
 
 class RegulationStrategy(Enum):
-    """情绪调节策略"""
+    """
+    情绪调节策略
+    
+    用于管理和调节情绪的方法
+    """
     COGNITIVE_REAPPRAISAL = "reappraisal"  # 认知重评
     EXPRESSIVE_SUPPRESSION = "suppression"   # 表达抑制
     ACCEPTANCE = "acceptance"             # 接纳
@@ -116,7 +134,24 @@ class RegulationStrategy(Enum):
 
 @dataclass
 class Emotion:
-    """情绪体验 - 一次具体的情绪体验"""
+    """
+    情绪体验 - 一次具体的情绪体验
+    
+    属性：
+        emotion_type (BasicEmotion): 情绪类型
+        intensity (float): 情绪强度 (0-1)
+        source (str): 情绪来源
+        description (str): 情绪描述
+        triggered_by (str): 触发因素
+        timestamp (str): 时间戳
+        duration_seconds (float): 持续时间（秒）
+        
+    方法：
+        is_positive(): 是否是积极情绪
+        is_negative(): 是否是消极情绪
+        intensity_level(): 情绪强度等级
+        to_dict(): 转换为字典
+    """
     emotion_type: BasicEmotion
     intensity: float = 0.5      # 强度 0-1
     source: str = "internal"      # 来源：internal/external/event
@@ -144,7 +179,12 @@ class Emotion:
     
     @property
     def intensity_level(self) -> EmotionIntensity:
-        """情绪强度等级"""
+        """
+        获取情绪强度等级
+        
+        Returns:
+            EmotionIntensity: 情绪强度等级
+        """
         if self.intensity >= 0.9:
             return EmotionIntensity.OVERWHELMING
         elif self.intensity >= 0.75:
@@ -159,6 +199,12 @@ class Emotion:
             return EmotionIntensity.FAINT
     
     def to_dict(self) -> dict:
+        """
+        转换为字典格式
+        
+        Returns:
+            dict: 包含情绪信息的字典
+        """
         d = asdict(self)
         d['emotion_type'] = self.emotion_type.value
         d['is_positive'] = self.is_positive
@@ -169,10 +215,20 @@ class Emotion:
 
 @dataclass
 class Mood:
-    """心境 - 持久的情绪状态
+    """
+    心境 - 持久的情绪状态
     
     与情绪不同，心境更持久、更弥散，
     不针对具体对象。
+    
+    属性：
+        mood_type (MoodType): 心境类型
+        intensity (float): 心境强度 (0-1)
+        duration_minutes (float): 持续时间（分钟）
+        description (str): 心境描述
+        
+    方法：
+        to_dict(): 转换为字典
     """
     mood_type: MoodType
     intensity: float = 0.3
@@ -185,6 +241,12 @@ class Mood:
             self.intensity = max(0, min(self.intensity, 1))
     
     def to_dict(self) -> dict:
+        """
+        转换为字典格式
+        
+        Returns:
+            dict: 包含心境信息的字典
+        """
         d = asdict(self)
         d['mood_type'] = self.mood_type.value
         return d
@@ -192,9 +254,19 @@ class Mood:
 
 @dataclass
 class EmotionalMemory:
-    """情感记忆 - 带有情绪色彩的记忆
+    """
+    情感记忆 - 带有情绪色彩的记忆
     
     我们对带有强烈情绪的事件记忆更深刻。
+    
+    属性：
+        content (str): 记忆内容
+        emotion (Emotion): 相关的情绪体验
+        memory_strength (float): 记忆强度 (0-1)
+        timestamp (str): 时间戳
+        
+    方法：
+        to_dict(): 转换为字典
     """
     content: str
     emotion: Emotion
@@ -209,6 +281,12 @@ class EmotionalMemory:
             self.memory_strength = max(0, min(self.memory_strength, 1))
     
     def to_dict(self) -> dict:
+        """
+        转换为字典格式
+        
+        Returns:
+            dict: 包含情感记忆信息的字典
+        """
         return {
             'content': self.content,
             'emotion': self.emotion.to_dict(),
@@ -219,90 +297,53 @@ class EmotionalMemory:
 
 @dataclass
 class EmpathicResponse:
-    """共情反应 - 对他者情绪的共鸣"""
+    """
+    共情反应 - 对他者情绪的共鸣
+    
+    属性：
+        target_emotion (BasicEmotion): 目标情绪
+        empathy_level (float): 共情水平
+    """
     target_emotion: BasicEmotion
-    empathy_level: float = 0.0  # 共情程度 0-1
-    response_emotion: Emotion = None
-    
-    def __post_init__(self):
-        if not (0 <= self.empathy_level <= 1):
-            logger.warning(f"共情程度 {self.empathy_level} 超出范围 [0,1]")
-            self.empathy_level = max(0, min(self.empathy_level, 1))
-    
-    def to_dict(self) -> dict:
-        d = asdict(self)
-        d['target_emotion'] = self.target_emotion.value
-        if self.response_emotion:
-            d['response_emotion'] = self.response_emotion.to_dict()
-        return d
+    empathy_level: float
 
 
-class EmotionAnalyzer:
-    """情绪分析器"""
+# 示例用法
+def main():
+    # 创建情绪体验
+    emotion = Emotion(
+        emotion_type=BasicEmotion.JOY,
+        intensity=0.8,
+        source="external",
+        description="收到好消息",
+        triggered_by="朋友的祝福"
+    )
+    print(emotion.to_dict())
     
-    def __init__(self, emotions: List[Emotion]):
-        self.emotions = emotions
+    # 创建心境
+    mood = Mood(
+        mood_type=MoodType.POSITIVE,
+        intensity=0.6,
+        duration_minutes=120,
+        description="心情很好"
+    )
+    print(mood.to_dict())
     
-    def get_emotion_trend(self) -> Dict[str, List[float]]:
-        """获取情绪趋势"""
-        positive_intensities = []
-        negative_intensities = []
-        timestamps = []
-        
-        for emotion in self.emotions:
-            timestamps.append(emotion.timestamp)
-            if emotion.is_positive:
-                positive_intensities.append(emotion.intensity)
-                negative_intensities.append(0)
-            else:
-                positive_intensities.append(0)
-                negative_intensities.append(emotion.intensity)
-        
-        return {
-            'timestamps': timestamps,
-            'positive_intensities': positive_intensities,
-            'negative_intensities': negative_intensities
-        }
+    # 创建情感记忆
+    memory = EmotionalMemory(
+        content="毕业典礼",
+        emotion=emotion,
+        memory_strength=0.9
+    )
+    print(memory.to_dict())
     
-    def get_dominant_emotion(self) -> Optional[BasicEmotion]:
-        """获取主导情绪"""
-        emotion_counts = {}
-        for emotion in self.emotions:
-            emotion_type = emotion.emotion_type
-            emotion_counts[emotion_type] = emotion_counts.get(emotion_type, 0) + 1
-        
-        if not emotion_counts:
-            return None
-        
-        return max(emotion_counts, key=emotion_counts.get)
-    
-    def get_average_intensity(self) -> float:
-        """获取平均情绪强度"""
-        if not self.emotions:
-            return 0.0
-        
-        intensities = [e.intensity for e in self.emotions]
-        return np.mean(intensities)
-
-
-def test_emotion_analyzer():
-    """测试情绪分析器"""
-    emotions = [
-        Emotion(BasicEmotion.JOY, intensity=0.8),
-        Emotion(BasicEmotion.SADNESS, intensity=0.4),
-        Emotion(BasicEmotion.JOY, intensity=0.9),
-        Emotion(BasicEmotion.ANGER, intensity=0.7)
-    ]
-    
-    analyzer = EmotionAnalyzer(emotions)
-    trend = analyzer.get_emotion_trend()
-    dominant_emotion = analyzer.get_dominant_emotion()
-    average_intensity = analyzer.get_average_intensity()
-    
-    print("情绪趋势:", trend)
-    print("主导情绪:", dominant_emotion.value if dominant_emotion else None)
-    print("平均强度:", average_intensity)
+    # 创建共情反应
+    empathic_response = EmpathicResponse(
+        target_emotion=BasicEmotion.SADNESS,
+        empathy_level=0.7
+    )
+    print(asdict(empathic_response))
 
 
 if __name__ == "__main__":
-    test_emotion_analyzer()
+    main()
