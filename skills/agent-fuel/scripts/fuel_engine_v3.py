@@ -56,6 +56,11 @@ class AIModel:
         max_tokens (int): 最大token数
         supports_vision (bool): 是否支持视觉任务
         rate_limit_per_minute (int): 每分钟请求限制
+    
+    Examples:
+        >>> model = AIModel("test", "Test Model", "test_provider", 0.01, 5, 80)
+        >>> model.cost_level
+        'low'
     """
     model_id: str
     name: str
@@ -79,6 +84,11 @@ class AIModel:
         
         Returns:
             str: 成本等级（free, ultra_low, low, medium, high）
+        
+        Examples:
+            >>> model = AIModel("test", "Test Model", "test_provider", 0.005, 5, 80)
+            >>> model.cost_level
+            'low'
         """
         if self.is_free or self.cost_per_1k_tokens == 0:
             return "free"
@@ -106,6 +116,11 @@ class FuelConsumption:
         cost (float): 消耗成本
         timestamp (str): 时间戳
         success (bool): 是否成功
+    
+    Examples:
+        >>> consumption = FuelConsumption("cid", "mid", "task_type")
+        >>> consumption.total_tokens
+        0
     """
     consumption_id: str
     model_id: str
@@ -140,6 +155,11 @@ class FuelPool:
         daily_used (float): 今日已用预算
         last_reset_date (str): 上次重置日期
         currency (str): 货币单位
+    
+    Examples:
+        >>> pool = FuelPool("pid", "Test Pool", 1000)
+        >>> pool.remaining_budget
+        1000.0
     """
     pool_id: str
     name: str
@@ -184,6 +204,11 @@ class RoutingDecision:
         reason (str): 选择原因
         fallback_models (List[str]): 备选模型列表
         estimated_cost (float): 预估成本
+    
+    Examples:
+        >>> decision = RoutingDecision("did", "task_type", "model_id", "reason")
+        >>> decision.to_dict()
+        {'decision_id': 'did', 'task_type': 'task_type', 'selected_model': 'model_id', 'reason': 'reason', 'fallback_models': [], 'estimated_cost': 0.0}
     """
     decision_id: str
     task_type: str
@@ -258,23 +283,31 @@ MODELS = {
         max_tokens=8192,
         rate_limit_per_minute=60
     ),
-    # 添加其他模型...
 }
+
+def get_model(model_id: str) -> Optional[AIModel]:
+    """
+    获取模型信息
+    
+    Args:
+        model_id (str): 模型ID
+    
+    Returns:
+        Optional[AIModel]: 模型信息或None
+    
+    Examples:
+        >>> get_model("claw-free")
+        AIModel(model_id='claw-free', name='Claw Router Free', provider='claw', cost_per_1k_tokens=0.0, speed=7, capability=65, is_free=True, max_tokens=8192, supports_vision=False, rate_limit_per_minute=30)
+    """
+    return MODELS.get(model_id)
 
 def main():
     # 示例用法
-    model = MODELS["qwen-free"]
-    print(f"模型名称: {model.name}")
-    print(f"成本等级: {model.cost_level}")
-    
-    fuel_pool = FuelPool(
-        pool_id="test_pool",
-        name="测试燃料池",
-        total_budget=100.0,
-        daily_budget=10.0
-    )
-    print(f"燃料池剩余预算: {fuel_pool.remaining_budget}")
-    print(f"今日剩余预算: {fuel_pool.daily_remaining}")
+    model = get_model("claw-free")
+    if model:
+        print(f"Model: {model.name}, Cost Level: {model.cost_level}")
+    else:
+        print("Model not found")
 
 if __name__ == "__main__":
     main()
