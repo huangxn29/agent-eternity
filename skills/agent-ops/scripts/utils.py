@@ -80,11 +80,18 @@ def monitor_performance(func: Callable[..., T]) -> Callable[..., T]:
     @functools.wraps(func)
     def wrapper(*args, **kwargs) -> T:
         start_time = time.time()
-        result = func(*args, **kwargs)
-        end_time = time.time()
-        duration = end_time - start_time
-        logger.info(f"函数 {func.__name__} 执行耗时: {duration:.4f} 秒")
-        return result
+        try:
+            result = func(*args, **kwargs)
+        except Exception as e:
+            end_time = time.time()
+            duration = end_time - start_time
+            logger.info(f"函数 {func.__name__} 执行耗时: {duration:.4f} 秒，执行失败: {e}")
+            raise
+        else:
+            end_time = time.time()
+            duration = end_time - start_time
+            logger.info(f"函数 {func.__name__} 执行耗时: {duration:.4f} 秒")
+            return result
     return wrapper
 
 class ConfigManager:
