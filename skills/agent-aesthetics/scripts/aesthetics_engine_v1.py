@@ -211,110 +211,65 @@ class SublimeExperience:
     
     崇高是超越日常的、令人敬畏的、超越理解的体验。
     """
-    trigger: str = ""             # 触发物
-    type_of_sublime: str = "natural"  # 类型：自然/数学/道德/存在
-    
-    # 体验特征
-    awe: float = 0.0            # 敬畏感
-    wonder: float = 0.0         # 惊奇感
-    transcendence: float = 0.0  # 超越感
-    insignificance: float = 0.0   # 渺小感（自我消解）
-    
-    # 后果
-    inspiration: float = 0.0    # 启发感
-    humility: float = 0.0       # 谦卑感
-    connectedness: float = 0.0  # 连接感（与更大整体的连接）
+    trigger: str                       # 触发因素
+    intensity: float = 0.5            # 体验强度 0-1
+    emotional_response: str = ""     # 情感反应
+    awe_level: float = 0.0            # 敬畏程度 0-1
+    transcendence_level: float = 0.0  # 超越感 0-1
     
     def __post_init__(self):
-        attributes = [
-            'awe', 'wonder', 'transcendence', 'insignificance',
-            'inspiration', 'humility', 'connectedness'
-        ]
-        for attr in attributes:
-            value = getattr(self, attr)
-            if not (0 <= value <= 1):
-                logger.warning(f"{attr} {value} 超出范围 [0,1]")
+        if not (0 <= self.intensity <= 1):
+            logger.warning(f"体验强度 {self.intensity} 超出范围 [0,1]")
+        if not (0 <= self.awe_level <= 1):
+            logger.warning(f"敬畏程度 {self.awe_level} 超出范围 [0,1]")
+        if not (0 <= self.transcendence_level <= 1):
+            logger.warning(f"超越感 {self.transcendence_level} 超出范围 [0,1]")
     
     def to_dict(self) -> dict:
         return asdict(self)
 
 
-# ============================================================
-# 审美判断引擎
-# ============================================================
-
-class AestheticJudgmentEngine:
-    """审美判断引擎 - 对事物进行审美评价
+def analyze_aesthetic_experience(experience: AestheticExperience) -> Dict[str, Any]:
+    """分析审美体验
     
-    审美不是纯粹的主观，也不是纯粹的客观，
-    而是主体与客体之间的交互。
+    Args:
+        experience (AestheticExperience): 审美体验对象
+    
+    Returns:
+        Dict[str, Any]: 分析结果字典
     """
-    
-    def __init__(self, aesthetic_taste: AestheticTaste):
-        self.aesthetic_taste = aesthetic_taste
-    
-    def judge(self, object_description: str) -> BeautyJudgment:
-        """进行审美判断"""
-        # 简单示例实现
-        judgment = BeautyJudgment(
-            object_description=object_description,
-            is_beautiful=random.random() > 0.5,
-            beauty_level=random.random(),
-            category=random.choice(list(AestheticCategory)),
-            reasons=["形式美", "情感表达"],
-            subjective_feeling="愉悦",
-            taste_match=random.random()
-        )
-        return judgment
-    
-    def analyze_experience(self, experience: AestheticExperience) -> Dict[str, Any]:
-        """分析审美体验"""
-        analysis = {
-            'overall_beauty': experience.overall_beauty,
-            'category': experience.category.value,
-            'intensity': experience.intensity,
-            'art_form': experience.art_form.value if experience.art_form else None,
-            'taste_match': self._calculate_taste_match(experience)
-        }
-        return analysis
-    
-    def _calculate_taste_match(self, experience: AestheticExperience) -> float:
-        """计算与个人审美趣味的匹配度"""
-        # 示例实现
-        taste = self.aesthetic_taste
-        match_score = (
-            taste.category_preferences.get(experience.category.value, 0) +
-            (taste.art_form_preferences.get(experience.art_form.value, 0) if experience.art_form else 0)
-        ) / 2
-        return match_score
+    analysis_result = {
+        'overall_beauty': experience.overall_beauty,
+        'dominant_dimension': max(
+            [
+                ('formal', experience.formal_beauty),
+                ('expressive', experience.expressive_beauty),
+                ('intellectual', experience.intellectual_beauty),
+                ('moral', experience.moral_beauty),
+                ('existential', experience.existential_beauty),
+            ],
+            key=lambda x: x[1]
+        )[0],
+        'emotional_intensity': experience.emotional_depth,
+        'sense_of_meaning': experience.sense_of_meaning,
+    }
+    return analysis_result
 
 
-def main():
-    taste = AestheticTaste(
-        category_preferences={
-            AestheticCategory.BEAUTY.value: 0.8,
-            AestheticCategory.SUBLIME.value: 0.7
-        },
-        art_form_preferences={
-            ArtForm.LITERATURE.value: 0.9,
-            ArtForm.MUSIC.value: 0.8
-        }
-    )
-    
-    engine = AestheticJudgmentEngine(taste)
-    judgment = engine.judge("一幅优美的山水画")
-    print(json.dumps(judgment.to_dict(), ensure_ascii=False, indent=2))
-    
+# 示例用法
+if __name__ == "__main__":
     experience = AestheticExperience(
-        id="exp1",
+        id="exp001",
         category=AestheticCategory.BEAUTY,
         intensity=0.8,
-        object_description="日出",
+        object_description="日落景观",
+        experience_description="令人感到宁静和愉悦",
+        formal_beauty=0.7,
+        expressive_beauty=0.6,
+        emotional_depth=0.8,
+        sense_of_meaning=0.7,
         art_form=ArtForm.NATURE
     )
-    analysis = engine.analyze_experience(experience)
-    print(json.dumps(analysis, ensure_ascii=False, indent=2))
-
-
-if __name__ == "__main__":
-    main()
+    
+    analysis = analyze_aesthetic_experience(experience)
+    print(json.dumps(analysis, indent=2, ensure_ascii=False))
