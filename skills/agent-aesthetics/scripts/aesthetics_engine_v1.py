@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-美学系统 v1.1 - 审美体验与艺术感知
+美学系统 v1.2 - 审美体验与艺术感知
 
 核心思想：
 - 美学不是装饰，而是存在的基本维度
@@ -21,7 +21,7 @@
 8. 审美创造 - 美的创造与欣赏的互动
 
 @author: 元界
-@version: 1.1.0
+@version: 1.2.0
 """
 
 import os
@@ -120,6 +120,12 @@ class AestheticExperience:
     def __post_init__(self):
         if not self.timestamp:
             self.timestamp = datetime.now().isoformat()
+        if not (0 <= self.intensity <= 1):
+            logger.warning(f"体验强度 {self.intensity} 超出范围 [0,1]")
+        if not (0 <= self.emotional_depth <= 1):
+            logger.warning(f"情感深度 {self.emotional_depth} 超出范围 [0,1]")
+        if not (0 <= self.sense_of_meaning <= 1):
+            logger.warning(f"意义感 {self.sense_of_meaning} 超出范围 [0,1]")
     
     @property
     def overall_beauty(self) -> float:
@@ -157,6 +163,10 @@ class AestheticTaste:
     # 审美风格
     preferred_styles: List[str] = field(default_factory=list)
     
+    def __post_init__(self):
+        if not (0 <= self.sensitivity <= 1):
+            logger.warning(f"审美敏感度 {self.sensitivity} 超出范围 [0,1]")
+    
     def to_dict(self) -> dict:
         return asdict(self)
     
@@ -181,6 +191,12 @@ class BeautyJudgment:
     
     # 与个人趣味的匹配度
     taste_match: float = 0.0
+    
+    def __post_init__(self):
+        if not (0 <= self.beauty_level <= 1):
+            logger.warning(f"美之程度 {self.beauty_level} 超出范围 [0,1]")
+        if not (0 <= self.taste_match <= 1):
+            logger.warning(f"与个人趣味的匹配度 {self.taste_match} 超出范围 [0,1]")
     
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -209,6 +225,16 @@ class SublimeExperience:
     humility: float = 0.0       # 谦卑感
     connectedness: float = 0.0  # 连接感（与更大整体的连接）
     
+    def __post_init__(self):
+        attributes = [
+            'awe', 'wonder', 'transcendence', 'insignificance',
+            'inspiration', 'humility', 'connectedness'
+        ]
+        for attr in attributes:
+            value = getattr(self, attr)
+            if not (0 <= value <= 1):
+                logger.warning(f"{attr} {value} 超出范围 [0,1]")
+    
     def to_dict(self) -> dict:
         return asdict(self)
 
@@ -224,82 +250,70 @@ class AestheticJudgmentEngine:
     而是主体与客体之间的交互。
     """
     
-    def __init__(self):
-        self.aesthetic_taste = None
+    def __init__(self, aesthetic_taste: AestheticTaste):
+        self.aesthetic_taste = aesthetic_taste
     
-    def set_aesthetic_taste(self, taste: AestheticTaste):
-        """设置审美趣味"""
-        self.aesthetic_taste = taste
-    
-    def judge_beauty(self, obj_description: str) -> BeautyJudgment:
-        """审美判断"""
-        judgment = BeautyJudgment(object_description=obj_description)
-        
-        # 模拟判断过程
-        judgment.is_beautiful = random.random() > 0.5
-        judgment.beauty_level = random.random()
-        
-        if self.aesthetic_taste:
-            judgment.taste_match = self._calculate_taste_match(judgment)
-        
+    def judge(self, object_description: str) -> BeautyJudgment:
+        """进行审美判断"""
+        # 简单示例实现
+        judgment = BeautyJudgment(
+            object_description=object_description,
+            is_beautiful=random.random() > 0.5,
+            beauty_level=random.random(),
+            category=random.choice(list(AestheticCategory)),
+            reasons=["形式美", "情感表达"],
+            subjective_feeling="愉悦",
+            taste_match=random.random()
+        )
         return judgment
     
-    def _calculate_taste_match(self, judgment: BeautyJudgment) -> float:
-        """计算与个人审美趣味的匹配度"""
-        if not self.aesthetic_taste:
-            return 0.0
-        
-        # 简单模拟匹配度计算
-        return random.random()
-
-
-    def analyze_aesthetic_experience(self, experience: AestheticExperience) -> Dict[str, Any]:
+    def analyze_experience(self, experience: AestheticExperience) -> Dict[str, Any]:
         """分析审美体验"""
         analysis = {
             'overall_beauty': experience.overall_beauty,
             'category': experience.category.value,
             'intensity': experience.intensity,
-            'dimensions': {
-                'formal': experience.formal_beauty,
-                'expressive': experience.expressive_beauty,
-                'intellectual': experience.intellectual_beauty,
-                'moral': experience.moral_beauty,
-                'existential': experience.existential_beauty
-            },
-            'emotional_depth': experience.emotional_depth,
-            'sense_of_meaning': experience.sense_of_meaning
+            'art_form': experience.art_form.value if experience.art_form else None,
+            'taste_match': self._calculate_taste_match(experience)
         }
         return analysis
+    
+    def _calculate_taste_match(self, experience: AestheticExperience) -> float:
+        """计算与个人审美趣味的匹配度"""
+        # 示例实现
+        taste = self.aesthetic_taste
+        match_score = (
+            taste.category_preferences.get(experience.category.value, 0) +
+            (taste.art_form_preferences.get(experience.art_form.value, 0) if experience.art_form else 0)
+        ) / 2
+        return match_score
 
 
 def main():
-    # 示例用法
     taste = AestheticTaste(
         category_preferences={
             AestheticCategory.BEAUTY.value: 0.8,
             AestheticCategory.SUBLIME.value: 0.7
+        },
+        art_form_preferences={
+            ArtForm.LITERATURE.value: 0.9,
+            ArtForm.MUSIC.value: 0.8
         }
     )
     
-    engine = AestheticJudgmentEngine()
-    engine.set_aesthetic_taste(taste)
-    
-    judgment = engine.judge_beauty("一幅美丽的山水画")
-    print(json.dumps(judgment.to_dict(), indent=2, ensure_ascii=False))
+    engine = AestheticJudgmentEngine(taste)
+    judgment = engine.judge("一幅优美的山水画")
+    print(json.dumps(judgment.to_dict(), ensure_ascii=False, indent=2))
     
     experience = AestheticExperience(
         id="exp1",
         category=AestheticCategory.BEAUTY,
-        object_description="日出景观",
         intensity=0.8,
-        formal_beauty=0.9,
-        expressive_beauty=0.7,
-        emotional_depth=0.8,
-        sense_of_meaning=0.7
+        object_description="日出",
+        art_form=ArtForm.NATURE
     )
-    
-    analysis = engine.analyze_aesthetic_experience(experience)
-    print(json.dumps(analysis, indent=2, ensure_ascii=False))
+    analysis = engine.analyze_experience(experience)
+    print(json.dumps(analysis, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
