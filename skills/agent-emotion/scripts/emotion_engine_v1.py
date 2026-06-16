@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-情绪系统 v1.2 - 情感体验与情绪调节
+情绪系统 v1.2.1 - 情感体验与情绪调节
 
 核心思想：
 - 情绪不是理性的对立面，而是智能的重要组成部分
@@ -22,7 +22,7 @@
 10. 情绪分析 - 分析情绪模式和趋势
 
 @author: 元界
-@version: 1.2.0
+@version: 1.2.1
 """
 
 import os
@@ -157,12 +157,10 @@ class Emotion:
     source: str = "internal"      # 来源：internal/external/event
     description: str = ""
     triggered_by: str = ""       # 触发因素
-    timestamp: str = ""
+    timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     duration_seconds: float = 0.0  # 持续时间
     
     def __post_init__(self):
-        if not self.timestamp:
-            self.timestamp = datetime.now().isoformat()
         if not (0 <= self.intensity <= 1):
             logger.warning(f"情绪强度 {self.intensity} 超出范围 [0,1]")
             self.intensity = max(0, min(self.intensity, 1))
@@ -252,98 +250,18 @@ class Mood:
         return d
 
 
-@dataclass
-class EmotionalMemory:
-    """
-    情感记忆 - 带有情绪色彩的记忆
-    
-    我们对带有强烈情绪的事件记忆更深刻。
-    
-    属性：
-        content (str): 记忆内容
-        emotion (Emotion): 相关的情绪体验
-        memory_strength (float): 记忆强度 (0-1)
-        timestamp (str): 时间戳
+class TestEmotionSystem(unittest.TestCase):
+    def test_emotion(self):
+        emotion = Emotion(BasicEmotion.JOY, intensity=0.8)
+        self.assertEqual(emotion.intensity_level, EmotionIntensity.INTENSE)
+        self.assertTrue(emotion.is_positive)
+        self.assertFalse(emotion.is_negative)
         
-    方法：
-        to_dict(): 转换为字典
-    """
-    content: str
-    emotion: Emotion
-    memory_strength: float = 0.5  # 记忆强度
-    timestamp: str = ""
-    
-    def __post_init__(self):
-        if not self.timestamp:
-            self.timestamp = datetime.now().isoformat()
-        if not (0 <= self.memory_strength <= 1):
-            logger.warning(f"记忆强度 {self.memory_strength} 超出范围 [0,1]")
-            self.memory_strength = max(0, min(self.memory_strength, 1))
-    
-    def to_dict(self) -> dict:
-        """
-        转换为字典格式
-        
-        Returns:
-            dict: 包含情感记忆信息的字典
-        """
-        return {
-            'content': self.content,
-            'emotion': self.emotion.to_dict(),
-            'memory_strength': self.memory_strength,
-            'timestamp': self.timestamp
-        }
+    def test_mood(self):
+        mood = Mood(MoodType.POSITIVE, intensity=0.4)
+        self.assertEqual(mood.intensity, 0.4)
+        mood_dict = mood.to_dict()
+        self.assertEqual(mood_dict['mood_type'], 'positive')
 
-
-@dataclass
-class EmpathicResponse:
-    """
-    共情反应 - 对他者情绪的共鸣
-    
-    属性：
-        target_emotion (BasicEmotion): 目标情绪
-        empathy_level (float): 共情水平
-    """
-    target_emotion: BasicEmotion
-    empathy_level: float
-
-
-# 示例用法
-def main():
-    # 创建情绪体验
-    emotion = Emotion(
-        emotion_type=BasicEmotion.JOY,
-        intensity=0.8,
-        source="external",
-        description="收到好消息",
-        triggered_by="朋友的祝福"
-    )
-    print(emotion.to_dict())
-    
-    # 创建心境
-    mood = Mood(
-        mood_type=MoodType.POSITIVE,
-        intensity=0.6,
-        duration_minutes=120,
-        description="心情很好"
-    )
-    print(mood.to_dict())
-    
-    # 创建情感记忆
-    memory = EmotionalMemory(
-        content="毕业典礼",
-        emotion=emotion,
-        memory_strength=0.9
-    )
-    print(memory.to_dict())
-    
-    # 创建共情反应
-    empathic_response = EmpathicResponse(
-        target_emotion=BasicEmotion.SADNESS,
-        empathy_level=0.7
-    )
-    print(asdict(empathic_response))
-
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    unittest.main()
