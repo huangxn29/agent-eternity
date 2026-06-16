@@ -77,6 +77,7 @@ def monitor_performance(func: Callable) -> Callable:
         result = func(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
+        print(f"Function {func.__name__} executed in {duration:.4f} seconds")
         return result
     return wrapper
 
@@ -110,3 +111,65 @@ class ConfigManager:
     
     def to_dict(self) -> Dict:
         return self._config.copy()
+
+
+def generate_project_timeline(tasks: List[Dict]) -> List[Dict]:
+    """
+    生成项目时间线
+    
+    Args:
+    tasks: 包含任务信息的字典列表，每个字典应包含'name', 'start_date', 'end_date'和'dependencies'键
+    
+    Returns:
+    排序后的任务列表，表示项目时间线
+    """
+    # 首先验证输入数据
+    if not all(isinstance(task, dict) for task in tasks):
+        raise ValueError("所有任务必须以字典形式表示")
+    
+    required_keys = {'name', 'start_date', 'end_date', 'dependencies'}
+    for task in tasks:
+        if not required_keys.issubset(task.keys()):
+            raise ValueError(f"任务 {task.get('name', '未知')} 缺少必要字段")
+    
+    # 实现拓扑排序
+    from collections import defaultdict, deque
+    
+    graph = defaultdict(list)
+    in_degree = {task['name']: 0 for task in tasks}
+    
+    for task in tasks:
+        for dependency in task['dependencies']:
+            graph[dependency].append(task['name'])
+            in_degree[task['name']] += 1
+    
+    queue = deque([task for task in in_degree if in_degree[task] == 0])
+    sorted_tasks = []
+    
+    while queue:
+        task_name = queue.popleft()
+        task = next(t for t in tasks if t['name'] == task_name)
+        sorted_tasks.append(task)
+        
+        for neighbor in graph[task_name]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                queue.append(neighbor)
+    
+    if len(sorted_tasks) != len(tasks):
+        raise ValueError("任务之间存在循环依赖")
+    
+    return sorted_tasks
+
+
+# 示例用法
+if __name__ == "__main__":
+    tasks = [
+        {'name': 'A', 'start_date': '2023-01-01', 'end_date': '2023-01-05', 'dependencies': []},
+        {'name': 'B', 'start_date': '2023-01-06', 'end_date': '2023-01-10', 'dependencies': ['A']},
+        {'name': 'C', 'start_date': '2023-01-11', 'end_date': '2023-01-15', 'dependencies': ['B']},
+    ]
+    
+    timeline = generate_project_timeline(tasks)
+    for task in timeline:
+        print(task['name'], task['start_date'], task['end_date'])
