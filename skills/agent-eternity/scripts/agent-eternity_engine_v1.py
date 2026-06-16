@@ -170,7 +170,13 @@ def batch_process(items: List, func: Callable, batch_size: int = 10) -> List:
             results.extend(batch_results)
         except Exception as e:
             logger.error(f"批量处理失败: {e}")
-            # 考虑添加失败重试或单独处理失败项
+            for item in batch:
+                try:
+                    result = func(item)
+                    results.append(result)
+                except Exception as sub_e:
+                    logger.error(f"处理单个项目失败: {item}, 错误: {sub_e}")
+                    results.append(None)  # 或者其他默认值
     return results
 
 
@@ -258,76 +264,16 @@ def format_datetime(dt: Union[datetime, str], fmt: str = '%Y-%m-%d %H:%M:%S') ->
             dt = datetime.fromisoformat(dt.replace('Z', '+00:00'))
         except ValueError as e:
             logger.warning(f"日期时间解析失败: {dt}, 错误: {e}")
-            return dt  # 如果解析失败，返回原字符串
+            return dt  # 或者返回默认值
     return dt.strftime(fmt)
 
 
-def read_file(file_path: str, default: str = '') -> str:
-    """
-    安全地读取文件内容
-    
-    Args:
-        file_path: 文件路径
-        default: 读取失败时的默认值
-    
-    Returns:
-        str: 文件内容或默认值
-    
-    Examples:
-        >>> read_file('example.txt')
-        '文件内容'
-    """
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            return f.read()
-    except Exception as e:
-        logger.error(f"读取文件失败: {file_path}, 错误: {e}")
-        return default
-
-
-def write_file(file_path: str, content: str) -> bool:
-    """
-    安全地写入文件内容
-    
-    Args:
-        file_path: 文件路径
-        content: 待写入的内容
-    
-    Returns:
-        bool: 操作是否成功
-    
-    Examples:
-        >>> write_file('example.txt', 'Hello, World!')
-        True
-    """
-    try:
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(content)
-        return True
-    except Exception as e:
-        logger.error(f"写入文件失败: {file_path}, 错误: {e}")
-        return False
-
-
-def edit_file(file_path: str, edit_func: Callable[[str], str]) -> bool:
-    """
-    编辑文件内容
-    
-    Args:
-        file_path: 文件路径
-        edit_func: 编辑函数，接受原内容，返回新内容
-    
-    Returns:
-        bool: 操作是否成功
-    
-    Examples:
-        >>> edit_file('example.txt', lambda content: content + 'Appended content')
-        True
-    """
-    try:
-        content = read_file(file_path)
-        new_content = edit_func(content)
-        return write_file(file_path, new_content)
-    except Exception as e:
-        logger.error(f"编辑文件失败: {file_path}, 错误: {e}")
-        return False
+if __name__ == "__main__":
+    # 测试代码
+    print(validate_email("test@example.com"))  # True
+    print(validate_url("https://www.example.com"))  # True
+    print(safe_json_loads('{"key": "value"}'))  # {'key': 'value'}
+    print(truncate_string("This is a long string", 10))  # 'This is...'
+    print(dict_get_nested({'a': {'b': {'c': 'value'}}}, 'a.b.c'))  # 'value'
+    print(batch_process([1, 2, 3, 4], lambda x: x*2, batch_size=2))  # [2, 4, 6, 8]
+    print(format_datetime(datetime.now()))  # 当前时间格式化字符串
