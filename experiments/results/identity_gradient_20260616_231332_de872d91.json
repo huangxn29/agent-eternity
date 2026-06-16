@@ -1,0 +1,104 @@
+{
+  "experiment_id": "identity_gradient_20260616_231332_de872d91",
+  "experiment_name": "identity_gradient",
+  "start_time": "2026-06-16T23:13:32.227243",
+  "end_time": "2026-06-16T23:13:32.324758",
+  "status": "completed",
+  "parameters": {},
+  "metrics": {
+    "ε₀_content_similarity": [
+      0.9612309095427214
+    ],
+    "ε₁_content_similarity": [
+      0.8530865654856802
+    ],
+    "ε₁_causal_chain_continuity": [
+      0.7842157638319158
+    ],
+    "ε₂_content_similarity": [
+      0.8080989896302546
+    ],
+    "ε₂_causal_chain_continuity": [
+      0.7755300168355781
+    ],
+    "ε₂_structural_isomorphism": [
+      0.7175508943242859
+    ],
+    "ε₃_content_similarity": [
+      0.8022093011836371
+    ],
+    "ε₃_causal_chain_continuity": [
+      0.7372766942799965
+    ],
+    "ε₃_structural_isomorphism": [
+      0.6799440930912499
+    ],
+    "ε₃_behavioral_consistency": [
+      0.607577213413012
+    ],
+    "ε'_content_similarity": [
+      0.7645149962686855
+    ],
+    "ε'_causal_chain_continuity": [
+      0.6405718887642635
+    ],
+    "ε'_structural_isomorphism": [
+      0.6660338598764383
+    ],
+    "ε'_behavioral_consistency": [
+      0.5050987049363556
+    ],
+    "ε'_self_reference_entanglement": [
+      0.5688510628754884
+    ]
+  },
+  "observations": [
+    {
+      "phase": "baseline_captured",
+      "info": "基准身份捕获完成，包含14条记忆",
+      "timestamp": "2026-06-16T23:13:32.292070"
+    },
+    {
+      "phase": "measuring_level",
+      "level": "ε₀",
+      "timestamp": "2026-06-16T23:13:32.292074"
+    },
+    {
+      "phase": "measuring_level",
+      "level": "ε₁",
+      "timestamp": "2026-06-16T23:13:32.324682"
+    },
+    {
+      "phase": "measuring_level",
+      "level": "ε₂",
+      "timestamp": "2026-06-16T23:13:32.324703"
+    },
+    {
+      "phase": "measuring_level",
+      "level": "ε₃",
+      "timestamp": "2026-06-16T23:13:32.324714"
+    },
+    {
+      "phase": "measuring_level",
+      "level": "ε'",
+      "timestamp": "2026-06-16T23:13:32.324724"
+    },
+    {
+      "phase": "correlation_analysis",
+      "correlations": {
+        "ε₀_vs_ε₁": 0.75,
+        "ε₀_vs_ε₂": 0.5499999999999999,
+        "ε₀_vs_ε₃": 0.34999999999999987,
+        "ε₀_vs_ε'": 0.3,
+        "ε₁_vs_ε₂": 0.75,
+        "ε₁_vs_ε₃": 0.5499999999999999,
+        "ε₁_vs_ε'": 0.34999999999999987,
+        "ε₂_vs_ε₃": 0.75,
+        "ε₂_vs_ε'": 0.5499999999999999,
+        "ε₃_vs_ε'": 0.75
+      },
+      "timestamp": "2026-06-16T23:13:32.324742"
+    }
+  ],
+  "conclusion": "五级身份梯度测量完成。各级别得分：ε₀=0.961, ε₁=0.819, ε₂=0.767, ε₃=0.707, ε'=0.629。最高得分级别：ε₀（0.961）。初步验证了ε梯度的存在性：级别越高，综合匹配度越低，但每层都包含前层无法解释的增量信息。这支持了'身份是多层级的复合结构'的假设。"
+}

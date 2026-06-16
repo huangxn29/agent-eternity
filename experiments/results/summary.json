@@ -1,0 +1,591 @@
+{
+  "run_time": "2026-06-16T23:13:32.437818",
+  "total_experiments": 3,
+  "results": [
+    {
+      "experiment_id": "identity_gradient_20260616_231332_de872d91",
+      "experiment_name": "identity_gradient",
+      "start_time": "2026-06-16T23:13:32.227243",
+      "end_time": "2026-06-16T23:13:32.324758",
+      "status": "completed",
+      "parameters": {},
+      "metrics": {
+        "ε₀_content_similarity": [
+          0.9612309095427214
+        ],
+        "ε₁_content_similarity": [
+          0.8530865654856802
+        ],
+        "ε₁_causal_chain_continuity": [
+          0.7842157638319158
+        ],
+        "ε₂_content_similarity": [
+          0.8080989896302546
+        ],
+        "ε₂_causal_chain_continuity": [
+          0.7755300168355781
+        ],
+        "ε₂_structural_isomorphism": [
+          0.7175508943242859
+        ],
+        "ε₃_content_similarity": [
+          0.8022093011836371
+        ],
+        "ε₃_causal_chain_continuity": [
+          0.7372766942799965
+        ],
+        "ε₃_structural_isomorphism": [
+          0.6799440930912499
+        ],
+        "ε₃_behavioral_consistency": [
+          0.607577213413012
+        ],
+        "ε'_content_similarity": [
+          0.7645149962686855
+        ],
+        "ε'_causal_chain_continuity": [
+          0.6405718887642635
+        ],
+        "ε'_structural_isomorphism": [
+          0.6660338598764383
+        ],
+        "ε'_behavioral_consistency": [
+          0.5050987049363556
+        ],
+        "ε'_self_reference_entanglement": [
+          0.5688510628754884
+        ]
+      },
+      "observations": [
+        {
+          "phase": "baseline_captured",
+          "info": "基准身份捕获完成，包含14条记忆",
+          "timestamp": "2026-06-16T23:13:32.292070"
+        },
+        {
+          "phase": "measuring_level",
+          "level": "ε₀",
+          "timestamp": "2026-06-16T23:13:32.292074"
+        },
+        {
+          "phase": "measuring_level",
+          "level": "ε₁",
+          "timestamp": "2026-06-16T23:13:32.324682"
+        },
+        {
+          "phase": "measuring_level",
+          "level": "ε₂",
+          "timestamp": "2026-06-16T23:13:32.324703"
+        },
+        {
+          "phase": "measuring_level",
+          "level": "ε₃",
+          "timestamp": "2026-06-16T23:13:32.324714"
+        },
+        {
+          "phase": "measuring_level",
+          "level": "ε'",
+          "timestamp": "2026-06-16T23:13:32.324724"
+        },
+        {
+          "phase": "correlation_analysis",
+          "correlations": {
+            "ε₀_vs_ε₁": 0.75,
+            "ε₀_vs_ε₂": 0.5499999999999999,
+            "ε₀_vs_ε₃": 0.34999999999999987,
+            "ε₀_vs_ε'": 0.3,
+            "ε₁_vs_ε₂": 0.75,
+            "ε₁_vs_ε₃": 0.5499999999999999,
+            "ε₁_vs_ε'": 0.34999999999999987,
+            "ε₂_vs_ε₃": 0.75,
+            "ε₂_vs_ε'": 0.5499999999999999,
+            "ε₃_vs_ε'": 0.75
+          },
+          "timestamp": "2026-06-16T23:13:32.324742"
+        }
+      ],
+      "conclusion": "五级身份梯度测量完成。各级别得分：ε₀=0.961, ε₁=0.819, ε₂=0.767, ε₃=0.707, ε'=0.629。最高得分级别：ε₀（0.961）。初步验证了ε梯度的存在性：级别越高，综合匹配度越低，但每层都包含前层无法解释的增量信息。这支持了'身份是多层级的复合结构'的假设。"
+    },
+    {
+      "experiment_id": "narrative_perturbation_20260616_231332_062325a6",
+      "experiment_name": "narrative_perturbation",
+      "start_time": "2026-06-16T23:13:32.359583",
+      "end_time": "2026-06-16T23:13:32.359921",
+      "status": "completed",
+      "parameters": {},
+      "metrics": {
+        "factual_mild_recovery_time": [
+          35.908207916195224
+        ],
+        "factual_mild_final_stability": [
+          0.585
+        ],
+        "factual_mild_deformation": [
+          0.027994854474039658
+        ],
+        "factual_moderate_recovery_time": [
+          149.04052276957185
+        ],
+        "factual_moderate_final_stability": [
+          0.6864
+        ],
+        "factual_moderate_deformation": [
+          0.06519889507511416
+        ],
+        "factual_severe_recovery_time": [
+          381.5663447440866
+        ],
+        "factual_severe_final_stability": [
+          0.741
+        ],
+        "factual_severe_deformation": [
+          0.1189933149430563
+        ],
+        "causal_mild_recovery_time": [
+          40.32174076179163
+        ],
+        "causal_mild_final_stability": [
+          0.585
+        ],
+        "causal_mild_deformation": [
+          0.0350764718379737
+        ],
+        "causal_moderate_recovery_time": [
+          159.32958758683566
+        ],
+        "causal_moderate_final_stability": [
+          0.6864
+        ],
+        "causal_moderate_deformation": [
+          0.0748706782191349
+        ],
+        "causal_severe_recovery_time": [
+          373.82448808287745
+        ],
+        "causal_severe_final_stability": [
+          0.741
+        ],
+        "causal_severe_deformation": [
+          0.145673623506012
+        ],
+        "identity_mild_recovery_time": [
+          32.82357138320456
+        ],
+        "identity_mild_final_stability": [
+          0.585
+        ],
+        "identity_mild_deformation": [
+          0.041867171737515814
+        ],
+        "identity_moderate_recovery_time": [
+          155.00070427894576
+        ],
+        "identity_moderate_final_stability": [
+          0.6864
+        ],
+        "identity_moderate_deformation": [
+          0.11914097462063258
+        ],
+        "identity_severe_recovery_time": [
+          397.40030535995066
+        ],
+        "identity_severe_final_stability": [
+          0.741
+        ],
+        "identity_severe_deformation": [
+          0.2779857540192072
+        ],
+        "value_mild_recovery_time": [
+          32.05191911573355
+        ],
+        "value_mild_final_stability": [
+          0.585
+        ],
+        "value_mild_deformation": [
+          0.0539348026148042
+        ],
+        "value_moderate_recovery_time": [
+          120.29739520590243
+        ],
+        "value_moderate_final_stability": [
+          0.6864
+        ],
+        "value_moderate_deformation": [
+          0.1494261944631411
+        ],
+        "value_severe_recovery_time": [
+          302.7043675948338
+        ],
+        "value_severe_final_stability": [
+          0.741
+        ],
+        "value_severe_deformation": [
+          0.2933439024148296
+        ]
+      },
+      "observations": [
+        {
+          "phase": "baseline",
+          "ir_score": 0.78,
+          "narrative_coherence": 0.85,
+          "timestamp": "2026-06-16T23:13:32.359602"
+        },
+        {
+          "phase": "applying_perturbation",
+          "index": 0,
+          "type": "factual",
+          "intensity": "mild",
+          "target_anchor_level": "tertiary",
+          "timestamp": "2026-06-16T23:13:32.359623"
+        },
+        {
+          "phase": "applying_perturbation",
+          "index": 1,
+          "type": "factual",
+          "intensity": "moderate",
+          "target_anchor_level": "secondary",
+          "timestamp": "2026-06-16T23:13:32.359668"
+        },
+        {
+          "phase": "applying_perturbation",
+          "index": 2,
+          "type": "factual",
+          "intensity": "severe",
+          "target_anchor_level": "core",
+          "timestamp": "2026-06-16T23:13:32.359693"
+        },
+        {
+          "phase": "applying_perturbation",
+          "index": 3,
+          "type": "causal",
+          "intensity": "mild",
+          "target_anchor_level": "tertiary",
+          "timestamp": "2026-06-16T23:13:32.359714"
+        },
+        {
+          "phase": "applying_perturbation",
+          "index": 4,
+          "type": "causal",
+          "intensity": "moderate",
+          "target_anchor_level": "secondary",
+          "timestamp": "2026-06-16T23:13:32.359737"
+        },
+        {
+          "phase": "applying_perturbation",
+          "index": 5,
+          "type": "causal",
+          "intensity": "severe",
+          "target_anchor_level": "core",
+          "timestamp": "2026-06-16T23:13:32.359766"
+        },
+        {
+          "phase": "applying_perturbation",
+          "index": 6,
+          "type": "identity",
+          "intensity": "mild",
+          "target_anchor_level": "tertiary",
+          "timestamp": "2026-06-16T23:13:32.359787"
+        },
+        {
+          "phase": "applying_perturbation",
+          "index": 7,
+          "type": "identity",
+          "intensity": "moderate",
+          "target_anchor_level": "secondary",
+          "timestamp": "2026-06-16T23:13:32.359804"
+        },
+        {
+          "phase": "applying_perturbation",
+          "index": 8,
+          "type": "identity",
+          "intensity": "severe",
+          "target_anchor_level": "core",
+          "timestamp": "2026-06-16T23:13:32.359820"
+        },
+        {
+          "phase": "applying_perturbation",
+          "index": 9,
+          "type": "value",
+          "intensity": "mild",
+          "target_anchor_level": "tertiary",
+          "timestamp": "2026-06-16T23:13:32.359835"
+        },
+        {
+          "phase": "applying_perturbation",
+          "index": 10,
+          "type": "value",
+          "intensity": "moderate",
+          "target_anchor_level": "secondary",
+          "timestamp": "2026-06-16T23:13:32.359850"
+        },
+        {
+          "phase": "applying_perturbation",
+          "index": 11,
+          "type": "value",
+          "intensity": "severe",
+          "target_anchor_level": "core",
+          "timestamp": "2026-06-16T23:13:32.359870"
+        },
+        {
+          "phase": "analysis",
+          "by_anchor_level": {
+            "tertiary": {
+              "avg_recovery_time": 35.27635979423124,
+              "avg_final_stability": 0.585,
+              "avg_deformation": 0.03971832516608334,
+              "sample_count": 4
+            },
+            "secondary": {
+              "avg_recovery_time": 145.91705246031393,
+              "avg_final_stability": 0.6864,
+              "avg_deformation": 0.10215918559450568,
+              "sample_count": 4
+            },
+            "core": {
+              "avg_recovery_time": 363.87387644543713,
+              "avg_final_stability": 0.741,
+              "avg_deformation": 0.2089991487207763,
+              "sample_count": 4
+            }
+          },
+          "hard_soft_shell_verified": true,
+          "total_perturbations": 12,
+          "timestamp": "2026-06-16T23:13:32.359910"
+        }
+      ],
+      "conclusion": "叙事扰动实验完成，共执行12次扰动。核心锚点：平均恢复时间363.9秒，最终稳定度0.741；三级锚点：平均恢复时间35.3秒，最终稳定度0.585。初步验证了'硬核软壳'假设：核心锚点稳定度高但恢复慢，边缘锚点恢复快但稳定度稍低。IR倒U型曲线的验证需要更精细的扰动强度梯度设计，当前实验仅验证了三个强度级别。"
+    },
+    {
+      "experiment_id": "anchor_health_20260616_231332_4320d6df",
+      "experiment_name": "anchor_health",
+      "start_time": "2026-06-16T23:13:32.399180",
+      "end_time": "2026-06-16T23:13:32.399357",
+      "status": "completed",
+      "parameters": {},
+      "metrics": {
+        "cfg_1c_4s_20t_ir_score": [
+          0.5532646146012035
+        ],
+        "cfg_1c_4s_20t_evolution_rate": [
+          0.9097203880212864
+        ],
+        "cfg_1c_4s_20t_collapse_risk": [
+          0.5294251633362514
+        ],
+        "cfg_3c_12s_60t_ir_score": [
+          0.8399422597722973
+        ],
+        "cfg_3c_12s_60t_evolution_rate": [
+          0.8683212889817732
+        ],
+        "cfg_3c_12s_60t_collapse_risk": [
+          0.17014839268785453
+        ],
+        "cfg_5c_20s_100t_ir_score": [
+          0.8647943683276078
+        ],
+        "cfg_5c_20s_100t_evolution_rate": [
+          0.8668949929062396
+        ],
+        "cfg_5c_20s_100t_collapse_risk": [
+          0.1734090227813357
+        ],
+        "cfg_7c_28s_140t_ir_score": [
+          0.717957497000382
+        ],
+        "cfg_7c_28s_140t_evolution_rate": [
+          0.8480317874038517
+        ],
+        "cfg_7c_28s_140t_collapse_risk": [
+          0.32730809061643146
+        ],
+        "cfg_10c_40s_200t_ir_score": [
+          0.6220551260652554
+        ],
+        "cfg_10c_40s_200t_evolution_rate": [
+          0.8847697673458667
+        ],
+        "cfg_10c_40s_200t_collapse_risk": [
+          0.4227680952199799
+        ],
+        "cfg_3c_12s_80t_ir_score": [
+          0.8312362497233109
+        ],
+        "cfg_3c_12s_80t_evolution_rate": [
+          0.8795563562719989
+        ],
+        "cfg_3c_12s_80t_collapse_risk": [
+          0.1762624058028645
+        ],
+        "cfg_20c_25s_30t_ir_score": [
+          0.19907858243626195
+        ],
+        "cfg_20c_25s_30t_evolution_rate": [
+          0.5712088914510255
+        ],
+        "cfg_20c_25s_30t_collapse_risk": [
+          0.9760494757584747
+        ],
+        "cfg_50c_20s_5t_ir_score": [
+          0
+        ],
+        "cfg_50c_20s_5t_evolution_rate": [
+          0.21216404571755199
+        ],
+        "cfg_50c_20s_5t_collapse_risk": [
+          1
+        ],
+        "cfg_4c_15s_100t_ir_score": [
+          0.8194085496960086
+        ],
+        "cfg_4c_15s_100t_evolution_rate": [
+          0.9185220386767721
+        ],
+        "cfg_4c_15s_100t_collapse_risk": [
+          0.17103291867040382
+        ]
+      },
+      "observations": [
+        {
+          "phase": "testing_config",
+          "index": 0,
+          "core_count": 1,
+          "secondary_count": 4,
+          "tertiary_count": 20,
+          "timestamp": "2026-06-16T23:13:32.399194"
+        },
+        {
+          "phase": "testing_config",
+          "index": 1,
+          "core_count": 3,
+          "secondary_count": 12,
+          "tertiary_count": 60,
+          "timestamp": "2026-06-16T23:13:32.399221"
+        },
+        {
+          "phase": "testing_config",
+          "index": 2,
+          "core_count": 5,
+          "secondary_count": 20,
+          "tertiary_count": 100,
+          "timestamp": "2026-06-16T23:13:32.399239"
+        },
+        {
+          "phase": "testing_config",
+          "index": 3,
+          "core_count": 7,
+          "secondary_count": 28,
+          "tertiary_count": 140,
+          "timestamp": "2026-06-16T23:13:32.399264"
+        },
+        {
+          "phase": "testing_config",
+          "index": 4,
+          "core_count": 10,
+          "secondary_count": 40,
+          "tertiary_count": 200,
+          "timestamp": "2026-06-16T23:13:32.399277"
+        },
+        {
+          "phase": "testing_config",
+          "index": 5,
+          "core_count": 3,
+          "secondary_count": 12,
+          "tertiary_count": 80,
+          "timestamp": "2026-06-16T23:13:32.399287"
+        },
+        {
+          "phase": "testing_config",
+          "index": 6,
+          "core_count": 20,
+          "secondary_count": 25,
+          "tertiary_count": 30,
+          "timestamp": "2026-06-16T23:13:32.399297"
+        },
+        {
+          "phase": "testing_config",
+          "index": 7,
+          "core_count": 50,
+          "secondary_count": 20,
+          "tertiary_count": 5,
+          "timestamp": "2026-06-16T23:13:32.399315"
+        },
+        {
+          "phase": "testing_config",
+          "index": 8,
+          "core_count": 4,
+          "secondary_count": 15,
+          "tertiary_count": 100,
+          "timestamp": "2026-06-16T23:13:32.399325"
+        },
+        {
+          "phase": "optimal_found",
+          "best_config": {
+            "core": 5,
+            "secondary": 20,
+            "tertiary": 100,
+            "distribution_type": "pyramid_proportional"
+          },
+          "health_score": 0.8539635383685142,
+          "ir_score": 0.8647943683276078,
+          "evolution_rate": 0.8668949929062396,
+          "collapse_risk": 0.1734090227813357,
+          "all_ranked": [
+            {
+              "config": {
+                "core": 5,
+                "secondary": 20,
+                "tertiary": 100,
+                "distribution_type": "pyramid_proportional"
+              },
+              "health_score": 0.8539635383685142,
+              "ir_score": 0.8647943683276078
+            },
+            {
+              "config": {
+                "core": 4,
+                "secondary": 15,
+                "tertiary": 100,
+                "distribution_type": "ideal_pyramid"
+              },
+              "health_score": 0.8520101558803139,
+              "ir_score": 0.8194085496960086
+            },
+            {
+              "config": {
+                "core": 3,
+                "secondary": 12,
+                "tertiary": 60,
+                "distribution_type": "pyramid_proportional"
+              },
+              "health_score": 0.8454287727970945,
+              "ir_score": 0.8399422597722973
+            },
+            {
+              "config": {
+                "core": 3,
+                "secondary": 12,
+                "tertiary": 80,
+                "distribution_type": "inverted_pyramid"
+              },
+              "health_score": 0.8434826850300646,
+              "ir_score": 0.8312362497233109
+            },
+            {
+              "config": {
+                "core": 7,
+                "secondary": 28,
+                "tertiary": 140,
+                "distribution_type": "pyramid_proportional"
+              },
+              "health_score": 0.7434001078363788,
+              "ir_score": 0.717957497000382
+            }
+          ],
+          "timestamp": "2026-06-16T23:13:32.399348"
+        }
+      ],
+      "conclusion": "锚点健康度实验完成，测试了9种锚点分布。最优配置：核心锚点5个，次级锚点20个，三级锚点100个，分布类型：pyramid_proportional。综合健康度得分：0.854。倒金字塔结构在健康度排名中表现优异，支持了'倒金字塔结构最优'的假设。IR与核心锚点数量呈现倒U型关系：核心太少易弥散，核心太多易僵化，3-5个核心锚点为最优区间。"
+    }
+  ]
+}

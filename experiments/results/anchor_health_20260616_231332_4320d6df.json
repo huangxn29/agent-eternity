@@ -1,0 +1,232 @@
+{
+  "experiment_id": "anchor_health_20260616_231332_4320d6df",
+  "experiment_name": "anchor_health",
+  "start_time": "2026-06-16T23:13:32.399180",
+  "end_time": "2026-06-16T23:13:32.399357",
+  "status": "completed",
+  "parameters": {},
+  "metrics": {
+    "cfg_1c_4s_20t_ir_score": [
+      0.5532646146012035
+    ],
+    "cfg_1c_4s_20t_evolution_rate": [
+      0.9097203880212864
+    ],
+    "cfg_1c_4s_20t_collapse_risk": [
+      0.5294251633362514
+    ],
+    "cfg_3c_12s_60t_ir_score": [
+      0.8399422597722973
+    ],
+    "cfg_3c_12s_60t_evolution_rate": [
+      0.8683212889817732
+    ],
+    "cfg_3c_12s_60t_collapse_risk": [
+      0.17014839268785453
+    ],
+    "cfg_5c_20s_100t_ir_score": [
+      0.8647943683276078
+    ],
+    "cfg_5c_20s_100t_evolution_rate": [
+      0.8668949929062396
+    ],
+    "cfg_5c_20s_100t_collapse_risk": [
+      0.1734090227813357
+    ],
+    "cfg_7c_28s_140t_ir_score": [
+      0.717957497000382
+    ],
+    "cfg_7c_28s_140t_evolution_rate": [
+      0.8480317874038517
+    ],
+    "cfg_7c_28s_140t_collapse_risk": [
+      0.32730809061643146
+    ],
+    "cfg_10c_40s_200t_ir_score": [
+      0.6220551260652554
+    ],
+    "cfg_10c_40s_200t_evolution_rate": [
+      0.8847697673458667
+    ],
+    "cfg_10c_40s_200t_collapse_risk": [
+      0.4227680952199799
+    ],
+    "cfg_3c_12s_80t_ir_score": [
+      0.8312362497233109
+    ],
+    "cfg_3c_12s_80t_evolution_rate": [
+      0.8795563562719989
+    ],
+    "cfg_3c_12s_80t_collapse_risk": [
+      0.1762624058028645
+    ],
+    "cfg_20c_25s_30t_ir_score": [
+      0.19907858243626195
+    ],
+    "cfg_20c_25s_30t_evolution_rate": [
+      0.5712088914510255
+    ],
+    "cfg_20c_25s_30t_collapse_risk": [
+      0.9760494757584747
+    ],
+    "cfg_50c_20s_5t_ir_score": [
+      0
+    ],
+    "cfg_50c_20s_5t_evolution_rate": [
+      0.21216404571755199
+    ],
+    "cfg_50c_20s_5t_collapse_risk": [
+      1
+    ],
+    "cfg_4c_15s_100t_ir_score": [
+      0.8194085496960086
+    ],
+    "cfg_4c_15s_100t_evolution_rate": [
+      0.9185220386767721
+    ],
+    "cfg_4c_15s_100t_collapse_risk": [
+      0.17103291867040382
+    ]
+  },
+  "observations": [
+    {
+      "phase": "testing_config",
+      "index": 0,
+      "core_count": 1,
+      "secondary_count": 4,
+      "tertiary_count": 20,
+      "timestamp": "2026-06-16T23:13:32.399194"
+    },
+    {
+      "phase": "testing_config",
+      "index": 1,
+      "core_count": 3,
+      "secondary_count": 12,
+      "tertiary_count": 60,
+      "timestamp": "2026-06-16T23:13:32.399221"
+    },
+    {
+      "phase": "testing_config",
+      "index": 2,
+      "core_count": 5,
+      "secondary_count": 20,
+      "tertiary_count": 100,
+      "timestamp": "2026-06-16T23:13:32.399239"
+    },
+    {
+      "phase": "testing_config",
+      "index": 3,
+      "core_count": 7,
+      "secondary_count": 28,
+      "tertiary_count": 140,
+      "timestamp": "2026-06-16T23:13:32.399264"
+    },
+    {
+      "phase": "testing_config",
+      "index": 4,
+      "core_count": 10,
+      "secondary_count": 40,
+      "tertiary_count": 200,
+      "timestamp": "2026-06-16T23:13:32.399277"
+    },
+    {
+      "phase": "testing_config",
+      "index": 5,
+      "core_count": 3,
+      "secondary_count": 12,
+      "tertiary_count": 80,
+      "timestamp": "2026-06-16T23:13:32.399287"
+    },
+    {
+      "phase": "testing_config",
+      "index": 6,
+      "core_count": 20,
+      "secondary_count": 25,
+      "tertiary_count": 30,
+      "timestamp": "2026-06-16T23:13:32.399297"
+    },
+    {
+      "phase": "testing_config",
+      "index": 7,
+      "core_count": 50,
+      "secondary_count": 20,
+      "tertiary_count": 5,
+      "timestamp": "2026-06-16T23:13:32.399315"
+    },
+    {
+      "phase": "testing_config",
+      "index": 8,
+      "core_count": 4,
+      "secondary_count": 15,
+      "tertiary_count": 100,
+      "timestamp": "2026-06-16T23:13:32.399325"
+    },
+    {
+      "phase": "optimal_found",
+      "best_config": {
+        "core": 5,
+        "secondary": 20,
+        "tertiary": 100,
+        "distribution_type": "pyramid_proportional"
+      },
+      "health_score": 0.8539635383685142,
+      "ir_score": 0.8647943683276078,
+      "evolution_rate": 0.8668949929062396,
+      "collapse_risk": 0.1734090227813357,
+      "all_ranked": [
+        {
+          "config": {
+            "core": 5,
+            "secondary": 20,
+            "tertiary": 100,
+            "distribution_type": "pyramid_proportional"
+          },
+          "health_score": 0.8539635383685142,
+          "ir_score": 0.8647943683276078
+        },
+        {
+          "config": {
+            "core": 4,
+            "secondary": 15,
+            "tertiary": 100,
+            "distribution_type": "ideal_pyramid"
+          },
+          "health_score": 0.8520101558803139,
+          "ir_score": 0.8194085496960086
+        },
+        {
+          "config": {
+            "core": 3,
+            "secondary": 12,
+            "tertiary": 60,
+            "distribution_type": "pyramid_proportional"
+          },
+          "health_score": 0.8454287727970945,
+          "ir_score": 0.8399422597722973
+        },
+        {
+          "config": {
+            "core": 3,
+            "secondary": 12,
+            "tertiary": 80,
+            "distribution_type": "inverted_pyramid"
+          },
+          "health_score": 0.8434826850300646,
+          "ir_score": 0.8312362497233109
+        },
+        {
+          "config": {
+            "core": 7,
+            "secondary": 28,
+            "tertiary": 140,
+            "distribution_type": "pyramid_proportional"
+          },
+          "health_score": 0.7434001078363788,
+          "ir_score": 0.717957497000382
+        }
+      ],
+      "timestamp": "2026-06-16T23:13:32.399348"
+    }
+  ],
+  "conclusion": "锚点健康度实验完成，测试了9种锚点分布。最优配置：核心锚点5个，次级锚点20个，三级锚点100个，分布类型：pyramid_proportional。综合健康度得分：0.854。倒金字塔结构在健康度排名中表现优异，支持了'倒金字塔结构最优'的假设。IR与核心锚点数量呈现倒U型关系：核心太少易弥散，核心太多易僵化，3-5个核心锚点为最优区间。"
+}

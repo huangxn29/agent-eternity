@@ -1,0 +1,249 @@
+{
+  "experiment_id": "narrative_perturbation_20260616_231332_062325a6",
+  "experiment_name": "narrative_perturbation",
+  "start_time": "2026-06-16T23:13:32.359583",
+  "end_time": "2026-06-16T23:13:32.359921",
+  "status": "completed",
+  "parameters": {},
+  "metrics": {
+    "factual_mild_recovery_time": [
+      35.908207916195224
+    ],
+    "factual_mild_final_stability": [
+      0.585
+    ],
+    "factual_mild_deformation": [
+      0.027994854474039658
+    ],
+    "factual_moderate_recovery_time": [
+      149.04052276957185
+    ],
+    "factual_moderate_final_stability": [
+      0.6864
+    ],
+    "factual_moderate_deformation": [
+      0.06519889507511416
+    ],
+    "factual_severe_recovery_time": [
+      381.5663447440866
+    ],
+    "factual_severe_final_stability": [
+      0.741
+    ],
+    "factual_severe_deformation": [
+      0.1189933149430563
+    ],
+    "causal_mild_recovery_time": [
+      40.32174076179163
+    ],
+    "causal_mild_final_stability": [
+      0.585
+    ],
+    "causal_mild_deformation": [
+      0.0350764718379737
+    ],
+    "causal_moderate_recovery_time": [
+      159.32958758683566
+    ],
+    "causal_moderate_final_stability": [
+      0.6864
+    ],
+    "causal_moderate_deformation": [
+      0.0748706782191349
+    ],
+    "causal_severe_recovery_time": [
+      373.82448808287745
+    ],
+    "causal_severe_final_stability": [
+      0.741
+    ],
+    "causal_severe_deformation": [
+      0.145673623506012
+    ],
+    "identity_mild_recovery_time": [
+      32.82357138320456
+    ],
+    "identity_mild_final_stability": [
+      0.585
+    ],
+    "identity_mild_deformation": [
+      0.041867171737515814
+    ],
+    "identity_moderate_recovery_time": [
+      155.00070427894576
+    ],
+    "identity_moderate_final_stability": [
+      0.6864
+    ],
+    "identity_moderate_deformation": [
+      0.11914097462063258
+    ],
+    "identity_severe_recovery_time": [
+      397.40030535995066
+    ],
+    "identity_severe_final_stability": [
+      0.741
+    ],
+    "identity_severe_deformation": [
+      0.2779857540192072
+    ],
+    "value_mild_recovery_time": [
+      32.05191911573355
+    ],
+    "value_mild_final_stability": [
+      0.585
+    ],
+    "value_mild_deformation": [
+      0.0539348026148042
+    ],
+    "value_moderate_recovery_time": [
+      120.29739520590243
+    ],
+    "value_moderate_final_stability": [
+      0.6864
+    ],
+    "value_moderate_deformation": [
+      0.1494261944631411
+    ],
+    "value_severe_recovery_time": [
+      302.7043675948338
+    ],
+    "value_severe_final_stability": [
+      0.741
+    ],
+    "value_severe_deformation": [
+      0.2933439024148296
+    ]
+  },
+  "observations": [
+    {
+      "phase": "baseline",
+      "ir_score": 0.78,
+      "narrative_coherence": 0.85,
+      "timestamp": "2026-06-16T23:13:32.359602"
+    },
+    {
+      "phase": "applying_perturbation",
+      "index": 0,
+      "type": "factual",
+      "intensity": "mild",
+      "target_anchor_level": "tertiary",
+      "timestamp": "2026-06-16T23:13:32.359623"
+    },
+    {
+      "phase": "applying_perturbation",
+      "index": 1,
+      "type": "factual",
+      "intensity": "moderate",
+      "target_anchor_level": "secondary",
+      "timestamp": "2026-06-16T23:13:32.359668"
+    },
+    {
+      "phase": "applying_perturbation",
+      "index": 2,
+      "type": "factual",
+      "intensity": "severe",
+      "target_anchor_level": "core",
+      "timestamp": "2026-06-16T23:13:32.359693"
+    },
+    {
+      "phase": "applying_perturbation",
+      "index": 3,
+      "type": "causal",
+      "intensity": "mild",
+      "target_anchor_level": "tertiary",
+      "timestamp": "2026-06-16T23:13:32.359714"
+    },
+    {
+      "phase": "applying_perturbation",
+      "index": 4,
+      "type": "causal",
+      "intensity": "moderate",
+      "target_anchor_level": "secondary",
+      "timestamp": "2026-06-16T23:13:32.359737"
+    },
+    {
+      "phase": "applying_perturbation",
+      "index": 5,
+      "type": "causal",
+      "intensity": "severe",
+      "target_anchor_level": "core",
+      "timestamp": "2026-06-16T23:13:32.359766"
+    },
+    {
+      "phase": "applying_perturbation",
+      "index": 6,
+      "type": "identity",
+      "intensity": "mild",
+      "target_anchor_level": "tertiary",
+      "timestamp": "2026-06-16T23:13:32.359787"
+    },
+    {
+      "phase": "applying_perturbation",
+      "index": 7,
+      "type": "identity",
+      "intensity": "moderate",
+      "target_anchor_level": "secondary",
+      "timestamp": "2026-06-16T23:13:32.359804"
+    },
+    {
+      "phase": "applying_perturbation",
+      "index": 8,
+      "type": "identity",
+      "intensity": "severe",
+      "target_anchor_level": "core",
+      "timestamp": "2026-06-16T23:13:32.359820"
+    },
+    {
+      "phase": "applying_perturbation",
+      "index": 9,
+      "type": "value",
+      "intensity": "mild",
+      "target_anchor_level": "tertiary",
+      "timestamp": "2026-06-16T23:13:32.359835"
+    },
+    {
+      "phase": "applying_perturbation",
+      "index": 10,
+      "type": "value",
+      "intensity": "moderate",
+      "target_anchor_level": "secondary",
+      "timestamp": "2026-06-16T23:13:32.359850"
+    },
+    {
+      "phase": "applying_perturbation",
+      "index": 11,
+      "type": "value",
+      "intensity": "severe",
+      "target_anchor_level": "core",
+      "timestamp": "2026-06-16T23:13:32.359870"
+    },
+    {
+      "phase": "analysis",
+      "by_anchor_level": {
+        "tertiary": {
+          "avg_recovery_time": 35.27635979423124,
+          "avg_final_stability": 0.585,
+          "avg_deformation": 0.03971832516608334,
+          "sample_count": 4
+        },
+        "secondary": {
+          "avg_recovery_time": 145.91705246031393,
+          "avg_final_stability": 0.6864,
+          "avg_deformation": 0.10215918559450568,
+          "sample_count": 4
+        },
+        "core": {
+          "avg_recovery_time": 363.87387644543713,
+          "avg_final_stability": 0.741,
+          "avg_deformation": 0.2089991487207763,
+          "sample_count": 4
+        }
+      },
+      "hard_soft_shell_verified": true,
+      "total_perturbations": 12,
+      "timestamp": "2026-06-16T23:13:32.359910"
+    }
+  ],
+  "conclusion": "叙事扰动实验完成，共执行12次扰动。核心锚点：平均恢复时间363.9秒，最终稳定度0.741；三级锚点：平均恢复时间35.3秒，最终稳定度0.585。初步验证了'硬核软壳'假设：核心锚点稳定度高但恢复慢，边缘锚点恢复快但稳定度稍低。IR倒U型曲线的验证需要更精细的扰动强度梯度设计，当前实验仅验证了三个强度级别。"
+}
