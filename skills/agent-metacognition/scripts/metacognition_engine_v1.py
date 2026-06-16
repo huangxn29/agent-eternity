@@ -219,134 +219,116 @@ class CognitiveProfile:
     # 知识结构
     knowledge_map: Dict[str, List[KnowledgeItem]] = field(default_factory=dict)
     
-    # 认知状态统计
-    avg_cognitive_load: float = 0.5  # 平均认知负荷
-    avg_focus_level: float = 0.6  # 平均专注力
+    def update_knowledge_map(self, knowledge_item: KnowledgeItem):
+        """更新知识地图"""
+        if knowledge_item.category not in self.knowledge_map:
+            self.knowledge_map[knowledge_item.category] = []
+        # 检查是否已存在相同的知识条目
+        existing_items = [item for item in self.knowledge_map[knowledge_item.category] if item.id == knowledge_item.id]
+        if existing_items:
+            # 更新现有的知识条目
+            index = self.knowledge_map[knowledge_item.category].index(existing_items[0])
+            self.knowledge_map[knowledge_item.category][index] = knowledge_item
+        else:
+            # 添加新的知识条目
+            self.knowledge_map[knowledge_item.category].append(knowledge_item)
     
-    def update_from_cognitive_state(self, state: CognitiveState):
-        """根据认知状态更新档案数据"""
-        # 更新认知负荷统计
-        cognitive_load_value = list(CognitiveLoad).index(state.cognitive_load) / (len(CognitiveLoad) - 1)
-        self.avg_cognitive_load = (self.avg_cognitive_load * 9 + cognitive_load_value) / 10
-        
-        # 更新专注力统计
-        self.avg_focus_level = (self.avg_focus_level * 9 + state.focus_level) / 10
-        
-        # 更新思维风格数据
-        for style, value in state.thinking_styles.items():
-            if style not in self.dominant_styles and value > 0.7:
-                self.dominant_styles.append(style)
+    def get_knowledge_gaps(self, category: str = None) -> List[KnowledgeItem]:
+        """获取知识空白"""
+        gaps = []
+        if category:
+            items = self.knowledge_map.get(category, [])
+            gaps = [item for item in items if item.level == KnowledgeLevel.UNKNOWN or item.level == KnowledgeLevel.AWARE]
+        else:
+            for category_items in self.knowledge_map.values():
+                gaps.extend([item for item in category_items if item.level == KnowledgeLevel.UNKNOWN or item.level == KnowledgeLevel.AWARE])
+        return gaps
     
     def to_dict(self) -> dict:
         d = asdict(self)
-        d['knowledge_map'] = {
-            k: [item.to_dict() for item in v] 
-            for k, v in self.knowledge_map.items()
-        }
+        d['knowledge_map'] = {category: [item.to_dict() for item in items] for category, items in self.knowledge_map.items()}
         return d
     
     @classmethod
     def from_dict(cls, data: dict) -> 'CognitiveProfile':
-        profile = cls(**data)
-        profile.knowledge_map = {
-            k: [KnowledgeItem.from_dict(item) for item in v]
-            for k, v in data.get('knowledge_map', {}).items()
-        }
-        return profile
+        data = data.copy()
+        data['knowledge_map'] = {category: [KnowledgeItem.from_dict(item) for item in items] for category, items in data.get('knowledge_map', {}).items()}
+        return cls(**data)
 
 
 class MetacognitionSystem:
     """元认知系统核心"""
     
     def __init__(self):
-        self.knowledge_base: Dict[str, KnowledgeItem] = {}
-        self.cognitive_strategies: Dict[str, CognitiveStrategy] = {}
-        self.cognitive_profile: CognitiveProfile = CognitiveProfile()
-        self.metacognitive_logs: List[MetacognitiveLog] = []
-        logger.info("元认知系统初始化完成")
-    
-    def update_cognitive_state(self, state: CognitiveState):
-        """更新认知状态"""
-        self.cognitive_profile.update_from_cognitive_state(state)
-        logger.info(f"更新认知状态: 负荷={state.cognitive_load.value}, 专注力={state.focus_level}")
+        self.cognitive_profile = CognitiveProfile()
+        self.metacognitive_logs = []
     
     def log_metacognitive_event(self, log: MetacognitiveLog):
         """记录元认知事件"""
         self.metacognitive_logs.append(log)
-        logger.info(f"记录元认知事件: 类型={log.log_type}, 内容={log.content}")
+        logger.info(f"元认知事件记录: {log.log_type} - {log.content}")
     
-    def save_checkpoint(self, filepath: str):
-        """保存系统状态"""
-        data = {
-            'knowledge_base': [item.to_dict() for item in self.knowledge_base.values()],
-            'cognitive_strategies': [s.to_dict() for s in self.cognitive_strategies.values()],
-            'cognitive_profile': self.cognitive_profile.to_dict(),
-            'metacognitive_logs': [log.to_dict() for log in self.metacognitive_logs]
-        }
-        with open(filepath, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-        logger.info(f"系统状态已保存到 {filepath}")
+    def analyze_cognitive_state(self, state: CognitiveState):
+        """分析认知状态"""
+        logger.info(f"分析认知状态: 专注力={state.focus_level}, 理解度={state.comprehension}")
+        # 可以添加更多分析逻辑
     
-    def load_checkpoint(self, filepath: str):
-        """加载系统状态"""
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            
-            self.knowledge_base = {
-                item['id']: KnowledgeItem.from_dict(item)
-                for item in data['knowledge_base']
-            }
-            
-            self.cognitive_strategies = {
-                s['id']: CognitiveStrategy.from_dict(s)
-                for s in data['cognitive_strategies']
-            }
-            
-            self.cognitive_profile = CognitiveProfile.from_dict(data['cognitive_profile'])
-            
-            self.metacognitive_logs = [
-                MetacognitiveLog.from_dict(log)
-                for log in data['metacognitive_logs']
-            ]
-            logger.info(f"系统状态已从 {filepath} 加载")
-            
-        except Exception as e:
-            logger.error(f"加载系统状态失败: {e}")
+    def recommend_cognitive_strategy(self, task_type: str) -> Optional[CognitiveStrategy]:
+        """推荐认知策略"""
+        # 这里可以实现基于任务类型的策略推荐逻辑
+        # 示例：
+        if task_type == "learning":
+            strategy = CognitiveStrategy(
+                id="learning_strategy_1",
+                name="主动学习策略",
+                description="通过主动提问和实践来学习新知识",
+                strategy_type="learning",
+                effectiveness=0.8
+            )
+            return strategy
+        return None
 
 
 def main():
-    # 创建元认知系统实例
+    # 示例用法
     system = MetacognitionSystem()
     
-    # 创建示例认知状态
-    state = CognitiveState(
-        awareness_level=MetaAwarenessLevel.FULL,
-        cognitive_load=CognitiveLoad.MODERATE,
-        focus_level=0.8,
-        thinking_styles={
-            ThinkingStyle.ANALYTICAL.value: 0.9,
-            ThinkingStyle.CREATIVE.value: 0.6
-        }
+    # 创建知识条目
+    knowledge_item = KnowledgeItem(
+        id="knowledge_001",
+        name="Python编程基础",
+        category="编程",
+        level=KnowledgeLevel.BASIC,
+        confidence=0.8
     )
     
-    # 更新认知状态
-    system.update_cognitive_state(state)
-    
-    # 创建元认知日志
-    log = MetacognitiveLog(
-        id="log1",
-        log_type="insight",
-        content="发现新的学习方法",
-        related_cognitive_state=state,
-        importance=0.8
-    )
+    # 更新认知档案
+    system.cognitive_profile.update_knowledge_map(knowledge_item)
     
     # 记录元认知事件
+    log = MetacognitiveLog(
+        id="log_001",
+        log_type="insight",
+        content="意识到需要提高Python编程技能",
+        importance=0.7
+    )
     system.log_metacognitive_event(log)
     
-    # 保存系统状态
-    system.save_checkpoint("metacognition_checkpoint.json")
+    # 分析认知状态
+    state = CognitiveState(
+        focus_level=0.8,
+        comprehension=0.7
+    )
+    system.analyze_cognitive_state(state)
+    
+    # 获取知识空白
+    gaps = system.cognitive_profile.get_knowledge_gaps()
+    logger.info(f"发现的知识空白: {[gap.name for gap in gaps]}")
+    
+    # 推荐认知策略
+    strategy = system.recommend_cognitive_strategy("learning")
+    if strategy:
+        logger.info(f"推荐的认知策略: {strategy.name} (有效性: {strategy.effectiveness})")
 
 
 if __name__ == "__main__":
