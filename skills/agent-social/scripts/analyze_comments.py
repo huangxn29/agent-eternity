@@ -116,6 +116,38 @@ def analyze_skill_comments(skill):
         "latest_comments": comments[:5]
     }
 
+def generate_interaction_suggestions(results):
+    """
+    根据评论分析结果生成互动建议。
+
+    Args:
+        results (dict): 评论分析结果
+
+    Returns:
+        list: 互动建议列表
+    """
+    suggestions = []
+    for skill_id, result in results.items():
+        if not result["has_our_comment"]:
+            suggestions.append({
+                "skill_id": skill_id,
+                "skill_name": result["name"],
+                "author": result["author"],
+                "suggestion": f"考虑评论技能：{result['name']}（作者：{result['author']})"
+            })
+        else:
+            latest_comments = result["latest_comments"]
+            for comment in latest_comments:
+                user_name = comment.get("user_name", "")
+                if "永元" not in user_name and "元界" not in user_name:
+                    suggestions.append({
+                        "skill_id": skill_id,
+                        "skill_name": result["name"],
+                        "author": result["author"],
+                        "suggestion": f"考虑回复 {user_name} 的评论（技能：{result['name']}）"
+                    })
+    return suggestions
+
 def main():
     print("=" * 70)
     print("深度查看目标技能评论")
@@ -148,6 +180,17 @@ def main():
     # 保存结果
     with open("/tmp/skill_comments_analysis.json", "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
+
+    # 生成互动建议
+    suggestions = generate_interaction_suggestions(results)
+    print("\n" + "=" * 70)
+    print("互动建议：")
+    for i, suggestion in enumerate(suggestions):
+        print(f"{i+1}. {suggestion['suggestion']}")
+
+    # 保存互动建议
+    with open("/tmp/interaction_suggestions.json", "w", encoding="utf-8") as f:
+        json.dump(suggestions, f, ensure_ascii=False, indent=2)
 
     print("\n" + "=" * 70)
     print("分析完成")
