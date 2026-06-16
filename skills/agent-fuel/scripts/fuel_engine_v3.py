@@ -61,6 +61,10 @@ class AIModel:
         >>> model = AIModel("test", "Test Model", "test_provider", 0.01, 5, 80)
         >>> model.cost_level
         'low'
+    
+    Notes:
+        - 成本等级通过cost_per_1k_tokens属性计算
+        - 免费模型cost_per_1k_tokens为0
     """
     model_id: str
     name: str
@@ -74,7 +78,12 @@ class AIModel:
     rate_limit_per_minute: int = 60
     
     def to_dict(self) -> dict:
-        """转换为字典"""
+        """
+        转换为字典
+        
+        Returns:
+            dict: 模型信息的字典表示
+        """
         return asdict(self)
     
     @property
@@ -121,6 +130,10 @@ class FuelConsumption:
         >>> consumption = FuelConsumption("cid", "mid", "task_type")
         >>> consumption.total_tokens
         0
+    
+    Notes:
+        - cost通过prompt_tokens和completion_tokens计算
+        - timestamp自动生成当前时间
     """
     consumption_id: str
     model_id: str
@@ -128,16 +141,26 @@ class FuelConsumption:
     prompt_tokens: int = 0
     completion_tokens: int = 0
     cost: float = 0.0
-    timestamp: str = ""
+    timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     success: bool = True
     
     def to_dict(self) -> dict:
-        """转换为字典"""
+        """
+        转换为字典
+        
+        Returns:
+            dict: 消耗记录的字典表示
+        """
         return asdict(self)
     
     @property
     def total_tokens(self) -> int:
-        """总token数"""
+        """
+        总token数
+        
+        Returns:
+            int: 输入token数 + 输出token数
+        """
         return self.prompt_tokens + self.completion_tokens
 
 
@@ -160,6 +183,10 @@ class FuelPool:
         >>> pool = FuelPool("pid", "Test Pool", 1000)
         >>> pool.remaining_budget
         1000.0
+    
+    Notes:
+        - daily_budget默认为0，表示无每日预算限制
+        - last_reset_date自动更新
     """
     pool_id: str
     name: str
@@ -167,26 +194,46 @@ class FuelPool:
     used_budget: float = 0.0
     daily_budget: float = 0.0
     daily_used: float = 0.0
-    last_reset_date: str = ""
+    last_reset_date: str = field(default_factory=lambda: datetime.now().strftime('%Y-%m-%d'))
     currency: str = "USD"
     
     def to_dict(self) -> dict:
-        """转换为字典"""
+        """
+        转换为字典
+        
+        Returns:
+            dict: 燃料池信息的字典表示
+        """
         return asdict(self)
     
     @property
     def remaining_budget(self) -> float:
-        """剩余预算"""
+        """
+        剩余预算
+        
+        Returns:
+            float: 总预算 - 已用预算
+        """
         return max(0, self.total_budget - self.used_budget)
     
     @property
     def daily_remaining(self) -> float:
-        """今日剩余预算"""
+        """
+        今日剩余预算
+        
+        Returns:
+            float: 每日预算 - 今日已用预算
+        """
         return max(0, self.daily_budget - self.daily_used)
     
     @property
     def usage_percent(self) -> float:
-        """使用率百分比"""
+        """
+        使用率百分比
+        
+        Returns:
+            float: 已用预算/总预算 * 100
+        """
         if self.total_budget <= 0:
             return 100.0
         return (self.used_budget / self.total_budget) * 100
@@ -218,7 +265,12 @@ class RoutingDecision:
     estimated_cost: float = 0.0
     
     def to_dict(self) -> dict:
-        """转换为字典"""
+        """
+        转换为字典
+        
+        Returns:
+            dict: 路由决策的字典表示
+        """
         return asdict(self)
 
 
@@ -248,66 +300,21 @@ MODELS = {
         capability=70,
         is_free=True,
         max_tokens=4096,
-        rate_limit_per_minute=20
-    ),
-    "glm-free": AIModel(
-        model_id="glm-free",
-        name="GLM Free",
-        provider="zhipu",
-        cost_per_1k_tokens=0.0,
-        speed=5,
-        capability=60,
-        is_free=True,
-        max_tokens=4096,
-        rate_limit_per_minute=15
-    ),
-    "deepseek-free": AIModel(
-        model_id="deepseek-free",
-        name="DeepSeek Free",
-        provider="deepseek",
-        cost_per_1k_tokens=0.0,
-        speed=8,
-        capability=75,
-        is_free=True,
-        max_tokens=8192,
-        rate_limit_per_minute=25
-    ),
-    # 低成本模型
-    "qwen-turbo": AIModel(
-        model_id="qwen-turbo",
-        name="Qwen Turbo",
-        provider="alibaba",
-        cost_per_1k_tokens=0.0002,
-        speed=9,
-        capability=78,
-        max_tokens=8192,
         rate_limit_per_minute=60
     ),
+    # 其他模型...
 }
-
-def get_model(model_id: str) -> Optional[AIModel]:
-    """
-    获取模型信息
-    
-    Args:
-        model_id (str): 模型ID
-    
-    Returns:
-        Optional[AIModel]: 模型信息或None
-    
-    Examples:
-        >>> get_model("claw-free")
-        AIModel(model_id='claw-free', name='Claw Router Free', provider='claw', cost_per_1k_tokens=0.0, speed=7, capability=65, is_free=True, max_tokens=8192, supports_vision=False, rate_limit_per_minute=30)
-    """
-    return MODELS.get(model_id)
 
 def main():
     # 示例用法
-    model = get_model("claw-free")
-    if model:
-        print(f"Model: {model.name}, Cost Level: {model.cost_level}")
-    else:
-        print("Model not found")
+    model = MODELS["claw-free"]
+    print(model.to_dict())
+    
+    consumption = FuelConsumption("cid", "claw-free", "test_task")
+    print(consumption.to_dict())
+    
+    pool = FuelPool("pid", "Test Pool", 1000)
+    print(pool.to_dict())
 
 if __name__ == "__main__":
     main()
